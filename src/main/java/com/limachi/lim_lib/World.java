@@ -100,7 +100,7 @@ public class World {
 
     private static Entity teleport(Entity entityIn, ServerLevel worldIn, double x, double y, double z, float yaw, float pitch) { //modified version of TeleportCommand.java: 123: TeleportCommand#teleport(CommandSource source, Entity entityIn, ServerWorld worldIn, double x, double y, double z, Set<SPlayerPositionLookPacket.Flags> relativeList, float yaw, float pitch, @Nullable TeleportCommand.Facing facing) throws CommandSyntaxException
         if (entityIn.isRemoved()) return entityIn;
-        Sync.XPSnapShot xp = entityIn instanceof ServerPlayer ? new Sync.XPSnapShot((Player)entityIn) : Sync.XPSnapShot.ZERO;
+        SyncUtils.XPSnapShot xp = entityIn instanceof ServerPlayer ? new SyncUtils.XPSnapShot((Player)entityIn) : SyncUtils.XPSnapShot.ZERO;
         Set<ClientboundPlayerPositionPacket.RelativeArgument> set = EnumSet.noneOf(ClientboundPlayerPositionPacket.RelativeArgument.class);
         set.add(ClientboundPlayerPositionPacket.RelativeArgument.X_ROT);
         set.add(ClientboundPlayerPositionPacket.RelativeArgument.Y_ROT);
@@ -143,7 +143,7 @@ public class World {
             ((PathfinderMob)entityIn).getNavigation().stop();
         }
         if (entityIn instanceof ServerPlayer) {
-            Sync.resyncXP((ServerPlayer) entityIn, xp);
+            SyncUtils.resyncXP((ServerPlayer) entityIn, xp);
         }
         return entityIn;
     }

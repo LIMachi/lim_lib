@@ -1,5 +1,10 @@
 package com.limachi.lim_lib;
 
+import com.limachi.lim_lib.network.NetworkManager;
+import com.limachi.lim_lib.registries.client.ClientRegistries;
+import com.limachi.lim_lib.registries.Registries;
+import com.limachi.lim_lib.registries.StaticInitializer;
+import com.limachi.lim_lib.saveData.SaveDataManager;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -27,9 +32,10 @@ public class ModBase {
         DistExecutor.unsafeCallWhenOn(Dist.CLIENT, ()->()->{ ClientRegistries.register(modId); return true; });
         MinecraftForge.EVENT_BUS.register(this);
         Configs.register(modId, name);
-        Network.register(modId);
-        SaveData.annotations(modId);
+        NetworkManager.register(modId);
+        SaveDataManager.annotations(modId);
         FMLJavaModLoadingContext.get().getModEventBus().addListener(CuriosIntegration::enqueueIMC);
+        Default.testAllDefaults(modId);
         INSTANCES.put(modId, this);
     }
 
@@ -40,9 +46,7 @@ public class ModBase {
         tab = new CreativeModeTab("tab_" + modId) {
             @Override
             @Nonnull
-            public ItemStack makeIcon() {
-                return new ItemStack(item.get());
-            }
+            public ItemStack makeIcon() { return new ItemStack(item.get()); }
         };
     }
 }

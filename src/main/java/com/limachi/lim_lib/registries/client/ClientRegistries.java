@@ -1,5 +1,11 @@
-package com.limachi.lim_lib;
+package com.limachi.lim_lib.registries.client;
 
+import com.limachi.lim_lib.ModAnnotation;
+import com.limachi.lim_lib.Reflection;
+import com.limachi.lim_lib.Strings;
+import com.limachi.lim_lib.registries.Registries;
+import com.limachi.lim_lib.registries.client.annotations.RegisterMenuScreen;
+import com.limachi.lim_lib.registries.client.annotations.RegisterSkin;
 import net.minecraft.client.color.block.BlockColor;
 import net.minecraft.client.color.block.BlockColors;
 import net.minecraft.client.color.item.ItemColor;
@@ -15,8 +21,10 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.player.PlayerRenderer;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.Item;
@@ -32,10 +40,6 @@ import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.registries.RegistryObject;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -60,11 +64,6 @@ public class ClientRegistries {
         void register(EntityRenderersEvent.RegisterRenderers event) { event.registerEntityRenderer(ge.get(), g); }
     }
 
-    protected record OpaqueMenuScreenRegistry<M extends AbstractContainerMenu, S extends Screen & MenuAccess<M>>(RegistryObject<MenuType<M>> menu, MenuScreens.ScreenConstructor<M, S> builder) {
-        void register() { MenuScreens.register(menu.get(), builder); }
-    }
-
-    public static <M extends AbstractContainerMenu, S extends Screen & MenuAccess<M>> void menuScreen(RegistryObject<MenuType<M>> menu, MenuScreens.ScreenConstructor<M, S> builder) { MENU_SCREEN.add(new OpaqueMenuScreenRegistry<>(menu, builder)); }
     public static <T extends BlockEntity> void setBer(RegistryObject<BlockEntityType<T>> getBe, BlockEntityRendererProvider<T> getRenderer) { BER.add(new OpaqueBERRegistry<>(getBe, getRenderer)); }
     public static <T extends Entity> void setEntityRenderer(RegistryObject<EntityType<T>> getBe, EntityRendererProvider<T> getRenderer) { ER.add(new OpaqueEntityRendererRegistry<>(getBe, getRenderer)); }
 
@@ -101,15 +100,26 @@ public class ClientRegistries {
         for (Map.Entry<RegistryObject<Item>, ItemColor> entry : ITEM_COLORS.entrySet()) blockcolors.register(entry.getValue(), entry.getKey().get());
     }
 
-    @Retention(RetentionPolicy.RUNTIME)
-    @Target(ElementType.TYPE)
-    public @interface RegisterSkin {
-    }
-
     private static final ArrayList<Constructor<?>> SKINS = new ArrayList<>();
     private static void discoverRegisterSkin(String modId) {
         for (ModAnnotation a : ModAnnotation.iterModAnnotations(modId, RegisterSkin.class))
             SKINS.add(a.getAnnotatedClassConstructor(PlayerRenderer.class, EntityModelSet.class));
+    }
+
+    protected record OpaqueMenuScreenRegistry<M extends AbstractContainerMenu, S extends Screen & MenuAccess<M>>(RegistryObject<MenuType<M>> menu, Class<S> clazz) {
+        void register() { MenuScreens.register(menu.get(), new MenuScreens.ScreenConstructor<M, S>() {
+                @Override
+                public S create(M menu, Inventory inventory, Component title) {
+                    return Reflection.newClass(clazz, menu, inventory, title);
+                }
+            });
+        }
+    }
+    public static <M extends AbstractContainerMenu, S extends Screen & MenuAccess<M>> void menuScreen(RegistryObject<MenuType<M>> menu, Class<S> clazz) { MENU_SCREEN.add(new OpaqueMenuScreenRegistry<>(menu, clazz)); }
+
+    private static <M extends AbstractContainerMenu, S extends Screen & MenuAccess<M>> void discoverRegisterMenuScreen(String modId) {
+        for (ModAnnotation a : ModAnnotation.iterModAnnotations(modId, RegisterMenuScreen.class))
+            menuScreen(Registries.getMenuType(modId, a.getData("menu", Strings.camelToSnake(a.getAnnotatedClassSimplifiedName()).replace("_screen", "_menu"))), (Class<S>)a.getAnnotatedClass());
     }
 
     @SubscribeEvent
@@ -142,6 +152,7 @@ public class ClientRegistries {
 
     public static void register(String modId) {
         discoverRegisterSkin(modId);
+        discoverRegisterMenuScreen(modId);
         IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
         bus.register(ClientRegistries.class);
     }

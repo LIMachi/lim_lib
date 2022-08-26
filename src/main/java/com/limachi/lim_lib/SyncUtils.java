@@ -14,7 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @SuppressWarnings("unused")
-public class Sync {
+public class SyncUtils {
     public static void resyncPlayerHands(@Nonnull ServerPlayer player, boolean main, boolean off) {
         List<Pair<EquipmentSlot, ItemStack>> hands = new ArrayList<>();
         if (main)

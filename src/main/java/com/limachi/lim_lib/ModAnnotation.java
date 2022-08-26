@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 /**
  * helper class to manipulate annotation using the scan data provided by forge
  */
-@SuppressWarnings("unused")
+@SuppressWarnings({"unused", "unchecked"})
 public class ModAnnotation {
     /**
      * helper function to create an iterable set of ModAnnotation for the files included by 'modId'
@@ -31,7 +31,10 @@ public class ModAnnotation {
 
     protected ModFileScanData.AnnotationData annotation;
 
-    public ModAnnotation(ModFileScanData.AnnotationData annotation) { this.annotation = annotation; }
+    public ModAnnotation(ModFileScanData.AnnotationData annotation) {
+        this.annotation = annotation;
+        Default.testDefault(getAnnotatedClass());
+    }
 
     /**
      * helper function to test if this ModAnnotation is of the given 'clazz' type
@@ -49,21 +52,17 @@ public class ModAnnotation {
     /**
      * helper function to get data from the annotation (aka annotation parameters)
      */
-    public <T> T getData(String key, T def) {
-        return (T)annotation.annotationData().getOrDefault(key, def);
-    }
+    public <T> T getData(String key, T def) { return (T)annotation.annotationData().getOrDefault(key, def); }
 
     /**
      * get a Class of the annotated class, we recommend using the functions to directly use fields and method
      */
-    public Class<?> getAnnotatedClass() {
-        try {
-            return Class.forName(annotation.clazz().getClassName());
-        } catch (ClassNotFoundException e) {
-            Log.error("Class not found for annotation: " + annotation);
-            return null;
-        }
-    }
+    public Class<?> getAnnotatedClass() { return Reflection.classByName(annotation.clazz().getClassName(), null); }
+
+    /**
+     * get the simplified name of the class
+     */
+    public String getAnnotatedClassSimplifiedName() { return Strings.getSimplifiedClassName(annotation.clazz().getClassName()); }
 
     public <T> Constructor<T> getAnnotatedClassConstructor(Class<?> ... paramTypes) {
         try {

@@ -1,6 +1,7 @@
 package com.limachi.lim_lib;
 
-import com.limachi.lim_lib.messages.KeyStateMsg;
+import com.limachi.lim_lib.network.messages.KeyStateMsg;
+import com.limachi.lim_lib.network.NetworkManager;
 import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
@@ -91,7 +92,7 @@ public class KeyMapController {
             if (mouse ? KEY_BINDINGS.get(i).getKeybinding().matchesMouse(key) : KEY_BINDINGS.get(i).getKeybinding().matches(key, scan)) {
                 if (state != getLocalKeyMap()[i]) {
                     getLocalKeyMap()[i] = state;
-                    Network.toServer(ModBase.COMMON_ID, new KeyStateMsg(i, state));
+                    NetworkManager.toServer(ModBase.COMMON_ID, new KeyStateMsg(i, state));
                 }
                 return;
             }
@@ -137,7 +138,7 @@ public class KeyMapController {
                 ((KeyMapping)KEY_BINDINGS.get(getId()).keybinding).setDown(state);
                 return null;
             }, ()->()->{
-                Network.toClient(ModBase.COMMON_ID, (ServerPlayer)player, new KeyStateMsg(getId(), state));
+                NetworkManager.toClient(ModBase.COMMON_ID, (ServerPlayer)player, new KeyStateMsg(getId(), state));
                 return null;
             });
         }
