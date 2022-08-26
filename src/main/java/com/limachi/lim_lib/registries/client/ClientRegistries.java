@@ -153,7 +153,5 @@ public class ClientRegistries {
     public static void register(String modId) {
         discoverRegisterSkin(modId);
         discoverRegisterMenuScreen(modId);
-        IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
-        bus.register(ClientRegistries.class);
     }
 }

@@ -280,7 +280,6 @@ public class Registries {
             return;
         }
         IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
-        bus.register(Registries.class);
         for (DeferredRegister<?> reg : mr.values()) {
             reg.register(bus);
         }
