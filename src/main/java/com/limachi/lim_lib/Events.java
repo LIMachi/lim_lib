@@ -5,7 +5,6 @@ import com.limachi.lim_lib.blocks.IGetUseSneakWithItemEvent;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
-import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.eventbus.api.Event;
@@ -45,10 +44,5 @@ public class Events {
             event.setUseBlock(Event.Result.ALLOW);
             event.setUseItem(Event.Result.DENY);
         }
-    }
-
-    @SubscribeEvent
-    public static void registerCommands(RegisterCommandsEvent event) {
-        TestCommand.register(event.getDispatcher());
     }
 }

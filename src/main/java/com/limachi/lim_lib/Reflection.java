@@ -4,6 +4,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.function.Supplier;
 
 /**
@@ -240,10 +241,64 @@ public class Reflection {
         }
     }
 
+    public static class VargMethod {
+        Class<?> clazz;
+        Object object;
+        String m1;
+        String m2;
+        public VargMethod(Class<?> clazz, String methodName, String obfuscatedMethodName) {
+            this.clazz = clazz;
+            this.object = null;
+            this.m1 = obfuscatedMethodName;
+            this.m2 = methodName;
+        }
+        public VargMethod(Object object, String methodName, String obfuscatedMethodName) {
+            this.clazz = object.getClass();
+            this.object = object;
+            this.m1 = obfuscatedMethodName;
+            this.m2 = methodName;
+        }
+        public VargMethod(Class<?> clazz, String methodName) {
+            this.clazz = clazz;
+            this.object = null;
+            this.m1 = methodName;
+            this.m2 = null;
+        }
+        public VargMethod(Object object, String methodName) {
+            this.clazz = object.getClass();
+            this.object = object;
+            this.m1 = methodName;
+            this.m2 = null;
+        }
+        public <T> T invoke(Object ... parameters) {
+            return object == null ? invokeMethod(clazz, m1, m2, parameters) : invokeMethod(object, m1, m2, parameters);
+        }
+    }
+
+    public static HashMap<Class<?>, Class<?>> CASTABLE_PRIMITIVES = new HashMap<>();
+    protected static void castablePrimitive(Class<?> c1, Class<?> c2) {
+        CASTABLE_PRIMITIVES.put(c1, c2);
+        CASTABLE_PRIMITIVES.put(c2, c1);
+    }
+    static {
+        castablePrimitive(Boolean.class, boolean.class);
+        castablePrimitive(Byte.class, byte.class);
+        castablePrimitive(Character.class, char.class);
+        castablePrimitive(Short.class, short.class);
+        castablePrimitive(Integer.class, int.class);
+        castablePrimitive(Long.class, long.class);
+        castablePrimitive(Float.class, float.class);
+        castablePrimitive(Double.class, double.class);
+    }
+
+    protected static boolean canCast(Class<?> to, Class<?> from) {
+        return to.isAssignableFrom(from) || CASTABLE_PRIMITIVES.get(to).isAssignableFrom(from) || to.isAssignableFrom(CASTABLE_PRIMITIVES.get(from));
+    }
+
     protected static boolean paramTypesAreAssignable(Class<?>[] to, Class<?>[] from) {
         if (to.length != from.length) return false;
         for (int i = 0; i < to.length; ++i)
-            if (!to[i].isAssignableFrom(from[i]))
+            if (!canCast(to[i], from[i])) //FIXME: does not work with primitives vs object of castable type (ex int/Integer)
                 return false;
         return true;
     }

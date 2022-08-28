@@ -86,6 +86,7 @@ public class World {
         }
     }
 
+    @SuppressWarnings("unchecked")
     public static <T extends BlockEntity> List<T> getTileEntitiesWithinAABB(Level level, Class<T> beClass, AABB aabb, @Nullable Predicate<T> pred) {
         ArrayList<T> out = new ArrayList<>();
         for (int x = (int)aabb.minX; x <= aabb.maxX; ++x)

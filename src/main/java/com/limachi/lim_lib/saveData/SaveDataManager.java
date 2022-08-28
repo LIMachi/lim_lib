@@ -26,6 +26,7 @@ public class SaveDataManager {
         SAVE_DATAS.put(name, new Pair<>(dataClass, sync));
     }
 
+    @SuppressWarnings("unchecked")
     public static void annotations(String modId) {
         for (ModAnnotation a : ModAnnotation.iterModAnnotations(modId, RegisterSaveData.class)) {
             String name = a.getData("name", "");
@@ -64,8 +65,9 @@ public class SaveDataManager {
         }
     }
 
+    @SuppressWarnings("unchecked")
     public static <T extends AbstractSyncSaveData> T getInstance(String name) {
-        if (Sides.isLogicalClient()) return (T) CLIENT_INSTANCES.get(name);
+        if (Sides.isLogicalClient()) return (T)CLIENT_INSTANCES.get(name);
         String type = Strings.getFolder(':', name);
         if (type.equals("")) type = name;
         Class<T> clazz = (Class<T>)SAVE_DATAS.get(type).getFirst();
@@ -89,6 +91,7 @@ public class SaveDataManager {
         }
         return null;
     }
+
 
     public static <T, S extends AbstractSyncSaveData> T execute(String name, Function<S, T> exec, Supplier<T> onError) {
         S instance = getInstance(name);

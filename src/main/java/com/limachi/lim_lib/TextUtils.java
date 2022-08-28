@@ -10,6 +10,7 @@ import net.minecraft.network.chat.TextComponent;
 import java.util.ArrayList;
 import java.util.List;
 
+@SuppressWarnings("unused")
 public class TextUtils {
     private static final int PRETTY_TAG_MAX_WIDTH = 32;
     private static final int PRETTY_TAG_MARGIN = 2;
@@ -26,6 +27,7 @@ public class TextUtils {
     private static Pair<Integer, MutableComponent> pstr(int depth, String v) { return new Pair<>(depth, str(v)); }
     private static Pair<Integer, MutableComponent> pdef(int depth, String v) { return new Pair<>(depth, def(v)); }
 
+    @SuppressWarnings("unchecked")
     private static ArrayList<Pair<Integer, MutableComponent>> prettyTagInternal(Tag nbt, int depth, boolean tryUuid) {
         ArrayList<Pair<Integer, MutableComponent>> out = new ArrayList<>();
         int width = PRETTY_TAG_MAX_WIDTH - depth * PRETTY_TAG_MARGIN;
@@ -60,8 +62,7 @@ public class TextUtils {
                 }
                 out.add(plst(depth, "]"));
             }
-        } else if (nbt instanceof CompoundTag) { //object style
-            CompoundTag c = (CompoundTag)nbt;
+        } else if (nbt instanceof CompoundTag c) { //object style
             if (c.isEmpty())
                 out.add(pobj(depth, "{}"));
             else if (c.getAllKeys().size() == 1) {

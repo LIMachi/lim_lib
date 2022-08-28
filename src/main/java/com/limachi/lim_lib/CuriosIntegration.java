@@ -56,9 +56,9 @@ public class CuriosIntegration {
 
     public static boolean equipOnFirstValidSlot(LivingEntity entity, String slot_category, ItemStack stack) {
         Optional<ICuriosItemHandler> oih = CuriosApi.getCuriosHelper().getCuriosHandler(entity).resolve();
-        if (!oih.isPresent()) return false;
+        if (oih.isEmpty()) return false;
         Optional<ICurioStacksHandler> osh = oih.get().getStacksHandler(slot_category);
-        if (!osh.isPresent()) return false;
+        if (osh.isEmpty()) return false;
         IDynamicStackHandler sh = osh.get().getStacks();
         for (int i = 0; i < sh.getSlots(); ++i)
             if (sh.getStackInSlot(i).isEmpty()) {
@@ -161,8 +161,8 @@ public class CuriosIntegration {
         if (!continueAfterOne && out.size() > 0)
             return out;
 
-        int s = 1;
-        int d = 5;
+        int s;
+        int d;
         if (isPlayer) {
             s = inv.offhand.size();
             d = inv.getContainerSize() - s;
