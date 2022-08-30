@@ -5,9 +5,7 @@ import com.mojang.brigadier.context.CommandContext;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.arguments.coordinates.ColumnPosArgument;
 import net.minecraft.server.level.ColumnPos;
-
-import java.util.Optional;
-import java.util.function.Function;
+import com.limachi.lim_lib.commands.FunctionThrowsCommandSyntaxException;
 
 @SuppressWarnings("unused")
 public class ColumnPosArg extends AbstractCommandArgument {
@@ -15,5 +13,5 @@ public class ColumnPosArg extends AbstractCommandArgument {
     @Override
     public Class<?>[] debugGetType() { return new Class[]{ColumnPos.class}; }
     @Override
-    public Function<CommandContext<CommandSourceStack>, Optional<Object>> getter() { return ctx->Optional.of(ColumnPosArgument.getColumnPos(ctx, getLabel())); }
+    public FunctionThrowsCommandSyntaxException<CommandContext<CommandSourceStack>, Object> getter() { return ctx->ColumnPosArgument.getColumnPos(ctx, getLabel()); }
 }

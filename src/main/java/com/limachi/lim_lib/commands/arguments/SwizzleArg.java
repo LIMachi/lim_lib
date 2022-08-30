@@ -8,7 +8,7 @@ import net.minecraft.core.Direction;
 
 import java.util.EnumSet;
 import java.util.Optional;
-import java.util.function.Function;
+import com.limachi.lim_lib.commands.FunctionThrowsCommandSyntaxException;
 
 @SuppressWarnings("unused")
 public class SwizzleArg extends AbstractCommandArgument {
@@ -16,5 +16,5 @@ public class SwizzleArg extends AbstractCommandArgument {
     @Override
     public Class<?>[] debugGetType() { return new Class[]{EnumSet.class, Direction.Axis.class}; }
     @Override
-    public Function<CommandContext<CommandSourceStack>, Optional<Object>> getter() { return ctx->Optional.of(SwizzleArgument.getSwizzle(ctx, getLabel())); }
+    public FunctionThrowsCommandSyntaxException<CommandContext<CommandSourceStack>, Object> getter() { return ctx->SwizzleArgument.getSwizzle(ctx, getLabel()); }
 }

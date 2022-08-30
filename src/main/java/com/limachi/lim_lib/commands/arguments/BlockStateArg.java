@@ -5,9 +5,7 @@ import com.mojang.brigadier.context.CommandContext;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.arguments.blocks.BlockInput;
 import net.minecraft.commands.arguments.blocks.BlockStateArgument;
-
-import java.util.Optional;
-import java.util.function.Function;
+import com.limachi.lim_lib.commands.FunctionThrowsCommandSyntaxException;
 
 @SuppressWarnings("unused")
 public class BlockStateArg extends AbstractCommandArgument {
@@ -15,5 +13,5 @@ public class BlockStateArg extends AbstractCommandArgument {
     @Override
     public Class<?>[] debugGetType() { return new Class[]{BlockInput.class}; }
     @Override
-    public Function<CommandContext<CommandSourceStack>, Optional<Object>> getter() { return ctx->Optional.of(BlockStateArgument.getBlock(ctx, getLabel())); }
+    public FunctionThrowsCommandSyntaxException<CommandContext<CommandSourceStack>, Object> getter() { return ctx->BlockStateArgument.getBlock(ctx, getLabel()); }
 }

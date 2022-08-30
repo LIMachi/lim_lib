@@ -5,9 +5,7 @@ import com.mojang.brigadier.context.CommandContext;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.gametest.framework.TestFunction;
 import net.minecraft.gametest.framework.TestFunctionArgument;
-
-import java.util.Optional;
-import java.util.function.Function;
+import com.limachi.lim_lib.commands.FunctionThrowsCommandSyntaxException;
 
 @SuppressWarnings("unused")
 public class TestFunctionArg extends AbstractCommandArgument {
@@ -15,5 +13,5 @@ public class TestFunctionArg extends AbstractCommandArgument {
     @Override
     public Class<?>[] debugGetType() { return new Class[]{TestFunction.class}; }
     @Override
-    public Function<CommandContext<CommandSourceStack>, Optional<Object>> getter() { return ctx->Optional.of(TestFunctionArgument.getTestFunction(ctx, getLabel())); }
+    public FunctionThrowsCommandSyntaxException<CommandContext<CommandSourceStack>, Object> getter() { return ctx->TestFunctionArgument.getTestFunction(ctx, getLabel()); }
 }

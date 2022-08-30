@@ -5,9 +5,7 @@ import com.mojang.brigadier.arguments.LongArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.SharedSuggestionProvider;
-
-import java.util.Optional;
-import java.util.function.Function;
+import com.limachi.lim_lib.commands.FunctionThrowsCommandSyntaxException;
 
 @SuppressWarnings("unused")
 public class LongArg extends AbstractCommandArgument {
@@ -48,5 +46,5 @@ public class LongArg extends AbstractCommandArgument {
     @Override
     public Class<?>[] debugGetType() { return new Class[]{long.class}; }
     @Override
-    public Function<CommandContext<CommandSourceStack>, Optional<Object>> getter() { return ctx->Optional.of(LongArgumentType.getLong(ctx, getLabel())); }
+    public FunctionThrowsCommandSyntaxException<CommandContext<CommandSourceStack>, Object> getter() { return ctx->LongArgumentType.getLong(ctx, getLabel()); }
 }

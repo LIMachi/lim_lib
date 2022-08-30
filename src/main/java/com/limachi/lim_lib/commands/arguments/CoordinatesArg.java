@@ -5,9 +5,7 @@ import com.mojang.brigadier.context.CommandContext;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.arguments.coordinates.Coordinates;
 import net.minecraft.commands.arguments.coordinates.Vec3Argument;
-
-import java.util.Optional;
-import java.util.function.Function;
+import com.limachi.lim_lib.commands.FunctionThrowsCommandSyntaxException;
 
 @SuppressWarnings("unused")
 public class CoordinatesArg extends AbstractCommandArgument {
@@ -15,5 +13,5 @@ public class CoordinatesArg extends AbstractCommandArgument {
     @Override
     public Class<?>[] debugGetType() { return new Class[]{Coordinates.class}; }
     @Override
-    public Function<CommandContext<CommandSourceStack>, Optional<Object>> getter() { return ctx->Optional.of(Vec3Argument.getCoordinates(ctx, getLabel())); }
+    public FunctionThrowsCommandSyntaxException<CommandContext<CommandSourceStack>, Object> getter() { return ctx->Vec3Argument.getCoordinates(ctx, getLabel()); }
 }

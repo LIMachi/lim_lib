@@ -13,8 +13,6 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
 import java.util.ArrayList;
-import java.util.Optional;
-import java.util.function.Function;
 import java.util.function.Predicate;
 
 @SuppressWarnings("unused")
@@ -42,7 +40,7 @@ public class CommandManager {
     @SuppressWarnings("unchecked")
     public static void registerCmd(Reflection.VargMethod execute, Predicate<CommandSourceStack> requires, String cmd, AbstractCommandArgument ... vargs) {
         ArrayList<AbstractCommandArgument> args = new ArrayList<>();
-        ArrayList<Function<CommandContext<CommandSourceStack>, Optional<Object>>> getters = new ArrayList<>();
+        ArrayList<FunctionThrowsCommandSyntaxException<CommandContext<CommandSourceStack>, Object>> getters = new ArrayList<>();
         String[] c = cmd.startsWith("/") ? cmd.substring(1).split(" ") : cmd.split(" ");
         int i = 1;
         int p = 0;
@@ -66,14 +64,8 @@ public class CommandManager {
             test = ctx-> {
                 Object[] params = new Object[getters.size() + 1];
                 params[0] = ctx;
-                for (int j = 0; j < getters.size(); ++j) {
-                    Optional<Object> o = getters.get(j).apply(ctx);
-                    if (o.isEmpty()) {
-                        //FIXME: ERROR
-                        return -1;
-                    }
-                    params[j + 1] = o.get();
-                }
+                for (int j = 0; j < getters.size(); ++j)
+                    params[j + 1] = getters.get(j).apply(ctx);
                 return execute.invoke(params);
             };
         else

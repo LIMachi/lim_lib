@@ -5,9 +5,7 @@ import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.arguments.TimeArgument;
-
-import java.util.Optional;
-import java.util.function.Function;
+import com.limachi.lim_lib.commands.FunctionThrowsCommandSyntaxException;
 
 @SuppressWarnings("unused")
 public class TimeArg extends AbstractCommandArgument {
@@ -15,5 +13,5 @@ public class TimeArg extends AbstractCommandArgument {
     @Override
     public Class<?>[] debugGetType() { return new Class[]{int.class}; }
     @Override
-    public Function<CommandContext<CommandSourceStack>, Optional<Object>> getter() { return ctx->Optional.of(IntegerArgumentType.getInteger(ctx, getLabel())); }
+    public FunctionThrowsCommandSyntaxException<CommandContext<CommandSourceStack>, Object> getter() { return ctx->IntegerArgumentType.getInteger(ctx, getLabel()); }
 }

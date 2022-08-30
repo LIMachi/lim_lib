@@ -5,9 +5,7 @@ import com.mojang.brigadier.context.CommandContext;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.arguments.ItemEnchantmentArgument;
 import net.minecraft.world.item.enchantment.Enchantment;
-
-import java.util.Optional;
-import java.util.function.Function;
+import com.limachi.lim_lib.commands.FunctionThrowsCommandSyntaxException;
 
 @SuppressWarnings("unused")
 public class EnchantmentArg extends AbstractCommandArgument {
@@ -15,5 +13,5 @@ public class EnchantmentArg extends AbstractCommandArgument {
     @Override
     public Class<?>[] debugGetType() { return new Class[]{Enchantment.class}; }
     @Override
-    public Function<CommandContext<CommandSourceStack>, Optional<Object>> getter() { return ctx->Optional.of(ItemEnchantmentArgument.getEnchantment(ctx, getLabel())); }
+    public FunctionThrowsCommandSyntaxException<CommandContext<CommandSourceStack>, Object> getter() { return ctx->ItemEnchantmentArgument.getEnchantment(ctx, getLabel()); }
 }

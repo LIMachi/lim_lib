@@ -4,9 +4,7 @@ import com.limachi.lim_lib.commands.AbstractCommandArgument;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import net.minecraft.commands.CommandSourceStack;
-
-import java.util.Optional;
-import java.util.function.Function;
+import com.limachi.lim_lib.commands.FunctionThrowsCommandSyntaxException;
 
 @SuppressWarnings("unused")
 public class QuotedStringArg extends AbstractCommandArgument {
@@ -14,5 +12,5 @@ public class QuotedStringArg extends AbstractCommandArgument {
     @Override
     public Class<?>[] debugGetType() { return new Class[]{String.class}; }
     @Override
-    public Function<CommandContext<CommandSourceStack>, Optional<Object>> getter() { return ctx->Optional.of(StringArgumentType.getString(ctx, getLabel())); }
+    public FunctionThrowsCommandSyntaxException<CommandContext<CommandSourceStack>, Object> getter() { return ctx->StringArgumentType.getString(ctx, getLabel()); }
 }

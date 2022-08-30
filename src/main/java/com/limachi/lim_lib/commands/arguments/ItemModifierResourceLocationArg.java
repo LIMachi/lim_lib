@@ -2,13 +2,10 @@ package com.limachi.lim_lib.commands.arguments;
 
 import com.limachi.lim_lib.commands.AbstractCommandArgument;
 import com.mojang.brigadier.context.CommandContext;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.arguments.ResourceLocationArgument;
 import net.minecraft.world.level.storage.loot.functions.LootItemFunction;
-
-import java.util.Optional;
-import java.util.function.Function;
+import com.limachi.lim_lib.commands.FunctionThrowsCommandSyntaxException;
 
 @SuppressWarnings("unused")
 public class ItemModifierResourceLocationArg extends AbstractCommandArgument {
@@ -16,13 +13,7 @@ public class ItemModifierResourceLocationArg extends AbstractCommandArgument {
     @Override
     public Class<?>[] debugGetType() { return new Class[]{LootItemFunction.class}; }
     @Override
-    public Function<CommandContext<CommandSourceStack>, Optional<Object>> getter() {
-        return ctx-> {
-            try {
-                return Optional.of(ResourceLocationArgument.getItemModifier(ctx, getLabel()));
-            } catch (CommandSyntaxException e) {
-                return Optional.empty();
-            }
-        };
+    public FunctionThrowsCommandSyntaxException<CommandContext<CommandSourceStack>, Object> getter() {
+        return ctx->ResourceLocationArgument.getItemModifier(ctx, getLabel());
     }
 }

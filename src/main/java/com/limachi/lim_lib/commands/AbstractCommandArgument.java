@@ -9,8 +9,6 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.SharedSuggestionProvider;
 
-import java.util.Optional;
-import java.util.function.Function;
 import java.util.function.Predicate;
 
 public abstract class AbstractCommandArgument {
@@ -19,7 +17,7 @@ public abstract class AbstractCommandArgument {
     private ArgumentBuilder<CommandSourceStack, ?> builder = null;
     private Predicate<CommandSourceStack> pred = null;
     private SuggestionProvider<CommandSourceStack> customSuggestions = null;
-    public abstract Function<CommandContext<CommandSourceStack>, Optional<Object>> getter();
+    public abstract FunctionThrowsCommandSyntaxException<CommandContext<CommandSourceStack>, Object> getter();
     public abstract Class<?>[] debugGetType();
     public String debugType() {
         Class<?>[] g = debugGetType();

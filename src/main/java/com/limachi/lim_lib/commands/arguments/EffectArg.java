@@ -5,9 +5,7 @@ import com.mojang.brigadier.context.CommandContext;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.arguments.MobEffectArgument;
 import net.minecraft.world.effect.MobEffect;
-
-import java.util.Optional;
-import java.util.function.Function;
+import com.limachi.lim_lib.commands.FunctionThrowsCommandSyntaxException;
 
 @SuppressWarnings("unused")
 public class EffectArg extends AbstractCommandArgument {
@@ -15,5 +13,5 @@ public class EffectArg extends AbstractCommandArgument {
     @Override
     public Class<?>[] debugGetType() { return new Class[]{MobEffect.class}; }
     @Override
-    public Function<CommandContext<CommandSourceStack>, Optional<Object>> getter() { return ctx->Optional.of(MobEffectArgument.getEffect(ctx, getLabel())); }
+    public FunctionThrowsCommandSyntaxException<CommandContext<CommandSourceStack>, Object> getter() { return ctx->MobEffectArgument.getEffect(ctx, getLabel()); }
 }

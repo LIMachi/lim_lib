@@ -4,14 +4,11 @@ import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import net.minecraft.commands.CommandSourceStack;
 
-import java.util.Optional;
-import java.util.function.Function;
-
 @SuppressWarnings("unused")
 public class ExternalArg extends AbstractCommandArgument {
-    protected final Function<CommandContext<CommandSourceStack>, Optional<Object>> getter;
+    protected final FunctionThrowsCommandSyntaxException<CommandContext<CommandSourceStack>, Object> getter;
     protected final Class<?> getterReturnType;
-    public ExternalArg(ArgumentType<?> type, Function<CommandContext<CommandSourceStack>, Optional<Object>> getter, Class<?> getterReturnType) {
+    public ExternalArg(ArgumentType<?> type, FunctionThrowsCommandSyntaxException<CommandContext<CommandSourceStack>, Object> getter, Class<?> getterReturnType) {
         this.type = type;
         this.getter = getter;
         this.getterReturnType = getterReturnType;
@@ -19,5 +16,5 @@ public class ExternalArg extends AbstractCommandArgument {
     @Override
     public Class<?>[] debugGetType() { return new Class[]{getterReturnType}; }
     @Override
-    public Function<CommandContext<CommandSourceStack>, Optional<Object>> getter() { return getter; }
+    public FunctionThrowsCommandSyntaxException<CommandContext<CommandSourceStack>, Object> getter() { return getter; }
 }

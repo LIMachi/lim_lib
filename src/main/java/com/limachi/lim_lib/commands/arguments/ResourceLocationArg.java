@@ -5,9 +5,7 @@ import com.mojang.brigadier.context.CommandContext;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.arguments.ResourceLocationArgument;
 import net.minecraft.resources.ResourceLocation;
-
-import java.util.Optional;
-import java.util.function.Function;
+import com.limachi.lim_lib.commands.FunctionThrowsCommandSyntaxException;
 
 @SuppressWarnings("unused")
 public class ResourceLocationArg extends AbstractCommandArgument {
@@ -15,7 +13,7 @@ public class ResourceLocationArg extends AbstractCommandArgument {
     @Override
     public Class<?>[] debugGetType() { return new Class[]{ResourceLocation.class}; }
     @Override
-    public Function<CommandContext<CommandSourceStack>, Optional<Object>> getter() {
-        return ctx->Optional.of(ResourceLocationArgument.getId(ctx, getLabel()));
+    public FunctionThrowsCommandSyntaxException<CommandContext<CommandSourceStack>, Object> getter() {
+        return ctx->ResourceLocationArgument.getId(ctx, getLabel());
     }
 }
