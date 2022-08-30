@@ -19,7 +19,7 @@ public class TestCommand {
         CommandManager.registerCmd(TestCommand.class, "enter_bag_cmd", s->s.hasPermission(2), "/test_commands enter <entities> <dimension>", new EntitiesArg(false), new DimensionArg()); //FIXME: here the predicate is overridden, or more exactly cannot be added to the command because other branches of this command have different requirements
         CommandManager.registerCmd(TestCommand.class, "enter_bag_self_cmd", "/test_commands enter <dimension>", new DimensionArg());
         CommandManager.registerCmd(null, "/test_commands test <int>", new IntArg(0, 100), new SwizzleArg(), new BiomeArg(), new CompoundTagArg());
-        CommandManager.registerCmd(TestCommand.class, "test_literal", "/test_commands pred <literal>", new LiteralArg().requirePerm(2));
+        CommandManager.registerCmd(TestCommand.class, "test_literal", "/test_commands pred <literal>", new LiteralArg(false).requirePerm(2));
     }
 
     public static int enter_bag_cmd(CommandContext<CommandSourceStack> ctx, Collection<? extends Entity> entities, ServerLevel dim) {
