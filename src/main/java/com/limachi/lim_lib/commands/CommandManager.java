@@ -44,7 +44,7 @@ public class CommandManager {
         String[] c = cmd.startsWith("/") ? cmd.substring(1).split(" ") : cmd.split(" ");
         int i = 1;
         int p = 0;
-        args.add(new LiteralArg().setLabel(c[0]).setPredicate(requires));
+        args.add(new LiteralArg(true).setLabel(c[0]).setPredicate(requires));
         while (i < c.length) {
             if (c[i].startsWith("<") && c[i].endsWith(">")) {
                 String label = c[i].substring(1, c[i].length() - 1);
@@ -53,10 +53,12 @@ public class CommandManager {
                     return;
                 }
                 args.add(vargs[p].setLabel(label));
-                getters.add(vargs[p].getter());
+                FunctionThrowsCommandSyntaxException<CommandContext<CommandSourceStack>, Object> g = vargs[p].getter();
+                if (g != null)
+                    getters.add(g);
                 ++p;
             } else
-                args.add(new LiteralArg().setLabel(c[i]));
+                args.add(new LiteralArg(true).setLabel(c[i]));
             ++i;
         }
         Command<CommandSourceStack> test;

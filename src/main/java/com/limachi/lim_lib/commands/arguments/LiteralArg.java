@@ -7,10 +7,10 @@ import com.limachi.lim_lib.commands.FunctionThrowsCommandSyntaxException;
 
 @SuppressWarnings("unused")
 public class LiteralArg extends AbstractCommandArgument {
-    public LiteralArg() {}
-    public LiteralArg(String label) { setLabel(label); }
+    private final boolean ignored;
+    public LiteralArg(boolean ignored) { this.ignored = ignored; }
     @Override
     public Class<?>[] debugGetType() { return new Class[]{String.class}; }
     @Override
-    public FunctionThrowsCommandSyntaxException<CommandContext<CommandSourceStack>, Object> getter() { return ctx->getLabel(); }
+    public FunctionThrowsCommandSyntaxException<CommandContext<CommandSourceStack>, Object> getter() { return ignored ? null : ctx->getLabel(); }
 }
