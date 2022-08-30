@@ -1,5 +1,6 @@
 package com.limachi.lim_lib;
 
+import com.limachi.lim_lib.constructorEnforcer.ConstructorEnforcer;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.forgespi.language.ModFileScanData;
 import net.minecraftforge.fml.loading.moddiscovery.ModAnnotation.EnumHolder;
@@ -33,7 +34,7 @@ public class ModAnnotation {
 
     public ModAnnotation(ModFileScanData.AnnotationData annotation) {
         this.annotation = annotation;
-        Default.testDefault(getAnnotatedClass());
+        ConstructorEnforcer.testClass(getAnnotatedClass());
     }
 
     /**

@@ -1,6 +1,6 @@
 package com.limachi.lim_lib.registries;
 
-import com.limachi.lim_lib.Default;
+import com.limachi.lim_lib.constructorEnforcer.ConstructorEnforcer;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.forgespi.language.ModFileScanData;
@@ -15,7 +15,7 @@ public class StaticInitializer {
         Type type = Type.getType(StaticInit.class);
         for (ModFileScanData.AnnotationData data : ModList.get().getAllScanData().stream().map(ModFileScanData::getAnnotations).flatMap(Collection::stream).filter(a->type.equals(a.annotationType())).collect(Collectors.toList())) {
             try {
-                Default.testDefault(Class.forName(data.clazz().getClassName()));
+                ConstructorEnforcer.testClass(Class.forName(data.clazz().getClassName()));
             } catch (ClassNotFoundException e) {
                 e.printStackTrace();
             }
@@ -29,7 +29,7 @@ public class StaticInitializer {
         Type type = Type.getType(StaticInitClient.class);
         for (ModFileScanData.AnnotationData data : ModList.get().getAllScanData().stream().map(ModFileScanData::getAnnotations).flatMap(Collection::stream).filter(a->type.equals(a.annotationType())).collect(Collectors.toList())) {
             try {
-                Default.testDefault(Class.forName(data.clazz().getClassName()));
+                ConstructorEnforcer.testClass(Class.forName(data.clazz().getClassName()));
             } catch (ClassNotFoundException e) {
                 e.printStackTrace();
             }

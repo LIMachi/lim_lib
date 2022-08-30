@@ -1,5 +1,6 @@
 package com.limachi.lim_lib;
 
+import com.limachi.lim_lib.constructorEnforcer.ConstructorEnforcer;
 import com.limachi.lim_lib.network.NetworkManager;
 import com.limachi.lim_lib.registries.client.ClientRegistries;
 import com.limachi.lim_lib.registries.Registries;
@@ -35,7 +36,7 @@ public class ModBase {
         NetworkManager.register(modId);
         SaveDataManager.annotations(modId);
         FMLJavaModLoadingContext.get().getModEventBus().addListener(CuriosIntegration::enqueueIMC);
-        Default.testAllDefaults(modId);
+        ConstructorEnforcer.testAllClass(modId);
         INSTANCES.put(modId, this);
     }
 

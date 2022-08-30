@@ -1,6 +1,6 @@
 package com.limachi.lim_lib.network;
 
-import com.limachi.lim_lib.Default;
+import com.limachi.lim_lib.constructorEnforcer.enforcers.Default;
 import net.minecraft.network.FriendlyByteBuf;
 
 public interface IBufferSerializable extends Default {
