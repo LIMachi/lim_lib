@@ -31,7 +31,9 @@ public interface Default {
         for (ModFileScanData scan : ModList.get().getAllScanData())
             if (scan.getTargets().containsKey(modId))
                 for (ModFileScanData.ClassData cd : scan.getClasses()) {
-                    Class<?> clazz = Reflection.classByName(cd.clazz().getClassName(), null);
+                    String className = cd.clazz().getClassName();
+                    if (className.contains("Mixin") || className.contains("mixin")) continue;
+                    Class<?> clazz = Reflection.classByName(className, null);
                     if (clazz == null) {
                         System.exit(-1);
                         return;

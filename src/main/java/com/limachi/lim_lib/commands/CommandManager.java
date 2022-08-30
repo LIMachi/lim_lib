@@ -15,7 +15,9 @@ import net.minecraftforge.fml.common.Mod;
 import java.util.ArrayList;
 import java.util.Optional;
 import java.util.function.Function;
+import java.util.function.Predicate;
 
+@SuppressWarnings("unused")
 @Mod.EventBusSubscriber
 public class CommandManager {
     private static final ArrayList<Pair<Integer, LiteralArgumentBuilder<CommandSourceStack>>> CMDS = new ArrayList<>();
@@ -26,19 +28,32 @@ public class CommandManager {
     }
 
     public static void registerCmd(Class<?> clazz, String method, String cmd, AbstractCommandArgument ... vargs) {
-        registerCmd(clazz != null && method != null && !method.equals("") ? new Reflection.VargMethod(clazz, method) : null, cmd, vargs);
+        registerCmd(clazz != null && method != null && !method.equals("") ? new Reflection.VargMethod(clazz, method) : null, null, cmd, vargs);
+    }
+
+    public static void registerCmd(Class<?> clazz, String method, Predicate<CommandSourceStack> requires, String cmd, AbstractCommandArgument ... vargs) {
+        registerCmd(clazz != null && method != null && !method.equals("") ? new Reflection.VargMethod(clazz, method) : null, requires, cmd, vargs);
     }
 
     public static void registerCmd(Reflection.VargMethod execute, String cmd, AbstractCommandArgument ... vargs) {
+        registerCmd(execute, null, cmd, vargs);
+    }
+
+    @SuppressWarnings("unchecked")
+    public static void registerCmd(Reflection.VargMethod execute, Predicate<CommandSourceStack> requires, String cmd, AbstractCommandArgument ... vargs) {
         ArrayList<AbstractCommandArgument> args = new ArrayList<>();
         ArrayList<Function<CommandContext<CommandSourceStack>, Optional<Object>>> getters = new ArrayList<>();
         String[] c = cmd.startsWith("/") ? cmd.substring(1).split(" ") : cmd.split(" ");
         int i = 1;
         int p = 0;
-        args.add(new LiteralArg().setLabel(c[0]));
+        args.add(new LiteralArg().setLabel(c[0]).setPredicate(requires));
         while (i < c.length) {
             if (c[i].startsWith("<") && c[i].endsWith(">")) {
                 String label = c[i].substring(1, c[i].length() - 1);
+                if (label.isBlank()) {
+                    //FIXME: ERROR
+                    return;
+                }
                 args.add(vargs[p].setLabel(label));
                 getters.add(vargs[p].getter());
                 ++p;
@@ -63,12 +78,12 @@ public class CommandManager {
             };
         else
             test = ctx -> {
-                StringBuilder output = new StringBuilder("Debugging command '" + cmd + "' -> getters: " + ctx.getClass());
+                StringBuilder output = new StringBuilder("Debugging command '" + cmd + "' -> public static method(CommandContext<CommandSourceStack> var1");
                 if (vargs.length > 0) {
                     for (int j = 0; j < vargs.length; ++j)
-                        output.append(", " + vargs[j].debugType());
+                        output.append(", ").append(vargs[j].debugType()).append(" var").append(j + 2);
                 }
-                ctx.getSource().sendSuccess(new TextComponent(output.toString()), true);
+                ctx.getSource().sendSuccess(new TextComponent(output.append(')').toString()), true);
                 return getters.size();
             };
         i = args.size();

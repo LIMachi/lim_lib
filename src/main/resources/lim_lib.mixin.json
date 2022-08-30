@@ -1,0 +1,15 @@
+{
+  "required": true,
+  "package": "com.limachi.lim_lib.mixins",
+  "compatibilityLevel": "JAVA_17",
+  "client": [
+    "MixinLevel"
+  ],
+  "server": [
+    "MixinLevel"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  },
+  "refmap": "lim_lib.mixin-refmap.json"
+}

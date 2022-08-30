@@ -14,18 +14,36 @@ public class LongArg extends AbstractCommandArgument {
     public LongArg() { type = LongArgumentType.longArg(); }
     public LongArg(long min) {
         type = LongArgumentType.longArg(min);
-        setSuggestions((ctx, builder) -> SharedSuggestionProvider.suggest(new String[]{"" + min, "" + min + 1, "" + min + 2}, builder));
+        setSuggestions("" + min, "" + (min * 10L), "" + (min * 100L), "" + (min * 1000L));
     }
     public LongArg(long min, long max) {
         type = LongArgumentType.longArg(min, max);
-        if (max - min >= 6)
-            setSuggestions((ctx, builder) -> SharedSuggestionProvider.suggest(new String[]{"" + min, "" + (min + 1), "" + (min + 2), "" + (max - 2), "" + (max - 1), "" + max}, builder));
-        else {
-            final String[] s = new String[(int)(max - min + 1)];
-            for (long i = min; i <= max; ++i)
-                s[(int)(i - min)] = "" + i;
-            setSuggestions((ctx, builder) -> SharedSuggestionProvider.suggest(s, builder));
-        }
+        setSuggestions((c,b)->{
+            String in = b.getRemaining();
+            if (in.isBlank())
+                return SharedSuggestionProvider.suggest(min == max ? new String[]{"" + min} : min + 1L == max ? new String[]{"" + min, "" + max} : new String[]{"" + min, "" + (min + 1L), "" + ((max - min) / 2L + min), "" + (max - 1L), "" + max}, b);
+            long t;
+            try {
+                t = Long.parseLong(in) * 10L;
+            } catch (NumberFormatException e) {
+                return SharedSuggestionProvider.suggest(new String[]{}, b);
+            }
+            if (t > max) return SharedSuggestionProvider.suggest(new String[]{}, b);
+            String[] s;
+            if (max - t >= 10) {
+                s = new String[(t * 10L < max) ? 12 : 11];
+                for (long i = 0; i < 10; ++i)
+                    s[(int)i] = "" + (i + t);
+                s[10] = "" + max;
+                if (t * 10L < max)
+                    s[11] = "" + t * 10L;
+            } else {
+                s = new String[(int)(max - min + 1)];
+                for (long i = min; i <= max; ++i)
+                    s[(int)(i - min)] = "" + i;
+            }
+            return SharedSuggestionProvider.suggest(s, b);
+        });
     }
     @Override
     public Class<?>[] debugGetType() { return new Class[]{long.class}; }

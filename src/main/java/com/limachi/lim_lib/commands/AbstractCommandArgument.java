@@ -7,6 +7,7 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.suggestion.SuggestionProvider;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
+import net.minecraft.commands.SharedSuggestionProvider;
 
 import java.util.Optional;
 import java.util.function.Function;
@@ -23,9 +24,9 @@ public abstract class AbstractCommandArgument {
     public String debugType() {
         Class<?>[] g = debugGetType();
         if (g.length == 1)
-            return "" + g[0];
+            return g[0].getSimpleName();
         else if (g.length == 2)
-            return g[0] + "<" + g[1] + ">";
+            return g[0].getSimpleName() + "<" + g[1].getSimpleName() + ">";
         return "!incorrect type!";
     }
     public ArgumentBuilder<CommandSourceStack, ?> builder() {
@@ -42,6 +43,14 @@ public abstract class AbstractCommandArgument {
         return builder;
     }
     public AbstractCommandArgument setSuggestions(SuggestionProvider<CommandSourceStack> customSuggestions) { this.customSuggestions = customSuggestions; return this; }
+    public AbstractCommandArgument setSuggestions(String ... suggestions) {
+        this.customSuggestions = (ctx, builder) -> SharedSuggestionProvider.suggest(suggestions, builder);
+        return this;
+    }
+    public AbstractCommandArgument requirePerm(int level) {
+        pred = pred != null ? s->pred.test(s) && s.hasPermission(level) : s->s.hasPermission(level);
+        return this;
+    }
     public AbstractCommandArgument setPredicate(Predicate<CommandSourceStack> pred) { this.pred = pred; return this; }
     public AbstractCommandArgument setLabel(String label) { this.label = label; return this; }
     public String getLabel() { return label; }

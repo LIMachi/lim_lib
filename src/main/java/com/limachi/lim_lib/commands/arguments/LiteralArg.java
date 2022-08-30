@@ -9,6 +9,8 @@ import java.util.function.Function;
 
 @SuppressWarnings("unused")
 public class LiteralArg extends AbstractCommandArgument {
+    public LiteralArg() {}
+    public LiteralArg(String label) { setLabel(label); }
     @Override
     public Class<?>[] debugGetType() { return new Class[]{String.class}; }
     @Override

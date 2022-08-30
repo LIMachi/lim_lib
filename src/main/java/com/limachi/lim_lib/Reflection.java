@@ -292,7 +292,7 @@ public class Reflection {
     }
 
     protected static boolean canCast(Class<?> to, Class<?> from) {
-        return to.isAssignableFrom(from) || CASTABLE_PRIMITIVES.get(to).isAssignableFrom(from) || to.isAssignableFrom(CASTABLE_PRIMITIVES.get(from));
+        return to.isAssignableFrom(from) || CASTABLE_PRIMITIVES.getOrDefault(to, Void.class).isAssignableFrom(from) || to.isAssignableFrom(CASTABLE_PRIMITIVES.getOrDefault(from, Void.class));
     }
 
     protected static boolean paramTypesAreAssignable(Class<?>[] to, Class<?>[] from) {

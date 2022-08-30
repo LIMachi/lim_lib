@@ -4,7 +4,6 @@ import com.limachi.lim_lib.commands.AbstractCommandArgument;
 import com.mojang.brigadier.arguments.DoubleArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import net.minecraft.commands.CommandSourceStack;
-import net.minecraft.commands.SharedSuggestionProvider;
 
 import java.util.Optional;
 import java.util.function.Function;
@@ -14,14 +13,15 @@ public class DoubleArg extends AbstractCommandArgument {
     public DoubleArg() { type = DoubleArgumentType.doubleArg(); }
     public DoubleArg(double min) {
         type = DoubleArgumentType.doubleArg(min);
-        setSuggestions((ctx, builder) -> SharedSuggestionProvider.suggest(new String[]{"" + min}, builder));
+        setSuggestions("" + min, "" + min * 10., "" + min * 100., "" + min * 1000.);
     }
     public DoubleArg(double min, double max) {
         type = DoubleArgumentType.doubleArg(min, max);
-        setSuggestions((ctx, builder) -> SharedSuggestionProvider.suggest(new String[]{"" + min, "" + max}, builder));
+        if (min != max)
+            setSuggestions("" + min, "" + ((max - min) / 2. + min), "" + max);
     }
     @Override
-    public Class<?>[] debugGetType() { return new Class[]{double.class}; }
+    public Class<?>[] debugGetType() { return new Class[]{float.class}; }
     @Override
     public Function<CommandContext<CommandSourceStack>, Optional<Object>> getter() { return ctx->Optional.of(DoubleArgumentType.getDouble(ctx, getLabel())); }
 }
