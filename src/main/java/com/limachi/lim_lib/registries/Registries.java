@@ -1,8 +1,10 @@
 package com.limachi.lim_lib.registries;
 
 import com.limachi.lim_lib.*;
+import com.limachi.lim_lib.reflection.Classes;
 import com.limachi.lim_lib.registries.annotations.*;
 import com.mojang.datafixers.util.Pair;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -46,6 +48,7 @@ import net.minecraft.world.level.levelgen.feature.stateproviders.BlockStateProvi
 import net.minecraft.world.level.levelgen.feature.treedecorators.TreeDecoratorType;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraftforge.eventbus.api.IEventBus;
+import net.minecraftforge.network.IContainerFactory;
 import net.minecraftforge.registries.*;
 
 import java.util.ArrayList;
@@ -84,22 +87,36 @@ public class Registries {
 
     private static void discoverItemRegistry(String modId) {
         for (ModAnnotation a : ModAnnotation.iterModAnnotations(modId, RegisterItem.class))
-            a.setAnnotatedStaticFieldData(item(modId, name(a), (Supplier<? extends Item>)Reflection.newClassSupplier(a.getAnnotatedClass())));
+            a.setAnnotatedStaticFieldData(item(modId, name(a), (Supplier<? extends Item>)Classes.newClassSupplier(a.getAnnotatedClass())));
     }
 
     private static void discoverBlockItemRegistry(String modId) {
         for (ModAnnotation a : ModAnnotation.iterModAnnotations(modId, RegisterBlockItem.class)) {
             String name = name(a).replace("_block", "_item");
+            String block = a.getData("block", a.getSnakeClassName());
             Field f = a.getAnnotatedField();
-            Field bf = a.getFieldFromAnnotatedClass(a.getData("block", ""));
             try {
                 f.set(null, item(modId, name, ()->{try {
-                    return new BlockItem(((Supplier<Block>)bf.get(null)).get(), ModBase.INSTANCES.get(modId).defaultProps());
+                    return new BlockItem((Block)getRegistryObject(modId, block).get(), ModBase.INSTANCES.get(modId).defaultProps());
                 } catch (Exception e) {
                     e.printStackTrace();
                     System.exit(-1);
                     return null;
                 }}));
+            } catch (Exception e) {
+                e.printStackTrace();
+                System.exit(-1);
+            }
+        }
+    }
+
+    private static void discoverBlockEntityRegistry(String modId) {
+        for (ModAnnotation a : ModAnnotation.iterModAnnotations(modId, RegisterBlockEntity.class)) {
+            String name = name(a);
+            String block = a.getData("block", a.getSnakeClassName().replace("_block_entity", "_block"));
+            Field f = a.getAnnotatedField();
+            try {
+                f.set(null, blockEntity(modId, name, a::getNewAnnotatedClass, getRegistryObject(modId, block)));
             } catch (Exception e) {
                 e.printStackTrace();
                 System.exit(-1);
@@ -141,7 +158,7 @@ public class Registries {
     private static String name(ModAnnotation a) {
         String name = a.getData("name", "");
         if (name.equals(""))
-            name = Strings.camelToSnake(Strings.getFile('.', a.getAnnotatedClass().getCanonicalName()));
+            name = a.getSnakeClassName();
         return name;
     }
 
@@ -149,6 +166,7 @@ public class Registries {
         discoverBlockRegistry(modId);
         discoverItemRegistry(modId);
         discoverBlockItemRegistry(modId);
+        discoverBlockEntityRegistry(modId);
         discoverEntityAttributeBuilder(modId);
         discoverEntityRegistry(modId);
         discoverRegisterMenu(modId);
@@ -248,11 +266,20 @@ public class Registries {
     public static <T extends Entity> RegistryObject<EntityType<T>> entity(String modId, String regKey, Supplier<EntityType<T>> etNew) { return getRegistry(modId, EntityType.class).register(regKey, etNew); }
     public static <T extends BlockEntity> RegistryObject<BlockEntityType<T>> blockEntity(String modId, String regKey, BlockEntityType.BlockEntitySupplier<T> beNew, RegistryObject<Block> block) { return blockEntity(modId, regKey, beNew, block, null); }
     public static <T extends BlockEntity> RegistryObject<BlockEntityType<T>> blockEntity(String modId, String regKey, BlockEntityType.BlockEntitySupplier<T> beNew, RegistryObject<Block> block, com.mojang.datafixers.types.Type<?> fixer) { return getRegistry(modId, BlockEntityType.class).register(regKey, ()->BlockEntityType.Builder.of(beNew, block.get()).build(fixer)); }
-    public static <T extends AbstractContainerMenu> RegistryObject<MenuType<T>> menu(String modId, String regKey, MenuType.MenuSupplier<T> menuNew) { return getRegistry(modId, MenuType.class).register(regKey, ()->new MenuType<T>(menuNew)); }
+    public static <T extends AbstractContainerMenu> RegistryObject<MenuType<T>> menu(String modId, String regKey, IContainerFactory<T> menuNew) { return getRegistry(modId, MenuType.class).register(regKey, ()->new MenuType<T>(menuNew)); }
 
     private static void discoverRegisterMenu(String modId) {
         for (ModAnnotation a : ModAnnotation.iterModAnnotations(modId, RegisterMenu.class)) {
-            a.setAnnotatedStaticFieldData(menu(modId, name(a), new MenuType.MenuSupplier<AbstractContainerMenu>() {
+            a.setAnnotatedStaticFieldData(menu(modId, name(a), new IContainerFactory<>() {
+                @Override
+                public AbstractContainerMenu create(int id, Inventory inventory, FriendlyByteBuf buff) {
+                    try {
+                        return (AbstractContainerMenu)a.getAnnotatedClassConstructor(int.class, Inventory.class, FriendlyByteBuf.class).newInstance(id, inventory, buff);
+                    } catch (Exception e) {
+                        return null;
+                    }
+                }
+
                 @Override
                 public AbstractContainerMenu create(int id, Inventory inventory) {
                     try {

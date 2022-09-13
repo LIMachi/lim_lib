@@ -2,6 +2,7 @@ package com.limachi.lim_lib.maths;
 
 import com.mojang.math.Matrix4f;
 import com.mojang.math.Vector4f;
+import net.minecraft.world.phys.Vec2;
 
 public class Box2d {
     private double x;
@@ -12,21 +13,40 @@ public class Box2d {
     public Box2d(double x, double y, double width, double height) {
         this.x = x;
         this.y = y;
-        this.w = width;
-        this.h = height;
+        w = width;
+        h = height;
     }
+
+    public Box2d(double width, double height) {
+        x = 0;
+        y = 0;
+        w = width;
+        h = height;
+    }
+
+    public Box2d(Vec2 volume) {
+        x = 0;
+        y = 0;
+        w = volume.x;
+        h = volume.y;
+    }
+
+    public Box2d(Vec2 position, Vec2 volume) {
+        x = position.x;
+        y = position.y;
+        w = volume.x;
+        h = volume.y;
+    }
+
+    public Vec2 getOrigins() { return new Vec2((float)x, (float)y); }
 
     public static Box2d fromCorners(double x1, double y1, double x2, double y2) { return new Box2d(x1, y1,x2 - x1, y2 - y1); }
 
     public static Box2d fromCorners(Vec2d topLeft, Vec2d bottomRight) { return fromCorners(topLeft.x, topLeft.y, bottomRight.x, bottomRight.y); }
 
-    public Box2d centerOn(double cx, double cy) {
-        return setX1(cx - getWidth() / 2).setY1(cy - getHeight() / 2);
-    }
+    public Box2d centerOn(double cx, double cy) { return setX1(cx - getWidth() / 2).setY1(cy - getHeight() / 2); }
 
-    public Box2d expandToContain(double px, double py) {
-        return expandToContain(px, py, 0, 0);
-    }
+    public Box2d expandToContain(double px, double py) { return expandToContain(px, py, 0, 0); }
 
     /**
      * if the given point is outside the box, expand the box so the point fits inside
@@ -69,7 +89,9 @@ public class Box2d {
 
     public boolean equals(Box2d cmp) { return x == cmp.x && y == cmp.y && w == cmp.w && h == cmp.h; }
 
-    public Box2d scaledCopy(double xFactor, double yFactor, double xOrigin, double yOrigin) { return fromCorners((int)((x - xOrigin) * xFactor + xOrigin), (int)((y - yOrigin) * yFactor + yOrigin), (int)((getX2() - xOrigin) * xFactor + xOrigin), (int)((getY2() - yOrigin) * yFactor + yOrigin)); }
+    public Box2d scaledCopy(double xFactor, double yFactor, double xOrigin, double yOrigin) {
+        return fromCorners((int)((x - xOrigin) * xFactor + xOrigin), (int)((y - yOrigin) * yFactor + yOrigin), (int)((getX2() - xOrigin) * xFactor + xOrigin), (int)((getY2() - yOrigin) * yFactor + yOrigin));
+    }
 
     public Box2d copy() { return new Box2d(x, y, w, h); }
 

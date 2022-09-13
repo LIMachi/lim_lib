@@ -13,9 +13,12 @@ import java.util.List;
 @Mod.EventBusSubscriber(value = Dist.CLIENT)
 public class NbtTooltip {
 
+    @Configs.Config(cmt = "Add a tooltip to view NBT on items when in extra info mode (F3 + H)")
+    public static boolean ADD_NBT_TOOLTIP = true;
+
     @SubscribeEvent
     public static void addExtendedTooltip(ItemTooltipEvent event) {
-        if (event.getItemStack().getTag() != null && event.getFlags().isAdvanced()) {
+        if (ADD_NBT_TOOLTIP && event.getItemStack().getTag() != null && event.getFlags().isAdvanced()) {
             if (Screen.hasAltDown()) {
                 List<Component> tooltip = event.getToolTip();
                 Component remove = null;

@@ -7,6 +7,8 @@ import java.util.UUID;
 
 @SuppressWarnings("unused")
 public class NBT {
+    public interface IAsTag { Tag asTag(); }
+    public interface IFromTag { void fromTag(Tag tag); }
     public static CompoundTag clear(CompoundTag comp) {
         Object[] keys = comp.getAllKeys().toArray();
         for (Object key : keys)

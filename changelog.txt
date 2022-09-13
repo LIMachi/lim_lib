@@ -1,0 +1,12 @@
+---- A1.0.2 ----
+Added utilities for containers, menus, screens, widgets, itemstacks, DataSlot, BlockEntities...
+Commands can now have facultative argument (declared with a ? in the name), you can set a default return for the getters by using AbstractCommandArgument#setDefault, will return null object as a parameter otherwise.
+Reorganised reflection and added a string representation for MethodHolder.
+Added AbstractContainerMenu (might be changed) and BaseContainerBlockEntity to the constructor enforcer.
+Added a new registry annotation: RegisterBlockEntity, also updated RegisterBlockItem.
+Reworked the blit functions in RenderUtils to offset the blit using the screen coordinates (facultative).
+Added info methods to Log, and added configs to change the log behavior.
+Added a way of serializing level keys in World.
+Added a config to disable the NBT tooltip behavior.
+Added assets for screens (generic background, slots, disabled slots, scroll bar).
+Changes to the access transformer to be able to move slots visually client side.

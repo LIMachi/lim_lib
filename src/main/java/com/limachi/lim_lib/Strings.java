@@ -1,5 +1,6 @@
 package com.limachi.lim_lib;
 
+import javax.annotation.Nullable;
 import java.util.regex.Pattern;
 
 public class Strings {
@@ -33,6 +34,27 @@ public class Strings {
         if (cut.length > 1)
             out = cut[0];
         return out;
+    }
+
+    public static String getSimpleConstructor(String fullyQualifiedClassName, Class<?> ... parameterTypes) {
+        StringBuilder out = new StringBuilder(getSimplifiedClassName(fullyQualifiedClassName)).append("(");
+        if (parameterTypes.length > 0)
+            out.append(getSimplifiedClassName(parameterTypes[0].toString())).append(" varName0");
+        for (int i = 1; i < parameterTypes.length; ++i)
+            out.append(", ").append(getSimplifiedClassName(parameterTypes[i].toString())).append(" varName").append(i);
+        return out.append(")").toString();
+    }
+
+    public static String getSimpleMethod(@Nullable String fullyQualifiedClassName, String methodName, Class<?> ... parameterTypes) {
+        StringBuilder out = new StringBuilder();
+        if (fullyQualifiedClassName != null && !fullyQualifiedClassName.isBlank())
+            out.append(getSimplifiedClassName(fullyQualifiedClassName)).append("#");
+        out.append(methodName).append("(");
+        if (parameterTypes.length > 0)
+            out.append(getSimplifiedClassName(parameterTypes[0].toString())).append(" varName0");
+        for (int i = 1; i < parameterTypes.length; ++i)
+            out.append(", ").append(getSimplifiedClassName(parameterTypes[i].toString())).append(" varName").append(i);
+        return out.append(")").toString();
     }
 
     public static String getFolderPath(char separator, String path) {

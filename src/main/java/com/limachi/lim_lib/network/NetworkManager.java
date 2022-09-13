@@ -1,5 +1,6 @@
 package com.limachi.lim_lib.network;
 
+import com.limachi.lim_lib.Log;
 import com.limachi.lim_lib.ModAnnotation;
 import com.limachi.lim_lib.Sides;
 import net.minecraft.resources.ResourceLocation;
@@ -19,7 +20,20 @@ public class NetworkManager {
     @SuppressWarnings("unchecked")
     private static <T extends Record & IRecordMsg> void discoverMsgRegistry(String modId) {
         for (ModAnnotation a : ModAnnotation.iterModAnnotations(modId, RegisterMsg.class))
-            registerMsg(a.getData("modId", modId), (Class<T>)a.getAnnotatedClass(), a.getData("value", -1));
+            if (Record.class.isAssignableFrom(a.getAnnotatedClass())) {
+                if (IRecordMsg.class.isAssignableFrom(a.getAnnotatedClass()))
+                    registerMsg(a.getData("modId", modId), (Class<T>) a.getAnnotatedClass(), a.getData("value", -1));
+                else {
+                    Log.error(a.getAnnotatedClass(), "@RegisterMsg on a record not implementing IRecordMsg!");
+                    System.exit(-1);
+                    return;
+                }
+            }
+            else {
+                Log.error(a.getAnnotatedClass(), "@RegisterMsg on a non record class!");
+                System.exit(-1);
+                return;
+            }
     }
 
     public static void register(String modId) {
@@ -41,7 +55,7 @@ public class NetworkManager {
                 buff->Buffer.recordFromBuffer(clazz, buff),
                 (msg, ictx) -> {
                     if (!clazz.isInstance(msg)) {
-                        //FIXME: add some kind of error there
+                        Log.error(msg, "Message received does not match registered consumer of type: " + clazz + "! Please check your message registrations.");
                         return;
                     }
                     NetworkEvent.Context ctx = ictx.get();

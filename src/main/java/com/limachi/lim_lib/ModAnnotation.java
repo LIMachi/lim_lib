@@ -1,6 +1,7 @@
 package com.limachi.lim_lib;
 
 import com.limachi.lim_lib.constructorEnforcer.ConstructorEnforcer;
+import com.limachi.lim_lib.reflection.Classes;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.forgespi.language.ModFileScanData;
 import net.minecraftforge.fml.loading.moddiscovery.ModAnnotation.EnumHolder;
@@ -58,30 +59,26 @@ public class ModAnnotation {
     /**
      * get a Class of the annotated class, we recommend using the functions to directly use fields and method
      */
-    public Class<?> getAnnotatedClass() { return Reflection.classByName(annotation.clazz().getClassName(), null); }
+    private Class<?> classCache = null;
+    public Class<?> getAnnotatedClass() {
+        if (classCache == null)
+            classCache = Classes.classByName(annotation.clazz().getClassName(), null);
+        return classCache;
+    }
 
     /**
      * get the simplified name of the class
      */
     public String getAnnotatedClassSimplifiedName() { return Strings.getSimplifiedClassName(annotation.clazz().getClassName()); }
 
+    public String getSnakeClassName() { return Strings.camelToSnake(getAnnotatedClassSimplifiedName()); }
+
     public <T> Constructor<T> getAnnotatedClassConstructor(Class<?> ... paramTypes) {
-        try {
-            return (Constructor<T>)getAnnotatedClass().getConstructor(paramTypes);
-        } catch (Exception e) {
-            return null;
-        }
+        return (Constructor<T>)Classes.getConstructor(getAnnotatedClass(), paramTypes);
     }
 
     public <T> T getNewAnnotatedClass(Object ... parameters) {
-        Class<?>[] paramTypes = new Class[parameters.length];
-        for (int i = 0; i < parameters.length; ++i)
-            paramTypes[i] = parameters[i].getClass();
-        try {
-            return (T)getAnnotatedClass().getConstructor(paramTypes).newInstance(parameters);
-        } catch (Exception e) {
-            return null;
-        }
+        return (T)Classes.newClass(getAnnotatedClass(), parameters);
     }
 
     /**

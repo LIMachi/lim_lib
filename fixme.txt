@@ -1,0 +1,3 @@
+shift click content in container OK
+drop container content on break OK
+slot background renderer might break with negative valid slots

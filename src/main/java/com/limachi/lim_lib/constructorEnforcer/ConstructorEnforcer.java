@@ -2,18 +2,26 @@ package com.limachi.lim_lib.constructorEnforcer;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.limachi.lim_lib.Log;
-import com.limachi.lim_lib.Reflection;
 import com.limachi.lim_lib.Strings;
 import com.limachi.lim_lib.constructorEnforcer.enforcers.Default;
+import com.limachi.lim_lib.reflection.Classes;
 import com.limachi.lim_lib.saveData.AbstractSyncSaveData;
 import com.limachi.lim_lib.saveData.SaveSync;
 import com.mojang.datafixers.util.Pair;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.level.block.entity.BaseContainerBlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.forgespi.language.ModFileScanData;
 
 import java.lang.reflect.Modifier;
 import java.util.HashSet;
 import java.util.Map;
+
+import static com.limachi.lim_lib.Strings.getSimpleConstructor;
 
 public class ConstructorEnforcer {
     private static final HashSet<String> IGNORED_CLASS_PATTERNS = new HashSet<>();
@@ -22,6 +30,8 @@ public class ConstructorEnforcer {
         ignoreClassName(".*[Mm]ixin.*");
         registerConstructorPattern(Default.class);
         registerConstructorPattern(AbstractSyncSaveData.class, String.class, SaveSync.class);
+        registerConstructorPattern(AbstractContainerMenu.class, int.class, Inventory.class, FriendlyByteBuf.class);
+        registerConstructorPattern(BaseContainerBlockEntity.class, BlockPos.class, BlockState.class);
     }
 
     /**
@@ -39,9 +49,7 @@ public class ConstructorEnforcer {
      * To make sure this work as intended, like registerConstructorPattern, call this in a static block inside your mod class before the constructor
      * @param regex the pattern (regex) that will be used to match the classes names ('.*[Mm]ixin.*' is already ignored by default)
      */
-    public static void ignoreClassName(String regex) {
-        IGNORED_CLASS_PATTERNS.add(regex);
-    }
+    public static void ignoreClassName(String regex) { IGNORED_CLASS_PATTERNS.add(regex); }
 
     /**
      * Test the given class, regardless of it's name. Will only test patterns once per class, even if called more than once.
@@ -56,7 +64,7 @@ public class ConstructorEnforcer {
                 try {
                     clazz.getConstructor(e.getValue().getFirst());
                 } catch (NoSuchMethodException exception) {
-                    Log.error(clazz, "Class is declared as " + Strings.getSimplifiedClassName(e.getKey().getName()) + " but has no valid constructor!");
+                    Log.error(clazz, "Class is declared as " + Strings.getSimplifiedClassName(e.getKey().getName()) + " but has no valid constructor! Expected at least one constructor of the form: public " + getSimpleConstructor(clazz.getCanonicalName(), e.getValue().getFirst()));
                     exception.printStackTrace();
                     System.exit(-1);
                 }
@@ -82,7 +90,7 @@ public class ConstructorEnforcer {
                             break;
                         }
                     if (skip) continue;
-                    Class<?> clazz = Reflection.classByName(className, null);
+                    Class<?> clazz = Classes.classByName(className, null);
                     if (clazz == null) {
                         System.exit(-1);
                         return;

@@ -2,8 +2,10 @@ package com.limachi.lim_lib;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.Registry;
 import net.minecraft.network.protocol.game.ClientboundPlayerPositionPacket;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.level.TicketType;
@@ -41,10 +43,18 @@ public class World {
         }
         return Sides.getServer().getLevel(reg);
     }
+    public static Level getLevel(String reg) {
+        return getLevel(ResourceKey.create(Registry.DIMENSION_REGISTRY, new ResourceLocation(reg)));
+    }
+    public static String asString(Level level) {
+        return level.dimension().location().toString();
+    }
 
     public static Level overworld() { return getLevel(Level.OVERWORLD); }
     public static Level nether() { return getLevel(Level.NETHER); }
     public static Level end() { return getLevel(Level.END); }
+
+    public static long tick() { return overworld().getGameTime(); }
 
     public static BlockPos getWorldSpawn(ResourceKey<Level> reg) {
         Level level = getLevel(reg);

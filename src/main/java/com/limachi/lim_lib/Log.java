@@ -9,25 +9,31 @@ import java.util.function.Consumer;
 public class Log {
     public static final Logger LOGGER = LogManager.getLogger(LimLib.class);
 
-    /**
-     * will debug methods actually log something
-     */
-    public static final boolean DO_DEBUG = true;
-    /**
-     * how debug will be logged (LOGGER::info or LOGGER::debug)
-     */
-    public static final Consumer<String> DEBUG = LOGGER::info;
+    @Configs.Config(cmt = "do debug calls actually log something. set to false to silence all debug calls")
+    public static boolean DO_DEBUG = true;
 
-    public static <T> T debug(T v, String s) { if (DO_DEBUG) DEBUG.accept(Thread.currentThread().getStackTrace()[2].toString() + " V: " + v + " : "+ s); return v; }
-    public static <T> T debug(T v) { if (DO_DEBUG) DEBUG.accept(Thread.currentThread().getStackTrace()[2].toString() + " V: " + v); return v; }
-    public static <T> T debug(T v, int depth) { if (DO_DEBUG) DEBUG.accept(Thread.currentThread().getStackTrace()[2 + depth].toString() + " V: " + v); return v; }
-    public static <T> T debug(T v, int depth, String s) { if (DO_DEBUG) DEBUG.accept(Thread.currentThread().getStackTrace()[2 + depth].toString() + " V: " + v + " : "+ s); return v; }
+    @Configs.Config(cmt = "send the debug calls through the Info log instead of Debug log")
+    public static boolean DEBUG_AS_INFO = true;
 
+    public static Consumer<String> debugConsumer() { return DEBUG_AS_INFO ? LOGGER::info : LOGGER::debug; }
+
+    public static void debug(String s) { if (DO_DEBUG) debugConsumer().accept(Thread.currentThread().getStackTrace()[2].toString() + " " + s); }
+    public static <T> T debug(T v, String s) { if (DO_DEBUG) debugConsumer().accept(Thread.currentThread().getStackTrace()[2].toString() + " V: " + v + " : "+ s); return v; }
+    public static <T> T debug(T v) { if (DO_DEBUG) debugConsumer().accept(Thread.currentThread().getStackTrace()[2].toString() + " V: " + v); return v; }
+    public static <T> T debug(T v, int depth) { if (DO_DEBUG) debugConsumer().accept(Thread.currentThread().getStackTrace()[2 + depth].toString() + " V: " + v); return v; }
+    public static <T> T debug(T v, int depth, String s) { if (DO_DEBUG) debugConsumer().accept(Thread.currentThread().getStackTrace()[2 + depth].toString() + " V: " + v + " : "+ s); return v; }
+
+    public static void info(String s) { LOGGER.info(s); }
+    public static <T> T info(T v, String s) { LOGGER.info(" V: " + v + " : "+ s); return v; }
+    public static <T> T info(T v) { LOGGER.info("V: " + v); return v; }
+
+    public static void warn(String s) { LOGGER.warn(Thread.currentThread().getStackTrace()[2].toString() + " "+ s); }
     public static <T> T warn(T v, String s) { LOGGER.warn(Thread.currentThread().getStackTrace()[2].toString() + " V: " + v + " : "+ s); return v; }
     public static <T> T warn(T v) { LOGGER.warn(Thread.currentThread().getStackTrace()[2].toString() + " V: " + v); return v; }
     public static <T> T warn(T v, int depth) { LOGGER.warn(Thread.currentThread().getStackTrace()[2 + depth].toString() + " V: " + v); return v; }
     public static <T> T warn(T v, int depth, String s) { LOGGER.warn(Thread.currentThread().getStackTrace()[2 + depth].toString() + " V: " + v + " : "+ s); return v; }
 
+    public static void error(String s) { LOGGER.error(Thread.currentThread().getStackTrace()[2].toString() + " "+ s); }
     public static <T> T error(T v, String s) { LOGGER.error(Thread.currentThread().getStackTrace()[2].toString() + " V: " + v + " : "+ s); return v; }
     public static <T> T error(T v) { LOGGER.error(Thread.currentThread().getStackTrace()[2].toString() + " V: " + v); return v; }
     public static <T> T error(T v, int depth) { LOGGER.error(Thread.currentThread().getStackTrace()[2 + depth].toString() + " V: " + v); return v; }

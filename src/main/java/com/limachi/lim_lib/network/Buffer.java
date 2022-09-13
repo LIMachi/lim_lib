@@ -1,8 +1,7 @@
 package com.limachi.lim_lib.network;
 
-import com.limachi.lim_lib.Log;
-import com.limachi.lim_lib.Reflection;
-import com.limachi.lim_lib.registries.StaticInit;
+import com.limachi.lim_lib.reflection.Classes;
+import com.limachi.lim_lib.reflection.Enums;
 import io.netty.buffer.Unpooled;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -25,42 +24,7 @@ import java.util.UUID;
 /**
  * helper class to manipulate FriendlyByteBuf (the buffers provided by forge)
  */
-//@StaticInit
 public class Buffer {
-/*
-    public static class Serial implements IBufferSerializable {
-        public int v1;
-        public int v2;
-        public Serial() {}
-        public Serial(int v1, int v2) {
-            this.v1 = v1;
-            this.v2 = v2;
-        }
-        @Override
-        public void readFromBuff(FriendlyByteBuf buff) {
-            v1 = buff.readInt();
-            v2 = buff.readInt();
-        }
-
-        @Override
-        public void writeToBuff(FriendlyByteBuf buff) {
-            buff.writeInt(v1);
-            buff.writeInt(v2);
-        }
-        public boolean overrideMe() { return false; }
-    }
-
-    public static record Test(Serial test){}
-    public static record Nested(Test t1, int t2) {
-        public void print() {
-            Log.warn("Nested -> v1: " + t1.test().v1 + ", v2: " + t1.test().v2 + "; t2: " + t2);
-        }
-    }
-
-    static {
-        recordFromBuffer(Nested.class, recordToBuffer(new Nested(new Test(new Serial(420, 69)), 666), heapBuffer())).print();
-    }
-*/
     /**
      * Create a buffer on the heap (memory allocation). Intended to only be used in testing.
      */
@@ -198,9 +162,9 @@ public class Buffer {
             else if (UUID.class.isAssignableFrom(paramTypes[i]))
                 params[i] = buffer.readUUID();
             else if (Enum.class.isAssignableFrom(paramTypes[i]))
-                params[i] = Reflection.anonymousEnumBuilder((Class<Enum<?>>)paramTypes[i], buffer.readVarInt());
+                params[i] = Enums.anonymousEnumBuilder((Class<Enum<?>>)paramTypes[i], buffer.readVarInt());
             else if (IBufferSerializable.class.isAssignableFrom(paramTypes[i])) {
-                params[i] = Reflection.newClass(paramTypes[i]);
+                params[i] = Classes.newClass(paramTypes[i]);
                 ((IBufferSerializable)params[i]).readFromBuff(buffer);
             }
             else if (Record.class.isAssignableFrom(paramTypes[i]))

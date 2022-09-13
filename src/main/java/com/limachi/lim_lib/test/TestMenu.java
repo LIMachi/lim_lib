@@ -1,10 +1,11 @@
 package com.limachi.lim_lib.test;
 
 import com.limachi.lim_lib.LimLib;
-import com.limachi.lim_lib.Reflection;
 import com.limachi.lim_lib.Strings;
+import com.limachi.lim_lib.reflection.Classes;
 import com.limachi.lim_lib.registries.Registries;
 import com.limachi.lim_lib.registries.annotations.RegisterMenu;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.server.level.ServerPlayer;
@@ -27,13 +28,14 @@ public class TestMenu extends AbstractContainerMenu {
     public static RegistryObject<MenuType<TestMenu>> R_MENU;
 
     protected TestMenu(int menuId, Inventory playerInventory, Container container) {
-        super((MenuType<TestMenu>)Registries.getRegistryObject(LimLib.COMMON_ID, Strings.camelToSnake(Reflection.getSimpleClassName())).get(), menuId);
+        super((MenuType<TestMenu>)Registries.getRegistryObject(LimLib.COMMON_ID, Strings.camelToSnake(Classes.getSimpleClassName())).get(), menuId);
         playerSlots(this, playerInventory, 84);
         build();
     }
 
     public void build() {}
 
+    public TestMenu(int id, Inventory playerInventory, FriendlyByteBuf buff) { this(id, playerInventory, new SimpleContainer(0)); }
     public TestMenu(int id, Inventory playerInventory) { this(id, playerInventory, new SimpleContainer(0)); }
 
     @Override

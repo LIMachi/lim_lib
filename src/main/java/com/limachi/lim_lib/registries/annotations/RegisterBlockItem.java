@@ -16,5 +16,5 @@ import java.lang.annotation.Target;
 @Target(ElementType.FIELD)
 public @interface RegisterBlockItem {
     java.lang.String name() default "";
-    java.lang.String block();
+    java.lang.String block() default "";
 }

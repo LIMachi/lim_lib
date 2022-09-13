@@ -1,8 +1,8 @@
 package com.limachi.lim_lib.registries.client;
 
 import com.limachi.lim_lib.ModAnnotation;
-import com.limachi.lim_lib.Reflection;
 import com.limachi.lim_lib.Strings;
+import com.limachi.lim_lib.reflection.Classes;
 import com.limachi.lim_lib.registries.Registries;
 import com.limachi.lim_lib.registries.client.annotations.RegisterMenuScreen;
 import com.limachi.lim_lib.registries.client.annotations.RegisterSkin;
@@ -34,10 +34,8 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraftforge.client.event.ColorHandlerEvent;
 import net.minecraftforge.client.event.EntityRenderersEvent;
-import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.registries.RegistryObject;
 
 import java.lang.reflect.Constructor;
@@ -110,7 +108,7 @@ public class ClientRegistries {
         void register() { MenuScreens.register(menu.get(), new MenuScreens.ScreenConstructor<M, S>() {
                 @Override
                 public S create(M menu, Inventory inventory, Component title) {
-                    return Reflection.newClass(clazz, menu, inventory, title);
+                    return Classes.newClass(clazz, menu, inventory, title);
                 }
             });
         }

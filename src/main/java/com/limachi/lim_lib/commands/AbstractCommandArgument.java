@@ -19,6 +19,8 @@ public abstract class AbstractCommandArgument {
     private SuggestionProvider<CommandSourceStack> customSuggestions = null;
     public abstract FunctionThrowsCommandSyntaxException<CommandContext<CommandSourceStack>, Object> getter();
     public abstract Class<?>[] debugGetType();
+    protected FunctionThrowsCommandSyntaxException<CommandContext<CommandSourceStack>, Object> defaultGetter = null;
+    public FunctionThrowsCommandSyntaxException<CommandContext<CommandSourceStack>, Object> getDefault() { return defaultGetter; }
     public String debugType() {
         Class<?>[] g = debugGetType();
         if (g.length == 1)
@@ -51,6 +53,7 @@ public abstract class AbstractCommandArgument {
     }
     public AbstractCommandArgument setPredicate(Predicate<CommandSourceStack> pred) { this.pred = pred; return this; }
     public AbstractCommandArgument setLabel(String label) { this.label = label; return this; }
+    public AbstractCommandArgument setDefault(FunctionThrowsCommandSyntaxException<CommandContext<CommandSourceStack>, Object> getter) { defaultGetter = getter; return this; }
     public String getLabel() { return label; }
     public boolean isLiteral() { return type == null; }
 }
