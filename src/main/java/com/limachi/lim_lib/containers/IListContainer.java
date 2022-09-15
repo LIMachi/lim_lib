@@ -33,7 +33,10 @@ public interface IListContainer extends Container, IItemHandlerModifiable, Stack
     @Override default @Nonnull ItemStack removeItem(int slot, int qty) {
         if (slot < 0 || slot >= stacks().size() || qty <= 0) return ItemStack.EMPTY;
         ItemStack ss = stacks().get(slot);
-        qty = Integer.min(Integer.min(ss.getCount(), qty), ss.getItem().getItemStackLimit(ss));
+        qty = Integer.min(Integer.min(ss.getCount(), qty), ss.getItem()
+//                .getItemStackLimit( //VERSION 1.18.2
+                .getMaxStackSize( //VERSION 1.19.2
+                        ss));
         if (qty <= 0) return ItemStack.EMPTY;
         ItemStack out = ss.split(qty);
         stacks().set(slot, ss);

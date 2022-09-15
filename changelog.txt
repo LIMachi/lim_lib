@@ -1,3 +1,9 @@
+---- 1.19.2-A1.0.0 ----
+port to 1.19.2
+removed mixins
+added VERSION comments to quickly locate what changed between 1.18.2 and 1.19.2 (which should also help with backport from 1.19.2 to 1.18.2)
+update java version to 17.0.4
+
 ---- A1.0.2 ----
 Added utilities for containers, menus, screens, widgets, itemstacks, DataSlot, BlockEntities...
 Commands can now have facultative argument (declared with a ? in the name), you can set a default return for the getters by using AbstractCommandArgument#setDefault, will return null object as a parameter otherwise.

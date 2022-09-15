@@ -1,6 +1,7 @@
 package com.limachi.lim_lib.commands.arguments;
 
 import com.limachi.lim_lib.commands.AbstractCommandArgument;
+import com.limachi.lim_lib.commands.CommandManager; // VERSION 1.19.2
 import com.mojang.brigadier.context.CommandContext;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.arguments.item.ItemPredicateArgument;
@@ -10,7 +11,10 @@ import java.util.function.Predicate;
 
 @SuppressWarnings("unused")
 public class ItemPredicateArg extends AbstractCommandArgument {
-    public ItemPredicateArg() { type = ItemPredicateArgument.itemPredicate(); }
+    public ItemPredicateArg() { type = ItemPredicateArgument.itemPredicate(
+            // VERSION 1.18.2
+            CommandManager.builderContext // VERSION 1.19.2
+    ); }
     @Override
     public Class<?>[] debugGetType() { return new Class[]{Predicate.class, ItemStack.class}; }
     @Override

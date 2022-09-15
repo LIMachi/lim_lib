@@ -61,8 +61,9 @@ public class RenderUtils {
         bufferbuilder.vertex(matrix, (float)box.getX2(), (float)box.getY2(), depth).color(ec.x(), ec.y(), ec.z(), ec.w()).endVertex();
         bufferbuilder.vertex(matrix, (float)box.getX2(), (float)box.getY1(), depth).color(ec.x(), ec.y(), ec.z(), ec.w()).endVertex();
         bufferbuilder.vertex(matrix, (float)box.getX1(), (float)box.getY1(), depth).color(ec.x(), ec.y(), ec.z(), ec.w()).endVertex();
-        bufferbuilder.end();
-        BufferUploader.end(bufferbuilder);
+//        bufferbuilder.end(); // VERSION 1.18.2
+//        BufferUploader.end(bufferbuilder); // VERSION 1.18.2
+        BufferUploader.drawWithShader(bufferbuilder.end()); // VERSION 1.19.2
         RenderSystem.enableTexture();
         RenderSystem.disableBlend();
     }

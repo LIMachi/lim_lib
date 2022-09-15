@@ -2,7 +2,7 @@ package com.limachi.lim_lib;
 
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
+//import net.minecraft.network.chat.TranslatableComponent; //VERSION 1.18.2
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -32,7 +32,10 @@ public class NbtTooltip {
                 tooltip.addAll(TextUtils.prettyTag(event.getItemStack().getTag()));
 
             } else
-                event.getToolTip().add(new TranslatableComponent("extended_tooltip.nbt_tooltip.use_alt"));
+                event.getToolTip().add(
+//                        new TranslatableComponent( //VERSION 1.18.2
+                        Component.translatable( //VERSION 1.19.2
+                                "extended_tooltip.nbt_tooltip.use_alt"));
         }
     }
 }

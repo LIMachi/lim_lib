@@ -38,8 +38,14 @@ public class Events {
 
     @SubscribeEvent
     public static void acceptSneakUseOfBlockWithItem(PlayerInteractEvent.RightClickBlock event) {
-        Block block = event.getWorld().getBlockState(event.getHitVec().getBlockPos()).getBlock();
-        Item item = event.getPlayer().getItemInHand(event.getHand()).getItem();
+        Block block = event
+//                .getWorld() // VERSION 1.18.2
+                .getLevel() // VERSION 1.19.2
+                .getBlockState(event.getHitVec().getBlockPos()).getBlock();
+        Item item = event
+//                .getPlayer() // VERSION 1.18.2
+                .getEntity() // VERSION 1.19.2
+                .getItemInHand(event.getHand()).getItem();
         if (block instanceof IGetUseSneakWithItemEvent && !(item instanceof BlockItem)) {
             event.setUseBlock(Event.Result.ALLOW);
             event.setUseItem(Event.Result.DENY);
