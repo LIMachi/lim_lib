@@ -5,7 +5,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.*;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.network.chat.TextComponent;
+//import net.minecraft.network.chat.TextComponent; //VERSION 1.18.2
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,11 +15,26 @@ public class TextUtils {
     private static final int PRETTY_TAG_MAX_WIDTH = 32;
     private static final int PRETTY_TAG_MARGIN = 2;
 
-    private static MutableComponent lst(String v) { return new TextComponent(v).withStyle(ChatFormatting.YELLOW); }
-    private static MutableComponent obj(String v) { return new TextComponent(v).withStyle(ChatFormatting.GOLD); }
-    private static MutableComponent key(String v) { return new TextComponent(v).withStyle(ChatFormatting.DARK_AQUA); }
-    private static MutableComponent str(String v) { return new TextComponent(v).withStyle(ChatFormatting.GREEN); }
-    private static MutableComponent def(String v) { return new TextComponent(v).withStyle(ChatFormatting.AQUA); }
+    private static MutableComponent lst(String v) { return
+//            new TextComponent( //VERSION 1.18.2
+            Component.literal( //VERSION 1.19.2
+                    v).withStyle(ChatFormatting.YELLOW); }
+    private static MutableComponent obj(String v) { return
+//            new TextComponent( //VERSION 1.18.2
+            Component.literal( //VERSION 1.19.2
+                    v).withStyle(ChatFormatting.GOLD); }
+    private static MutableComponent key(String v) { return
+//            new TextComponent( //VERSION 1.18.2
+            Component.literal( //VERSION 1.19.2
+                    v).withStyle(ChatFormatting.DARK_AQUA); }
+    private static MutableComponent str(String v) { return
+//            new TextComponent( //VERSION 1.18.2
+            Component.literal( //VERSION 1.19.2
+                    v).withStyle(ChatFormatting.GREEN); }
+    private static MutableComponent def(String v) { return
+//            new TextComponent( //VERSION 1.18.2
+            Component.literal( //VERSION 1.19.2
+                    v).withStyle(ChatFormatting.AQUA); }
 
     private static Pair<Integer, MutableComponent> plst(int depth, String v) { return new Pair<>(depth, lst(v)); }
     private static Pair<Integer, MutableComponent> pobj(int depth, String v) { return new Pair<>(depth, obj(v)); }
@@ -103,7 +118,13 @@ public class TextUtils {
         return out;
     }
 
-    private static TextComponent margin(int depth) { return new TextComponent("                                                                ".substring(0, depth * PRETTY_TAG_MARGIN)); }
+    private static
+//    TextComponent //VERSION 1.18.2
+    MutableComponent //VERSION 1.19.2
+    margin(int depth) { return
+//            new TextComponent( //VERSION 1.18.2
+            Component.literal( //VERSION 1.19.2
+                    "                                                                ".substring(0, depth * PRETTY_TAG_MARGIN)); }
 
     public static List<Component> prettyTag(Tag nbt) {
         ArrayList<Pair<Integer, MutableComponent>> in = prettyTagInternal(nbt, 0, false);
@@ -140,11 +161,17 @@ public class TextUtils {
         return out.deleteCharAt(out.length() - 1).toString();
     }
 
-    public static TextComponent prettyTagText(Tag nbt) {
-        TextComponent out = new TextComponent("");
+    public static
+//    TextComponent //VERSION 1.18.2
+    Component //VERSION 1.19.2
+    prettyTagText(Tag nbt) {
+//        TextComponent out = new TextComponent(""); //VERSION 1.18.2
+        MutableComponent out = Component.literal(""); //VERSION 1.19.2
         List<Component> list = prettyTag(nbt);
         for (int i = 0; i < list.size() - 1; ++i)
             out.append(list.get(i)).append("\n");
-        return (TextComponent)out.append(list.get(list.size() - 1));
+        return
+//                (TextComponent) //VERSION 1.18.2
+                out.append(list.get(list.size() - 1));
     }
 }

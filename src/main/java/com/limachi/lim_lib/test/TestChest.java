@@ -7,7 +7,7 @@ import com.limachi.lim_lib.registries.annotations.RegisterBlockEntity;
 import com.limachi.lim_lib.registries.annotations.RegisterBlockItem;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
+//import net.minecraft.network.chat.TextComponent; //VERSION 1.18.2
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -38,6 +38,9 @@ public class TestChest {
         protected int initialContainerSize() { return 60; }
 
         @Override
-        protected Component getDefaultName() { return new TextComponent("Test Chest"); }
+        protected Component getDefaultName() { return
+//                new TextComponent( //VERSION 1.18.2
+                Component.literal( //VERSION 1.19.2
+                        "Test Chest"); }
     }
 }

@@ -1,7 +1,6 @@
 package com.limachi.lim_lib.saveData;
 
 import com.limachi.lim_lib.*;
-import com.limachi.lim_lib.constructorEnforcer.ConstructorEnforcer;
 import com.limachi.lim_lib.network.NetworkManager;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.nbt.CompoundTag;
@@ -109,11 +108,17 @@ public class SaveDataManager {
 
     @SubscribeEvent
     public static void onPlayerLoginEvent(PlayerEvent.PlayerLoggedInEvent event) {
-        if (!event.getPlayer().level.isClientSide()) {
+        if (!event
+//                .getPlayer() //VERSION 1.18.2
+                .getEntity() // VERSION 1.19.2
+                .level.isClientSide()) {
             for (String k : SAVE_DATAS.keySet()) {
                 AbstractSyncSaveData d = getInstance(k);
                 if (d != null)
-                    NetworkManager.toClient(ModBase.COMMON_ID, (ServerPlayer) event.getPlayer(), d.pack(true));
+                    NetworkManager.toClient(ModBase.COMMON_ID, (ServerPlayer) event
+//                            .getPlayer() // VERSION 1.18.2
+                                    .getEntity() // VERSION 1.19.2
+                            , d.pack(true));
             }
         } else
             CLIENT_INSTANCES.clear();
@@ -121,7 +126,10 @@ public class SaveDataManager {
 
     @SubscribeEvent
     public static void onPlayerLogoutEvent(PlayerEvent.PlayerLoggedOutEvent event) {
-        if (event.getPlayer().level.isClientSide())
+        if (event
+//                .getPlayer() // VERSION 1.18.2
+                .getEntity() // VERSION 1.19.2
+                .level.isClientSide())
             CLIENT_INSTANCES.clear();
     }
 }

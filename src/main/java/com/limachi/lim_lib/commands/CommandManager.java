@@ -11,15 +11,20 @@ import com.mojang.brigadier.tree.ArgumentCommandNode;
 import com.mojang.brigadier.tree.CommandNode;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import com.mojang.datafixers.util.Pair;
+import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
-import net.minecraft.network.chat.TextComponent;
+//import net.minecraft.network.chat.TextComponent; //VERSION 1.18.2
+import net.minecraft.core.RegistryAccess;
+import net.minecraft.network.chat.Component; //VERSION 1.19.2
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 @SuppressWarnings("unused")
 @Mod.EventBusSubscriber
@@ -40,6 +45,8 @@ public class CommandManager {
         }
         return out.toString();
     }
+
+    public static CommandBuildContext builderContext = new CommandBuildContext(RegistryAccess.BUILTIN.get()); //VERSION 1.19.2
 
     @SubscribeEvent
     public static void registerCommands(RegisterCommandsEvent event) {
@@ -130,7 +137,10 @@ public class CommandManager {
                             throw forward;
                         }
                     } catch (Exception caught) {
-                        ctx.getSource().sendFailure(new TextComponent("Exception in command '" + cmd + "' -> public static " + execute.getMethod(false) + ". Please check game log for further details."));
+                        ctx.getSource().sendFailure(
+//                                new TextComponent( //VERSION 1.18.2
+                                Component.literal( //VERSION 1.19.2
+                                        "Exception in command '" + cmd + "' -> public static " + execute.getMethod(false) + ". Please check game log for further details."));
                         caught.printStackTrace();
                         return 0;
                     }
@@ -144,7 +154,10 @@ public class CommandManager {
                     for (int j = 0; j < vargs.length; ++j)
                         output.append(", ").append(vargs[j].debugType()).append(" var").append(j + 2);
                 }
-                ctx.getSource().sendSuccess(new TextComponent(output.append(')').toString()), true);
+                ctx.getSource().sendSuccess(
+//                        new TextComponent( //VERSION 1.18.2
+                        Component.literal( //VERSION 1.19.2
+                                output.append(')').toString()), true);
                 return nonLiteral.size();
             };
         i = args.size();

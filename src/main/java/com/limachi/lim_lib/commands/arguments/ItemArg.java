@@ -1,6 +1,7 @@
 package com.limachi.lim_lib.commands.arguments;
 
 import com.limachi.lim_lib.commands.AbstractCommandArgument;
+import com.limachi.lim_lib.commands.CommandManager; // VERSION 1.19.2
 import com.mojang.brigadier.context.CommandContext;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.arguments.item.ItemArgument;
@@ -9,7 +10,10 @@ import com.limachi.lim_lib.commands.FunctionThrowsCommandSyntaxException;
 
 @SuppressWarnings("unused")
 public class ItemArg extends AbstractCommandArgument {
-    public ItemArg() { type = ItemArgument.item(); }
+    public ItemArg() { type = ItemArgument.item(
+            // VERSION 1.18.2
+            CommandManager.builderContext // VERSION 1.19.2
+    ); }
     @Override
     public Class<?>[] debugGetType() { return new Class[]{ItemInput.class}; }
     @Override

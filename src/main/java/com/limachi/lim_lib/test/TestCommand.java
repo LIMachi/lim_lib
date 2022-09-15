@@ -7,7 +7,8 @@ import com.limachi.lim_lib.registries.StaticInit;
 import com.mojang.brigadier.context.CommandContext;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.core.BlockPos;
-import net.minecraft.network.chat.TextComponent;
+//import net.minecraft.network.chat.TextComponent; //VERSION 1.18.2
+import net.minecraft.network.chat.Component; //VERSION 1.19.2
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
@@ -32,7 +33,10 @@ public class TestCommand {
         BlockPos pos = new BlockPos(8, 128, 8);
         for (Entity e : entities)
             World.teleportEntity(e, level, pos);
-        ctx.getSource().sendSuccess(new TextComponent("Sent entities " + entities + " to the dim " + dim), true);
+        ctx.getSource().sendSuccess(
+//                new TextComponent( //VERSION 1.18.2
+                Component.literal( //VERSION 1.19.2
+                        "Sent entities " + entities + " to the dim " + dim), true);
         return entities.size();
     }
 
@@ -44,7 +48,10 @@ public class TestCommand {
 //    }
 
     public static int test_literal(CommandContext<CommandSourceStack> ctx, String literal) {
-        ctx.getSource().sendSuccess(new TextComponent("tested literal: " + literal), true);
+        ctx.getSource().sendSuccess(
+//                new TextComponent( //VERSION 1.18.2
+                Component.literal( //VERSION 1.19.2
+                        "tested literal: " + literal), true);
         return 0;
     }
 }

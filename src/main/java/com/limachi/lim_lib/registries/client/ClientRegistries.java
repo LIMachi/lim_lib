@@ -32,7 +32,8 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.material.Fluid;
-import net.minecraftforge.client.event.ColorHandlerEvent;
+//import net.minecraftforge.client.event.ColorHandlerEvent; //VERSION 1.18.2
+import net.minecraftforge.client.event.RegisterColorHandlersEvent; //VERSION 1.19.2
 import net.minecraftforge.client.event.EntityRenderersEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
@@ -67,10 +68,10 @@ public class ClientRegistries {
 
     protected static final HashMap<RegistryObject<MenuType<?>>, MenuScreens.ScreenConstructor<?, ?>> CONTAINER_SCREENS = new HashMap<>();
 
-    public static void setRenderLayer(RegistryObject<Block> rb, RenderType type) { RENDER_LAYERS.put(rb, type); }
+//    public static void setRenderLayer(RegistryObject<Block> rb, RenderType type) { RENDER_LAYERS.put(rb, type); } FIXME: see ItemBlockRenderTypes.setRenderLayer in 1.19.2
     public static void setColor(RegistryObject<Block> rb, BlockColor color) { BLOCK_COLORS.put(rb, color); }
-    public static void setTranslucent(RegistryObject<Block> rb) { setRenderLayer(rb, RenderType.translucent()); }
-    public static void setCutout(RegistryObject<Block> rb) { setRenderLayer(rb, RenderType.cutout()); }
+//    public static void setTranslucent(RegistryObject<Block> rb) { setRenderLayer(rb, RenderType.translucent()); } FIXME: see ItemBlockRenderTypes.setRenderLayer in 1.19.2
+//    public static void setCutout(RegistryObject<Block> rb) { setRenderLayer(rb, RenderType.cutout()); } FIXME: see ItemBlockRenderTypes.setRenderLayer in 1.19.2
     public static void setLayerDefinition(ModelLayerLocation location, Supplier<LayerDefinition> layerDef) { LAYER_DEFINITIONS.put(location, layerDef); }
 
     @SubscribeEvent
@@ -78,8 +79,8 @@ public class ClientRegistries {
     {
         for (Map.Entry<RegistryObject<?>, RenderType> entry : RENDER_LAYERS.entrySet()) {
             Object o = entry.getKey().get();
-            if (o instanceof Block)
-                ItemBlockRenderTypes.setRenderLayer((Block)o, entry.getValue());
+//            if (o instanceof Block)
+//                ItemBlockRenderTypes.setRenderLayer((Block)o, entry.getValue());
             if (o instanceof Fluid)
                 ItemBlockRenderTypes.setRenderLayer((Fluid)o, entry.getValue());
         }
@@ -87,13 +88,15 @@ public class ClientRegistries {
     }
 
     @SubscribeEvent
-    static void registerBlockColor(ColorHandlerEvent.Block event) {
+//    static void registerBlockColor(ColorHandlerEvent.Block event) { //VERSION 1.18.2
+    static void registerBlockColor(RegisterColorHandlersEvent.Block event) { //VERSION 1.19.2
         BlockColors blockcolors = event.getBlockColors();
         for (Map.Entry<RegistryObject<Block>, BlockColor> entry : BLOCK_COLORS.entrySet()) blockcolors.register(entry.getValue(), entry.getKey().get());
     }
 
     @SubscribeEvent
-    static void registerBlockColor(ColorHandlerEvent.Item event) {
+//    static void registerBlockColor(ColorHandlerEvent.Item event) { //VERSION 1.18.2
+    static void registerBlockColor(RegisterColorHandlersEvent.Item event) { //VERSION 1.19.2
         ItemColors blockcolors = event.getItemColors();
         for (Map.Entry<RegistryObject<Item>, ItemColor> entry : ITEM_COLORS.entrySet()) blockcolors.register(entry.getValue(), entry.getKey().get());
     }

@@ -24,7 +24,8 @@ import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
 import net.minecraft.world.entity.ai.sensing.SensorType;
 import net.minecraft.world.entity.ai.village.poi.PoiType;
-import net.minecraft.world.entity.decoration.Motive;
+//import net.minecraft.world.entity.decoration.Motive; //VERSION 1.18.2
+import net.minecraft.world.entity.decoration.PaintingVariant; //VERSION 1.19.2
 import net.minecraft.world.entity.npc.VillagerProfession;
 import net.minecraft.world.entity.schedule.Activity;
 import net.minecraft.world.entity.schedule.Schedule;
@@ -42,7 +43,7 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.chunk.ChunkStatus;
 import net.minecraft.world.level.levelgen.carver.WorldCarver;
 import net.minecraft.world.level.levelgen.feature.Feature;
-import net.minecraft.world.level.levelgen.feature.StructureFeature;
+//import net.minecraft.world.level.levelgen.feature.StructureFeature; //VERSION 1.18.2
 import net.minecraft.world.level.levelgen.feature.foliageplacers.FoliagePlacerType;
 import net.minecraft.world.level.levelgen.feature.stateproviders.BlockStateProviderType;
 import net.minecraft.world.level.levelgen.feature.treedecorators.TreeDecoratorType;
@@ -141,7 +142,10 @@ public class Registries {
     private static void discoverEntityAttributeBuilder(String modId) {
         for (ModAnnotation a : ModAnnotation.iterModAnnotations(modId, EntityAttributeBuilder.class)) {
             String name = name(a);
-            registerEntityAttributes(modId, name, (Class<? extends EntityType<? extends LivingEntity>>)ForgeRegistries.ENTITIES.getValue(new ResourceLocation(modId, name)).getClass(), ()->a.invokeStaticAnnotatedMethod());
+            registerEntityAttributes(modId, name, (Class<? extends EntityType<? extends LivingEntity>>)ForgeRegistries.
+//                    ENTITIES //VERSION 1.18.2
+                    ENTITY_TYPES //VERSION 1.19.2
+                    .getValue(new ResourceLocation(modId, name)).getClass(), ()->a.invokeStaticAnnotatedMethod());
         }
     }
 
@@ -189,15 +193,20 @@ public class Registries {
         MAPPED_REGISTRIES.put(SoundEvent.class, ForgeRegistries.SOUND_EVENTS);
         MAPPED_REGISTRIES.put(Potion.class, ForgeRegistries.POTIONS);
         MAPPED_REGISTRIES.put(Enchantment.class, ForgeRegistries.ENCHANTMENTS);
-        MAPPED_REGISTRIES.put(EntityType.class, ForgeRegistries.ENTITIES);
-        MAPPED_REGISTRIES.put(BlockEntityType.class, ForgeRegistries.BLOCK_ENTITIES);
+//        MAPPED_REGISTRIES.put(EntityType.class, ForgeRegistries.ENTITIES); //VERSION 1.18.2
+        MAPPED_REGISTRIES.put(EntityType.class, ForgeRegistries.ENTITY_TYPES); //VERSION 1.19.2
+//        MAPPED_REGISTRIES.put(BlockEntityType.class, ForgeRegistries.BLOCK_ENTITIES); //VERSION 1.18.2
+        MAPPED_REGISTRIES.put(BlockEntityType.class, ForgeRegistries.BLOCK_ENTITY_TYPES); //VERSION 1.19.2
         MAPPED_REGISTRIES.put(ParticleType.class, ForgeRegistries.PARTICLE_TYPES);
-        MAPPED_REGISTRIES.put(MenuType.class, ForgeRegistries.CONTAINERS);
-        MAPPED_REGISTRIES.put(Motive.class, ForgeRegistries.PAINTING_TYPES);
+//        MAPPED_REGISTRIES.put(MenuType.class, ForgeRegistries.CONTAINERS); //VERSION 1.18.2
+        MAPPED_REGISTRIES.put(MenuType.class, ForgeRegistries.MENU_TYPES); //VERSION 1.19.2
+//        MAPPED_REGISTRIES.put(Motive.class, ForgeRegistries.PAINTING_TYPES); //VERSION 1.18.2
+        MAPPED_REGISTRIES.put(PaintingVariant.class, ForgeRegistries.PAINTING_VARIANTS); //VERSION 1.19.2
         MAPPED_REGISTRIES.put(RecipeSerializer.class, ForgeRegistries.RECIPE_SERIALIZERS);
         MAPPED_REGISTRIES.put(Attribute.class, ForgeRegistries.ATTRIBUTES);
         MAPPED_REGISTRIES.put(StatType.class, ForgeRegistries.STAT_TYPES);
-        MAPPED_REGISTRIES.put(VillagerProfession.class, ForgeRegistries.PROFESSIONS);
+//        MAPPED_REGISTRIES.put(VillagerProfession.class, ForgeRegistries.PROFESSIONS); //VERSION 1.18.2
+        MAPPED_REGISTRIES.put(VillagerProfession.class, ForgeRegistries.VILLAGER_PROFESSIONS); //VERSION 1.19.2
         MAPPED_REGISTRIES.put(PoiType.class, ForgeRegistries.POI_TYPES);
         MAPPED_REGISTRIES.put(MemoryModuleType.class, ForgeRegistries.MEMORY_MODULE_TYPES);
         MAPPED_REGISTRIES.put(SensorType.class, ForgeRegistries.SENSOR_TYPES);
@@ -206,7 +215,7 @@ public class Registries {
         MAPPED_REGISTRIES.put(WorldCarver.class, ForgeRegistries.WORLD_CARVERS);
         MAPPED_REGISTRIES.put(Feature.class, ForgeRegistries.FEATURES);
         MAPPED_REGISTRIES.put(ChunkStatus.class, ForgeRegistries.CHUNK_STATUS);
-        MAPPED_REGISTRIES.put(StructureFeature.class, ForgeRegistries.STRUCTURE_FEATURES);
+//        MAPPED_REGISTRIES.put(StructureFeature.class, ForgeRegistries.STRUCTURE_FEATURES); //VERSION 1.18.2
         MAPPED_REGISTRIES.put(BlockStateProviderType.class, ForgeRegistries.BLOCK_STATE_PROVIDER_TYPES);
         MAPPED_REGISTRIES.put(FoliagePlacerType.class, ForgeRegistries.FOLIAGE_PLACER_TYPES);
         MAPPED_REGISTRIES.put(TreeDecoratorType.class, ForgeRegistries.TREE_DECORATOR_TYPES);
@@ -227,13 +236,15 @@ public class Registries {
         return (DeferredRegister<T>)mr.get(clazz);
     }
 
-    public static <T extends ForgeRegistryEntry<E>, E extends IForgeRegistryEntry<E>> T getRegisteredObject(String modId, String regKey, Class<T> clazz) {
+//    public static <T extends ForgeRegistryEntry<E>, E extends IForgeRegistryEntry<E>> T getRegisteredObject(String modId, String regKey, Class<T> clazz) { //VERSION 1.18.2
+    public static <T> T getRegisteredObject(String modId, String regKey, Class<T> clazz) { //VERSION 1.19.2
         Map.Entry<Class<?>, IForgeRegistry<?>> reg = getEntry(clazz);
         if (reg == null) return null;
         return (T)reg.getValue().getValue(new ResourceLocation(modId, regKey));
     }
 
-    public static <T extends ForgeRegistryEntry<E>, E extends IForgeRegistryEntry<E>> RegistryObject<T> getRegistryObject(String modId, String regKey) {
+//    public static <T extends ForgeRegistryEntry<E>, E extends IForgeRegistryEntry<E>> RegistryObject<T> getRegistryObject(String modId, String regKey) { //VERSION 1.18.2
+    public static <T> RegistryObject<T> getRegistryObject(String modId, String regKey) { //VERSION 1.19.2
         ResourceLocation rl = new ResourceLocation(modId, regKey);
         AtomicReference<RegistryObject<T>> out = new AtomicReference();
         REGISTRIES.forEach((k, v)->v.forEach((c, r) -> {

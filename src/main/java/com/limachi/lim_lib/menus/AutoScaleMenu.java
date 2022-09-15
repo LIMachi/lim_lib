@@ -18,7 +18,10 @@ public class AutoScaleMenu extends CommonContainerMenu {
 
     public static void open(Player player, Container container, Component title) {
         if (!player.level.isClientSide())
-            NetworkHooks.openGui((ServerPlayer)player, new SimpleMenuProvider((id, playerInventory, _player) -> new AutoScaleMenu(id, playerInventory, container), title), buff->buff.writeInt(container.getContainerSize()));
+            NetworkHooks
+//                    .openGui( // VERSION 1.18.2
+                    .openScreen( // VERSION 1.19.2
+                            (ServerPlayer)player, new SimpleMenuProvider((id, playerInventory, _player) -> new AutoScaleMenu(id, playerInventory, container), title), buff->buff.writeInt(container.getContainerSize()));
     }
 
     @RegisterMenu
