@@ -8,7 +8,7 @@ plugins {
 
 apply plugin: 'net.minecraftforge.gradle'
 
-version = '1.19.2-A1.0.0'
+version = '1.19.2-A1.0.1'
 group = 'com.limachi.lim_lib'
 archivesBaseName = 'lim_lib'
 

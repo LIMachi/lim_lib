@@ -1,3 +1,11 @@
+---- 1.19.2-A1.0.1 ----
+Added multi level support to SaveDataManager (until now all save data where forced on overworld, now you can optionally specify the level to store the data)
+World now has a method to iterate on all available worlds, regardless of side
+CommandManager now will use defaults instead of null for Primitives (prevent crash when trying to use primitives like 'int', 'float', etc... as parameter of a method but parameter is facultative in script)
+To achieve the above change, reflection.Types now expose a method 'getDefault' that will return a non null primitive if the given class is a primitive
+CommandManager is now compatible with method starting with 'CommandContext<CommandSourceStack>', 'CommandSourceStack' or none of the two
+To achieve the above change, reflection.MethodHolder now expose the static builder 'fromFirstMatching' that will try to find the first name method in a class and extract the parameter types from the found method
+
 ---- 1.19.2-A1.0.0 ----
 port to 1.19.2
 removed mixins

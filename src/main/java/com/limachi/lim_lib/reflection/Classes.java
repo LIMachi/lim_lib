@@ -9,6 +9,7 @@ import java.lang.reflect.Constructor;
 import java.util.Arrays;
 import java.util.function.Supplier;
 
+@SuppressWarnings("unused")
 public class Classes {
     /**
      * <pre>

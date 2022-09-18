@@ -25,7 +25,7 @@ public class TestItem extends Item implements IScrollItem {
      */
     @Override
     public void scroll(Player player, int slot, int delta) {
-        TestData test = SaveDataManager.getInstance("test");
+        TestData test = SaveDataManager.getInstance("test", player.level);
         delta += test.getTest();
         Log.debug("Validated scroll server side: " + delta);
         test.setTest(delta);

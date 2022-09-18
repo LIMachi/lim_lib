@@ -3,6 +3,7 @@ package com.limachi.lim_lib.commands;
 import com.limachi.lim_lib.Log;
 import com.limachi.lim_lib.commands.arguments.LiteralArg;
 import com.limachi.lim_lib.reflection.MethodHolder;
+import com.limachi.lim_lib.reflection.Types;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
@@ -20,11 +21,9 @@ import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
-import java.awt.*;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.function.Predicate;
-import java.util.function.Supplier;
 
 @SuppressWarnings("unused")
 @Mod.EventBusSubscriber
@@ -51,6 +50,7 @@ public class CommandManager {
     @SubscribeEvent
     public static void registerCommands(RegisterCommandsEvent event) {
         CMDS.forEach(c->{
+            builderContext = event.getBuildContext(); //technically do nothing as 'builderContext' probably already was referenced in the construction of commands
             Log.LOGGER.info("Registering command: " + builderAsStrings(c.getSecond()));
             event.getDispatcher().register(c.getSecond());
         });
@@ -61,15 +61,9 @@ public class CommandManager {
     }
 
     public static void registerCmd(Class<?> clazz, String method, Predicate<CommandSourceStack> requires, String cmd, AbstractCommandArgument ... vargs) {
-        MethodHolder tm = null;
-        if (clazz != null && method != null && !method.isBlank()) {
-            Class<?>[] types = new Class[vargs.length + 1];
-            types[0] = CommandContext.class;
-            for (int i = 0; i < vargs.length; ++i)
-                types[i + 1] = vargs[i].debugGetType()[0];
-            tm = new MethodHolder(clazz, method, types);
-        }
-        registerCmd(tm, requires, cmd, vargs);
+        MethodHolder tm = clazz != null && method != null && !method.isBlank() ? MethodHolder.fromFirstMatching(clazz, null, method) : null;
+        if (tm != null)
+            registerCmd(tm, requires, cmd, vargs);
     }
 
     public static void registerCmd(MethodHolder execute, String cmd, AbstractCommandArgument ... vargs) {
@@ -122,17 +116,25 @@ public class CommandManager {
         Command<CommandSourceStack> test;
         if (execute != null)
             test = ctx-> {
-                Object[] params = new Object[nonLiteral.size() + 1];
-                params[0] = ctx;
-                for (int j = 0; j < nonLiteral.size(); ++j) {
+                int pt = 0;
+                Object[] params;
+                Class<?>[] opt = execute.getOptionalParameterTypes();
+                if (opt != null && (CommandContext.class.isAssignableFrom(opt[0]) || CommandSourceStack.class.isAssignableFrom(opt[0]))) {
+                    params = new Object[nonLiteral.size() + 1];
+                    params[0] = CommandContext.class.isAssignableFrom(opt[0]) ? ctx : ctx.getSource();
+                    pt = 1;
+                }
+                else
+                    params = new Object[nonLiteral.size()];
+                for (int j = 0; j < nonLiteral.size(); ++j, ++pt) {
                     AbstractCommandArgument argument = nonLiteral.get(j);
                     try {
-                        params[j + 1] = argument.getter().apply(ctx);
+                        params[pt] = argument.getter().apply(ctx);
                     } catch (CommandSyntaxException forward) {
                         throw forward;
                     } catch (IllegalArgumentException forward) {
                         try {
-                            params[j + 1] = argument.getDefault() == null ? null : argument.getDefault().apply(ctx);
+                            params[pt] = argument.getDefault() == null ? Types.getDefault(argument.debugGetType()[0]) : argument.getDefault().apply(ctx);
                         } catch (Exception ignored) {
                             throw forward;
                         }

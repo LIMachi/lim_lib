@@ -2,6 +2,7 @@ package com.limachi.lim_lib.reflection;
 
 import com.limachi.lim_lib.Log;
 
+@SuppressWarnings("unused")
 public class Enums {
     /**
      * <pre>

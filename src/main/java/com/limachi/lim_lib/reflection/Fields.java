@@ -4,6 +4,7 @@ import com.limachi.lim_lib.Log;
 
 import java.lang.reflect.Field;
 
+@SuppressWarnings("unused")
 public class Fields {
     /**
      * <pre>

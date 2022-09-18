@@ -24,6 +24,8 @@ public class TestCommand {
 //        CommandManager.registerCmd(TestCommand.class, "enter_bag_self_cmd", "/test_commands enter <dimension>", new DimensionArg());
         CommandManager.registerCmd(TestCommand.class, "test_literal", "/test_commands test <int>", new IntArg(0, 100), new SwizzleArg(), new BiomeArg(), new CompoundTagArg());
         CommandManager.registerCmd(TestCommand.class, "test_literal", "/test_commands pred <literal>", new LiteralArg(false).requirePerm(2));
+        CommandManager.registerCmd(TestCommand.class, "test_source", "/test_commands test_source");
+        CommandManager.registerCmd(TestCommand.class, "test_empty", "/test_commands test_empty");
     }
 
     public static int enter_dim(CommandContext<CommandSourceStack> ctx, Collection<? extends Entity> entities, ServerLevel dim) {
@@ -52,6 +54,15 @@ public class TestCommand {
 //                new TextComponent( //VERSION 1.18.2
                 Component.literal( //VERSION 1.19.2
                         "tested literal: " + literal), true);
+        return 0;
+    }
+
+    public static int test_source(CommandSourceStack source) {
+        source.sendSuccess(Component.literal("good"), true);
+        return 0;
+    }
+
+    public static int test_empty() {
         return 0;
     }
 }

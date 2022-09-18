@@ -36,6 +36,13 @@ import java.util.function.Predicate;
 
 @SuppressWarnings("unused")
 public class World {
+
+    public static Iterable<? extends Level> getAllLevels() {
+        if (Sides.isLogicalClient())
+            return Collections.singletonList(Sides.getPlayer().level);
+        return Sides.getServer().getAllLevels();
+    }
+
     public static Level getLevel(ResourceKey<Level> reg) {
         if (Sides.isLogicalClient()) {
             Level t = Sides.getPlayer().level;
@@ -43,10 +50,13 @@ public class World {
         }
         return Sides.getServer().getLevel(reg);
     }
+
     public static Level getLevel(String reg) {
         return getLevel(ResourceKey.create(Registry.DIMENSION_REGISTRY, new ResourceLocation(reg)));
     }
+
     public static String asString(Level level) {
+        if (level == null) return "";
         return level.dimension().location().toString();
     }
 
