@@ -5,6 +5,9 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-@Target(ElementType.TYPE)
+@Target({ElementType.TYPE, ElementType.METHOD})
 @Retention(RetentionPolicy.CLASS)
-public @interface StaticInit {}
+public @interface StaticInit {
+    Stage value() default Stage.FIRST;
+    java.lang.String skip() default ""; //only for ElementType.METHOD (as static block will always be called). Work like skip for registries (will call a static method to test if this should be executed, the name provided will be the name of the annotated method)
+}

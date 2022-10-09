@@ -1,0 +1,10 @@
+{
+  "homepage": "https://www.curseforge.com/minecraft/mc-mods/lim-lib",
+  "promos": {
+    "1.19.2-latest": "1.19.2-A1.2.1",
+    "1.19.2-recommended": "1.19.2-A1.2.1"
+  },
+  "1.19.2": {
+    "1.19.2-A1.2.1": "First public release"
+  }
+}

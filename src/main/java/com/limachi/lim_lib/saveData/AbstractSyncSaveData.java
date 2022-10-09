@@ -1,26 +1,32 @@
 package com.limachi.lim_lib.saveData;
 
-import com.limachi.lim_lib.Events;
-import com.limachi.lim_lib.ModBase;
-import com.limachi.lim_lib.NBT;
-import com.limachi.lim_lib.Sides;
+import com.limachi.lim_lib.*;
 import com.limachi.lim_lib.network.NetworkManager;
 import com.limachi.lim_lib.network.messages.SaveDataSyncMsg;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.saveddata.SavedData;
 
 import javax.annotation.Nonnull;
 
 public abstract class AbstractSyncSaveData extends SavedData {
     public final String name;
+    public String level;
     public final SaveSync sync;
     private int lastMarkDirty = 0;
     private CompoundTag prevState;
 
-    public AbstractSyncSaveData(String name, SaveSync sync) {
+    protected AbstractSyncSaveData(String name, SaveSync sync) {
         this.name = name;
         this.sync = sync;
     }
+
+    protected AbstractSyncSaveData(String name) {
+        this.name = name;
+        this.sync = SaveSync.SERVER_TO_CLIENT;
+    }
+
+    public AbstractSyncSaveData setLevel(Level level) { this.level = World.asString(level); return this; }
 
     @Override
     public void setDirty() {
@@ -41,11 +47,11 @@ public abstract class AbstractSyncSaveData extends SavedData {
             CompoundTag diff = NBT.extractDiff(ser, prevState);
             if (diff.isEmpty()) return null;
             if (diff.toString().length() < prevState.toString().length())
-                out = new SaveDataSyncMsg(name, true, diff);
+                out = new SaveDataSyncMsg(name, level, true, diff);
             else
-                out = new SaveDataSyncMsg(name, false, ser);
+                out = new SaveDataSyncMsg(name, level, false, ser);
         } else
-            out = new SaveDataSyncMsg(name, false, ser);
+            out = new SaveDataSyncMsg(name, level, false, ser);
         prevState = ser;
         return out;
     }

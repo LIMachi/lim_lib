@@ -18,8 +18,9 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)
 public @interface RegisterEntity {
-    String name() default "";
+    java.lang.String name() default ""; //registry name of the object
+    java.lang.String skip() default ""; //use this method path to make this registry optional (method should be static, of the format `boolean method(Class<?> annotation, String name)`, returning true if the object should be skipped, aka not registered)
     MobCategory category() default MobCategory.MISC;
-    float width() default 1f;
-    float height() default 1f;
+    float width() default 1f; //in ratio of block
+    float height() default 1f; //in ratio of block
 }

@@ -8,7 +8,7 @@ plugins {
 
 apply plugin: 'net.minecraftforge.gradle'
 
-version = '1.19.2-A1.0.0'
+version = '1.19.2-A1.2.1'
 group = 'com.limachi.lim_lib'
 archivesBaseName = 'lim_lib'
 
@@ -75,8 +75,27 @@ sourceSets.main.resources { srcDir 'src/generated/resources' }
 
 repositories {
     maven {
-        url = "https://maven.theillusivec4.top/"
+        url = "https://maven.theillusivec4.top/" //Curio
     }
+
+    maven {
+        // location of the maven that hosts JEI files
+        name = "Progwml6 maven"
+        url = "https://dvs1.progwml6.com/files/maven/"
+    }
+    maven {
+        // location of a maven mirror for JEI files, as a fallback
+        name = "ModMaven"
+        url = "https://modmaven.dev"
+    }
+
+    maven { // TOP
+        url "https://maven.k-4u.nl"
+    }
+
+    maven { url "https://maven.bai.lol" } //WAILA
+
+    maven { url 'https://www.cursemaven.com' } //General Curse Maven
 }
 
 dependencies {
@@ -84,6 +103,14 @@ dependencies {
     dependencies {
         runtimeOnly fg.deobf("top.theillusivec4.curios:curios-forge:1.19.2-5.1.1.0")
         compileOnly fg.deobf("top.theillusivec4.curios:curios-forge:1.19.2-5.1.1.0:api")
+
+        // compile against the JEI API but do not include it at runtime
+        compileOnly(fg.deobf("mezz.jei:jei-${mc_version}-common-api:${jei_version}"))
+        compileOnly(fg.deobf("mezz.jei:jei-${mc_version}-forge-api:${jei_version}"))
+        // at runtime, use the full JEI jar for Forge
+        runtimeOnly(fg.deobf("mezz.jei:jei-${mc_version}-forge:${jei_version}"))
+
+        implementation(fg.deobf("curse.maven:the-one-probe-245211:${top_file}") { transitive = false })
     }
 }
 

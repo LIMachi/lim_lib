@@ -1,3 +1,28 @@
+---- 1.19.2-A1.2.1 ----
+forgot to do a changelog for the previous versions, oupsy :P
+fixed ConstructorEnforcer class loadding facultative classes, resulting in crashes if JEI or TOP is not loadded
+better integration with JEI info and TOP
+made MethodHolder compatible with string representation of classes and method path
+reorganised registries
+added skip option in registries: allows annotations to not register objects if a condition is not met
+added redstone tint annotation for blocks (will generate a tint on all channels by searching the states POWER and POWERED of the block)
+added stage concept to @StaticInit and made @StaticInit also work with public static methods
+AbstractSyncSaveData no longer require the constructor with Sync and the annotation no longer defines Sync (just set the field manually in your constructor)
+changed method prototype IScrollBlock#canScroll to get the player instead of the level
+added method to test the validity of a real player (in oposition to FakePlayer) in EntityUtils
+test can be disabled via config (by default they are disabled)
+added a utility to generate blocks using a config file (POC)
+working on utils for NBT serialisation
+added sound utils (mostly to play records)
+
+---- 1.19.2-A1.0.1 ----
+Added multi level support to SaveDataManager (until now all save data where forced on overworld, now you can optionally specify the level to store the data)
+World now has a method to iterate on all available worlds, regardless of side
+CommandManager now will use defaults instead of null for Primitives (prevent crash when trying to use primitives like 'int', 'float', etc... as parameter of a method but parameter is facultative in script)
+To achieve the above change, reflection.Types now expose a method 'getDefault' that will return a non null primitive if the given class is a primitive
+CommandManager is now compatible with method starting with 'CommandContext<CommandSourceStack>', 'CommandSourceStack' or none of the two
+To achieve the above change, reflection.MethodHolder now expose the static builder 'fromFirstMatching' that will try to find the first name method in a class and extract the parameter types from the found method
+
 ---- 1.19.2-A1.0.0 ----
 port to 1.19.2
 removed mixins

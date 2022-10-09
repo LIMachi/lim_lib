@@ -1,4 +1,4 @@
-package com.limachi.lim_lib.registries.client.annotations;
+package com.limachi.lim_lib.registries.annotations;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -6,5 +6,5 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.TYPE)
-public @interface RegisterSkin {}
+@Target(ElementType.FIELD)
+public @interface HasRedstoneTint {}

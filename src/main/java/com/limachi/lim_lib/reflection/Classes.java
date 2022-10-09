@@ -4,11 +4,13 @@ import com.limachi.lim_lib.Log;
 import com.limachi.lim_lib.Strings;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.forgespi.language.ModFileScanData;
+import org.objectweb.asm.Type;
 
 import java.lang.reflect.Constructor;
 import java.util.Arrays;
 import java.util.function.Supplier;
 
+@SuppressWarnings("unused")
 public class Classes {
     /**
      * <pre>
@@ -62,6 +64,16 @@ public class Classes {
             return (T)Class.forName(name);
         } catch (Exception e) {
             Log.error(name != null ? name : obName, 1, "classByName -> Invalid class name");
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public static <T extends Class<O>, O> T classByType(Type type) {
+        try {
+            return (T) Class.forName(type.getClassName());
+        } catch (ClassNotFoundException e) {
+            Log.error(type, 1, "classByType -> Could not get class");
             e.printStackTrace();
             return null;
         }

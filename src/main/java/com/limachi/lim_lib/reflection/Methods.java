@@ -5,6 +5,7 @@ import com.limachi.lim_lib.Log;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 
+@SuppressWarnings("unused")
 public class Methods {
     protected static Method getAssignableMethod(Class<?> clazz, String obName, String name, Class<?>[] parametersTypes) {
         try {

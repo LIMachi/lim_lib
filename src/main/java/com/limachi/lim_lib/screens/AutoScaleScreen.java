@@ -1,9 +1,8 @@
 package com.limachi.lim_lib.screens;
 
 import com.limachi.lim_lib.menus.AutoScaleMenu;
-import com.limachi.lim_lib.registries.client.annotations.RegisterMenuScreen;
+import com.limachi.lim_lib.registries.clientAnnotations.RegisterMenuScreen;
 import com.limachi.lim_lib.render.RenderUtils;
-import com.limachi.lim_lib.widgets.BaseWidget;
 import com.limachi.lim_lib.widgets.ScrollBarWidget;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;

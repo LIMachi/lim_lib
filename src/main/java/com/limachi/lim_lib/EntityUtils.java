@@ -3,8 +3,10 @@ package com.limachi.lim_lib;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityDimensions;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.common.util.FakePlayer;
 
 import javax.annotation.Nullable;
 import java.util.HashSet;
@@ -50,5 +52,9 @@ public class EntityUtils {
                 for (int z = (int)(entity.position().z - (hb.width / 2.)); z <= mz; ++z)
                     out.add(new BlockPos(x, y, z));
         return out;
+    }
+
+    public static boolean truePlayer(Entity player) {
+        return player instanceof Player && !(player instanceof FakePlayer);
     }
 }

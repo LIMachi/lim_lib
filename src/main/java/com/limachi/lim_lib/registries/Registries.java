@@ -1,9 +1,11 @@
 package com.limachi.lim_lib.registries;
 
 import com.limachi.lim_lib.*;
+import com.limachi.lim_lib.integration.JEIPlugin.JEIInfo;
+import com.limachi.lim_lib.registries.annotations.HasRedstoneTint;
 import com.limachi.lim_lib.reflection.Classes;
+import com.limachi.lim_lib.reflection.MethodHolder;
 import com.limachi.lim_lib.registries.annotations.*;
-import com.mojang.datafixers.util.Pair;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
@@ -52,11 +54,11 @@ import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.network.IContainerFactory;
 import net.minecraftforge.registries.*;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Supplier;
 import java.lang.reflect.Field;
 import java.util.stream.Collectors;
@@ -68,6 +70,7 @@ public class Registries {
     private static void discoverBlockRegistry(String modId) {
         for (ModAnnotation a : ModAnnotation.iterModAnnotations(modId, RegisterBlock.class)) {
             String name = name(a);
+            if (skip(a, RegisterBlock.class, name)) continue;
             Field f = a.getAnnotatedField();
             try {
                 f.set(null, block(modId, name, ()-> {
@@ -87,23 +90,32 @@ public class Registries {
     }
 
     private static void discoverItemRegistry(String modId) {
-        for (ModAnnotation a : ModAnnotation.iterModAnnotations(modId, RegisterItem.class))
-            a.setAnnotatedStaticFieldData(item(modId, name(a), (Supplier<? extends Item>)Classes.newClassSupplier(a.getAnnotatedClass())));
+        for (ModAnnotation a : ModAnnotation.iterModAnnotations(modId, RegisterItem.class)) {
+            String name = name(a);
+            if (skip(a, RegisterItem.class, name)) continue;
+            a.setAnnotatedStaticFieldData(item(modId, name, (Supplier<? extends Item>) Classes.newClassSupplier(a.getAnnotatedClass()), a.getData("jeiInfoKey", "")));
+        }
     }
 
     private static void discoverBlockItemRegistry(String modId) {
         for (ModAnnotation a : ModAnnotation.iterModAnnotations(modId, RegisterBlockItem.class)) {
-            String name = name(a).replace("_block", "_item");
+            String name = name(a);
+            if (skip(a, RegisterBlockItem.class, name)) continue;
+            if (name.equals("")) {
+                name = a.getSnakeClassName();
+                if (name.endsWith("_block"))
+                    name = name.substring(0, name.length() - 6) + "_item";
+            }
             String block = a.getData("block", a.getSnakeClassName());
             Field f = a.getAnnotatedField();
             try {
                 f.set(null, item(modId, name, ()->{try {
-                    return new BlockItem((Block)getRegistryObject(modId, block).get(), ModBase.INSTANCES.get(modId).defaultProps());
+                    return new BlockItem((Block)getRegistryObject(modId, Block.class, block).get(), ModBase.INSTANCES.get(modId).defaultProps());
                 } catch (Exception e) {
                     e.printStackTrace();
                     System.exit(-1);
                     return null;
-                }}));
+                }}, a.getData("jeiInfoKey", "")));
             } catch (Exception e) {
                 e.printStackTrace();
                 System.exit(-1);
@@ -114,10 +126,11 @@ public class Registries {
     private static void discoverBlockEntityRegistry(String modId) {
         for (ModAnnotation a : ModAnnotation.iterModAnnotations(modId, RegisterBlockEntity.class)) {
             String name = name(a);
+            if (skip(a, RegisterBlockEntity.class, name)) continue;
             String block = a.getData("block", a.getSnakeClassName().replace("_block_entity", "_block"));
             Field f = a.getAnnotatedField();
             try {
-                f.set(null, blockEntity(modId, name, a::getNewAnnotatedClass, getRegistryObject(modId, block)));
+                f.set(null, blockEntity(modId, name, a::getNewAnnotatedClass, getRegistryObject(modId, Block.class, block)));
             } catch (Exception e) {
                 e.printStackTrace();
                 System.exit(-1);
@@ -127,7 +140,9 @@ public class Registries {
 
     private static void discoverEntityRegistry(String modId) {
         for (ModAnnotation a : ModAnnotation.iterModAnnotations(modId, RegisterEntity.class)) {
-            a.setAnnotatedStaticFieldData(entity(modId, name(a), (type, level)-> {
+            String name = name(a);
+            if (skip(a, RegisterEntity.class, name)) continue;
+            a.setAnnotatedStaticFieldData(entity(modId, name, (type, level)-> {
                 try {
                     return (Entity)a.getAnnotatedClass().getConstructor(EntityType.class, Level.class).newInstance(type, level);
                 } catch (Exception e) {
@@ -142,6 +157,7 @@ public class Registries {
     private static void discoverEntityAttributeBuilder(String modId) {
         for (ModAnnotation a : ModAnnotation.iterModAnnotations(modId, EntityAttributeBuilder.class)) {
             String name = name(a);
+            if (skip(a, EntityAttributeBuilder.class, name)) continue;
             registerEntityAttributes(modId, name, (Class<? extends EntityType<? extends LivingEntity>>)ForgeRegistries.
 //                    ENTITIES //VERSION 1.18.2
                     ENTITY_TYPES //VERSION 1.19.2
@@ -152,28 +168,58 @@ public class Registries {
     private static ArrayList<Reab> ATTRIBUTES = new ArrayList<>();
 
     private static record Reab(String modId, String regKey, Class<? extends EntityType<? extends LivingEntity>> clazz, Supplier<AttributeSupplier.Builder> builder) {
-        void register(EntityAttributeCreationEvent event) { event.put(getRegisteredObject(modId, regKey, clazz), builder.get().build()); }
+        void register(EntityAttributeCreationEvent event) { event.put(getRegistryObject(modId, EntityType.class, regKey).get(), builder.get().build()); }
     }
 
     public static void registerEntityAttributes(String modId, String regKey, Class<? extends EntityType<? extends LivingEntity>> entityTypeClass, Supplier<AttributeSupplier.Builder> builder) {
         ATTRIBUTES.add(new Reab(modId, regKey, entityTypeClass, builder));
     }
 
-    private static String name(ModAnnotation a) {
+    static String name(ModAnnotation a) {
         String name = a.getData("name", "");
         if (name.equals(""))
             name = a.getSnakeClassName();
         return name;
     }
 
+    static boolean skip(ModAnnotation a, Class<?> annotation, String name) {
+        String skip = a.getData("skip", "");
+        if (skip.equals(""))
+            return false;
+        MethodHolder method = MethodHolder.byPath(skip, null);
+        return method.invoke(annotation, name);
+    }
+
     private static void runRegisterAnnotationDiscovery(String modId) {
+        Log.debug("Block Registration Stage: discovery");
         discoverBlockRegistry(modId);
+        Log.debug("Block Registration Stage: static init");
+        StaticInitializer.initialize(modId, Stage.BLOCK);
+        for (ModAnnotation a : ModAnnotation.iterModAnnotations(modId, HasRedstoneTint.class)) RedstoneUtils.hasRedstoneTint(a.getAnnotatedStaticFieldData());
+        Log.debug("Item Registration Stage: discovery");
         discoverItemRegistry(modId);
+        Log.debug("Item Registration Stage: static init");
+        StaticInitializer.initialize(modId, Stage.ITEM);
+        Log.debug("BlockItem Registration Stage: discovery");
         discoverBlockItemRegistry(modId);
+        Log.debug("BlockItem Registration Stage: static init");
+        StaticInitializer.initialize(modId, Stage.BLOCK_ITEM);
+        Log.debug("BlockEntity Registration Stage: discovery");
         discoverBlockEntityRegistry(modId);
+        Log.debug("BlockEntity Registration Stage: static init");
+        StaticInitializer.initialize(modId, Stage.BLOCK_ENTITY);
+        Log.debug("EntityAttributes Registration Stage: discovery");
         discoverEntityAttributeBuilder(modId);
+        Log.debug("EntityAttributes Registration Stage: static init");
+        StaticInitializer.initialize(modId, Stage.ENTITY_ATTRIBUTE);
+        Log.debug("Entity Registration Stage: discovery");
         discoverEntityRegistry(modId);
+        Log.debug("Entity Registration Stage: static init");
+        StaticInitializer.initialize(modId, Stage.ENTITY);
+        Log.debug("Menu Registration Stage: discovery");
         discoverRegisterMenu(modId);
+        Log.debug("Menu Registration Stage: static init");
+        StaticInitializer.initialize(modId, Stage.MENU);
     }
 
     protected static final HashMap<String, HashMap<Class<?>, DeferredRegister<?>>> REGISTRIES = new HashMap<>();
@@ -237,29 +283,34 @@ public class Registries {
     }
 
 //    public static <T extends ForgeRegistryEntry<E>, E extends IForgeRegistryEntry<E>> T getRegisteredObject(String modId, String regKey, Class<T> clazz) { //VERSION 1.18.2
-    public static <T> T getRegisteredObject(String modId, String regKey, Class<T> clazz) { //VERSION 1.19.2
-        Map.Entry<Class<?>, IForgeRegistry<?>> reg = getEntry(clazz);
-        if (reg == null) return null;
-        return (T)reg.getValue().getValue(new ResourceLocation(modId, regKey));
-    }
+//    public static <T> T getRegisteredObject(String modId, String regKey, Class<T> clazz) { //VERSION 1.19.2
+//        Map.Entry<Class<?>, IForgeRegistry<?>> reg = getEntry(clazz);
+//        if (reg == null) return null;
+//        return (T)reg.getValue().getValue(new ResourceLocation(modId, regKey));
+//    }
 
 //    public static <T extends ForgeRegistryEntry<E>, E extends IForgeRegistryEntry<E>> RegistryObject<T> getRegistryObject(String modId, String regKey) { //VERSION 1.18.2
-    public static <T> RegistryObject<T> getRegistryObject(String modId, String regKey) { //VERSION 1.19.2
+//    public static <T> RegistryObject<T> getRegistryObject(String modId, String regKey) { //VERSION 1.19.2
+//        ResourceLocation rl = new ResourceLocation(modId, regKey);
+//        AtomicReference<RegistryObject<T>> out = new AtomicReference();
+//        REGISTRIES.forEach((k, v)->v.forEach((c, r) -> {
+//                r.getEntries().forEach(e->{
+//                    if (e.getId().equals(rl))
+//                        try {
+//                            out.set((RegistryObject<T>)e);
+//                        }
+//                    catch (Exception ignore) {}
+//                    if (out.get() != null)
+//                        return;
+//                });
+//            })
+//        );
+//        return out.get();
+//    }
+
+    public static <C, T extends C> RegistryObject<T> getRegistryObject(String modId, Class<C> baseClass, String regKey) {
         ResourceLocation rl = new ResourceLocation(modId, regKey);
-        AtomicReference<RegistryObject<T>> out = new AtomicReference();
-        REGISTRIES.forEach((k, v)->v.forEach((c, r) -> {
-                r.getEntries().forEach(e->{
-                    if (e.getId().equals(rl))
-                        try {
-                            out.set((RegistryObject<T>)e);
-                        }
-                    catch (Exception ignore) {}
-                    if (out.get() != null)
-                        return;
-                });
-            })
-        );
-        return out.get();
+        return (RegistryObject<T>)REGISTRIES.get(modId).get(baseClass).getEntries().stream().filter(r->r.getId().equals(rl)).findAny().orElse(null);
     }
 
     public static <T extends MenuType<M>, M extends AbstractContainerMenu> RegistryObject<T> getMenuType(String modId, String regKey) {
@@ -268,11 +319,16 @@ public class Registries {
     }
 
     public static <T extends Block> RegistryObject<T> block(String modId, String regKey, Supplier<T> blockNew) { return getRegistry(modId, Block.class).register(regKey, blockNew); }
-    public static <T extends Item> RegistryObject<T> item(String modId, String regKey, Supplier<T> itemNew) { return getRegistry(modId, Item.class).register(regKey, itemNew); }
-    public static <T extends Block> Pair<RegistryObject<BlockItem>, RegistryObject<T>> blockAndItem(String modId, String regKey, Supplier<T> blockNew, Item.Properties props) {
-        RegistryObject<T> r_block = getRegistry(modId, Block.class).register(regKey, blockNew);
-        return Pair.of(getRegistry(modId, Item.class).register(regKey, ()->new BlockItem(r_block.get(), props)), r_block);
+    public static <T extends Item> RegistryObject<T> item(String modId, String regKey, Supplier<T> itemNew, @Nullable String infoKey) {
+        RegistryObject<T> out = getRegistry(modId, Item.class).register(regKey, itemNew);
+        if (out != null && infoKey != null && !infoKey.isBlank())
+            JEIInfo.registerInfo(out, infoKey);
+        return out;
     }
+//    public static <T extends Block> Pair<RegistryObject<BlockItem>, RegistryObject<T>> blockAndItem(String modId, String regKey, Supplier<T> blockNew, Item.Properties props) {
+//        RegistryObject<T> r_block = getRegistry(modId, Block.class).register(regKey, blockNew);
+//        return Pair.of(getRegistry(modId, Item.class).register(regKey, ()->new BlockItem(r_block.get(), props)), r_block);
+//    }
     public static <T extends Entity> RegistryObject<EntityType<T>> entity(String modId, String regKey, EntityType.EntityFactory<T> eNew, MobCategory category, float width, float height) { return entity(modId, regKey, ()->EntityType.Builder.of(eNew, category).sized(width, height).build(regKey)); }
     public static <T extends Entity> RegistryObject<EntityType<T>> entity(String modId, String regKey, Supplier<EntityType<T>> etNew) { return getRegistry(modId, EntityType.class).register(regKey, etNew); }
     public static <T extends BlockEntity> RegistryObject<BlockEntityType<T>> blockEntity(String modId, String regKey, BlockEntityType.BlockEntitySupplier<T> beNew, RegistryObject<Block> block) { return blockEntity(modId, regKey, beNew, block, null); }
