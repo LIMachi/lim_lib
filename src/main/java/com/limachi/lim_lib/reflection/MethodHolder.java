@@ -3,6 +3,8 @@ package com.limachi.lim_lib.reflection;
 import com.limachi.lim_lib.Log;
 import com.limachi.lim_lib.Strings;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 
@@ -41,6 +43,58 @@ public class MethodHolder {
             this.optionalParameterTypes = parameterTypes;
     }
 
+    public MethodHolder(String className, String obfuscatedClassName, String methodName, String obfuscatedMethodName, Class<?> ... parameterTypes) {
+        this.clazz = Classes.classByName(obfuscatedClassName, className);
+        this.m1 = obfuscatedMethodName;
+        this.m2 = methodName;
+        if (parameterTypes.length > 0)
+            this.optionalParameterTypes = parameterTypes;
+    }
+
+    public static MethodHolder byPath(@Nonnull String obfuscatedMethodPath, @Nullable String methodPath, Class<?> ... parameterTypes) {
+        String[] s = obfuscatedMethodPath.split(":");
+        if (s.length <= 1) {
+            Log.error("Invalid method path: `" + obfuscatedMethodPath + "`, should have a : separator between class path and method name");
+            return new MethodHolder((Class<?>)null, null);
+        }
+        String obfuscatedClassName = s[0];
+        String obfuscatedMethodName = s[s.length - 1];
+        String className = null;
+        String methodName = null;
+        if (methodPath != null) {
+            s = methodPath.split(":");
+            if (s.length <= 1)
+                Log.error("Invalid alternate method path: `" + methodPath + "`, should have a : separator between class path and method name");
+            else {
+                className = s[0];
+                methodName = s[s.length - 1];
+            }
+        }
+        return new MethodHolder(className, obfuscatedClassName, methodName, obfuscatedMethodName, parameterTypes);
+    }
+
+    public static MethodHolder byPath(@Nonnull String obfuscatedMethodPath, @Nullable String methodPath) {
+        String[] s = obfuscatedMethodPath.split(":");
+        if (s.length <= 1) {
+            Log.error("Invalid method path: `" + obfuscatedMethodPath + "`, should have a : separator between class path and method name");
+            return new MethodHolder((Class<?>)null, null);
+        }
+        String obfuscatedClassName = s[0];
+        String obfuscatedMethodName = s[s.length - 1];
+        String className = null;
+        String methodName = null;
+        if (methodPath != null) {
+            s = methodPath.split(":");
+            if (s.length <= 1)
+                Log.error("Invalid alternate method path: `" + methodPath + "`, should have a : separator between class path and method name");
+            else {
+                className = s[0];
+                methodName = s[s.length - 1];
+            }
+        }
+        return new MethodHolder(className, obfuscatedClassName, methodName, obfuscatedMethodName);
+    }
+
     public MethodHolder(Object object, String methodName, String obfuscatedMethodName, Class<?> ... parameterTypes) {
         this.clazz = object.getClass();
         this.object = object;
@@ -59,6 +113,12 @@ public class MethodHolder {
 
     public MethodHolder(Class<?> clazz, String methodName, String obfuscatedMethodName) {
         this.clazz = clazz;
+        this.m1 = obfuscatedMethodName;
+        this.m2 = methodName;
+    }
+
+    public MethodHolder(String className, String obfuscatedClassName, String methodName, String obfuscatedMethodName) {
+        this.clazz = Classes.classByName(obfuscatedClassName, className);
         this.m1 = obfuscatedMethodName;
         this.m2 = methodName;
     }
@@ -85,6 +145,13 @@ public class MethodHolder {
             this.optionalParameterTypes = parameterTypes;
     }
 
+    public MethodHolder(String className, String methodName, Class<?> ... parameterTypes) {
+        this.clazz = Classes.classByName(className, null);
+        this.m1 = methodName;
+        if (parameterTypes.length > 0)
+            this.optionalParameterTypes = parameterTypes;
+    }
+
     public MethodHolder(Object object, String methodName, Class<?> ... parameterTypes) {
         this.clazz = object.getClass();
         this.object = object;
@@ -101,6 +168,11 @@ public class MethodHolder {
 
     public MethodHolder(Class<?> clazz, String methodName) {
         this.clazz = clazz;
+        this.m1 = methodName;
+    }
+
+    public MethodHolder(String className, String methodName) {
+        this.clazz = Classes.classByName(className, null);
         this.m1 = methodName;
     }
 

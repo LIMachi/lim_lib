@@ -20,11 +20,11 @@ import java.util.function.Supplier;
 @SuppressWarnings("unused")
 @Mod.EventBusSubscriber
 public class SaveDataManager {
-    protected static HashMap<String, Pair<Class<? extends AbstractSyncSaveData>, SaveSync>> SAVE_DATAS = new HashMap<>();
+    protected static HashMap<String, Class<? extends AbstractSyncSaveData>> SAVE_DATAS = new HashMap<>();
     protected static final HashMap<Pair<String, String>, AbstractSyncSaveData> CLIENT_INSTANCES = new HashMap<>();
 
-    public static void register(String name, SaveSync sync, Class<? extends AbstractSyncSaveData> dataClass) {
-        SAVE_DATAS.put(name, new Pair<>(dataClass, sync));
+    public static void register(String name, Class<? extends AbstractSyncSaveData> dataClass) {
+        SAVE_DATAS.put(name, dataClass);
     }
 
     @SuppressWarnings("unchecked")
@@ -33,7 +33,7 @@ public class SaveDataManager {
             String name = a.getData("name", "");
             if (name.equals(""))
                 name = Strings.camelToSnake(Strings.getFile('.', a.getAnnotatedClass().getCanonicalName())).replace("_save_data", "").replace("_data", "");
-            register(name, a.getData("sync", SaveSync.SERVER_TO_CLIENT), (Class<? extends AbstractSyncSaveData>)a.getAnnotatedClass());
+            register(name, (Class<? extends AbstractSyncSaveData>)a.getAnnotatedClass());
         }
     }
 
@@ -51,9 +51,9 @@ public class SaveDataManager {
     public static void clientUpdate(String name, String level, CompoundTag nbt, boolean isDiff) {
         AbstractSyncSaveData d = CLIENT_INSTANCES.computeIfAbsent(new Pair<>(name, level), s -> {
             if (!SAVE_DATAS.containsKey(name)) return null;
-            Class<? extends AbstractSyncSaveData> type = SAVE_DATAS.get(name).getFirst();
+            Class<? extends AbstractSyncSaveData> type = SAVE_DATAS.get(name);
             try {
-                return type.getConstructor(String.class, SaveSync.class).newInstance(name, SAVE_DATAS.get(name).getSecond());
+                return type.getConstructor(String.class).newInstance(name);
             } catch (Exception e) {
                 return null;
             }
@@ -73,8 +73,7 @@ public class SaveDataManager {
         if (Sides.isLogicalClient()) return (T)CLIENT_INSTANCES.get(new Pair<>(name, World.asString(level == null ? World.overworld() : level)));
         String type = Strings.getFolder(':', name);
         if (type.equals("")) type = name;
-        Class<T> clazz = (Class<T>)SAVE_DATAS.get(type).getFirst();
-        SaveSync sync = SAVE_DATAS.get(type).getSecond();
+        Class<T> clazz = (Class<T>)SAVE_DATAS.get(type);
         if (clazz != null) {
             if (level == null)
                 level = World.overworld();
@@ -82,7 +81,7 @@ public class SaveDataManager {
                 Level finalLevel = level;
                 Supplier<T> supp = () -> {
                     try {
-                        return (T) clazz.getConstructor(String.class, SaveSync.class).newInstance(name, sync).setLevel(finalLevel);
+                        return (T) clazz.getConstructor(String.class).newInstance(name).setLevel(finalLevel);
                     } catch (Exception e) {
                         return null;
                     }

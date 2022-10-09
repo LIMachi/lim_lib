@@ -2,7 +2,6 @@ package com.limachi.lim_lib.test;
 
 import com.limachi.lim_lib.KeyMapController;
 import com.limachi.lim_lib.registries.annotations.RegisterItem;
-import com.limachi.lim_lib.saveData.SaveDataManager;
 import com.limachi.lim_lib.scrollSystem.IScrollItem;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
@@ -12,10 +11,9 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.registries.RegistryObject;
-import com.limachi.lim_lib.Log;
 
 public class TestItem extends Item implements IScrollItem {
-    @RegisterItem
+    @RegisterItem(skip = "com.limachi.lim_lib.LimLib:useTests")
     public static RegistryObject<Item> R_ITEM;
 
     public TestItem() { super(new Item.Properties()); }
@@ -25,10 +23,10 @@ public class TestItem extends Item implements IScrollItem {
      */
     @Override
     public void scroll(Player player, int slot, int delta) {
-        TestData test = SaveDataManager.getInstance("test", player.level);
-        delta += test.getTest();
-        Log.debug("Validated scroll server side: " + delta);
-        test.setTest(delta);
+//        TestData test = SaveDataManager.getInstance("test", player.level);
+//        delta += test.getTest();
+//        Log.debug("Validated scroll server side: " + delta);
+//        test.setTest(delta);
     }
 
     @Override

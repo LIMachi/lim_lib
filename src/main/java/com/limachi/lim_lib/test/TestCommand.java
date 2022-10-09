@@ -3,6 +3,7 @@ package com.limachi.lim_lib.test;
 import com.limachi.lim_lib.World;
 import com.limachi.lim_lib.commands.CommandManager;
 import com.limachi.lim_lib.commands.arguments.*;
+import com.limachi.lim_lib.registries.Stage;
 import com.limachi.lim_lib.registries.StaticInit;
 import com.mojang.brigadier.context.CommandContext;
 import net.minecraft.commands.CommandSourceStack;
@@ -17,9 +18,10 @@ import net.minecraft.world.level.Level;
 import java.util.Collection;
 import java.util.Collections;
 
-@StaticInit
 public class TestCommand {
-    static {
+    @StaticInit(skip = "com.limachi.lim_lib.LimLib:useTests")
+    public static void test() {
+//    static {
         CommandManager.registerCmd(TestCommand.class, "enter_dim", s->s.hasPermission(2), "/test_commands enter <entities?> <dimension?>", new EntitiesArg(true), new DimensionArg());
 //        CommandManager.registerCmd(TestCommand.class, "enter_bag_self_cmd", "/test_commands enter <dimension>", new DimensionArg());
         CommandManager.registerCmd(TestCommand.class, "test_literal", "/test_commands test <int>", new IntArg(0, 100), new SwizzleArg(), new BiomeArg(), new CompoundTagArg());

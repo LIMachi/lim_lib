@@ -28,8 +28,10 @@ public class ConstructorEnforcer {
     private static final ArrayListMultimap<Class<?>, Pair<Class<?>[], HashSet<Class<?>>>> CONSTRUCTOR_PATTERNS = ArrayListMultimap.create();
     static {
         ignoreClassName(".*[Mm]ixin.*");
+        ignoreClassName(".*[Jj][Ee][Ii].*");
+        ignoreClassName(".*[Tt][Oo][Pp].*");
         registerConstructorPattern(Default.class);
-        registerConstructorPattern(AbstractSyncSaveData.class, String.class, SaveSync.class);
+        registerConstructorPattern(AbstractSyncSaveData.class, String.class);
         registerConstructorPattern(AbstractContainerMenu.class, int.class, Inventory.class, FriendlyByteBuf.class);
         registerConstructorPattern(BaseContainerBlockEntity.class, BlockPos.class, BlockState.class);
     }

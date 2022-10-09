@@ -20,7 +20,7 @@ public interface IScrollBlock {
     void scrollFeedBack(Level level, BlockPos pos, int delta, Player player);
 
     /**
-     * called on both side to test if the scroll is locked on this block
+     * called client side to test if the scroll is locked on this block
      */
-    boolean canScroll(Level level, BlockPos pos);
+    boolean canScroll(Player player, BlockPos pos);
 }

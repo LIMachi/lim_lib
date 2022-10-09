@@ -1,7 +1,7 @@
 package com.limachi.lim_lib.test;
 
 import com.limachi.lim_lib.LimLib;
-import com.limachi.lim_lib.registries.client.annotations.RegisterMenuScreen;
+import com.limachi.lim_lib.registries.clientAnnotations.RegisterMenuScreen;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
@@ -10,7 +10,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 
-@RegisterMenuScreen
+@RegisterMenuScreen(skip = "com.limachi.lim_lib.LimLib:useTests")
 public class TestScreen extends AbstractContainerScreen<TestMenu> {
     public static final ResourceLocation DEFAULT_BACKGROUND = new ResourceLocation(LimLib.COMMON_ID, "textures/screen/default_background.png");
 

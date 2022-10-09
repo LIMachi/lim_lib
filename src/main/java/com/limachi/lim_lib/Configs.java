@@ -148,6 +148,7 @@ public class Configs {
     /**
      * populates the builders and getters by scanning @Config annotations on static
      */
+    @SuppressWarnings({"unchecked", "rawtypes"})
     private static void runConfigAnnotationDiscovery(String modId) throws Exception {
         Type ct = Type.getType(Config.class);
         for (ModFileScanData fsd : ModList.get().getAllScanData())
@@ -191,6 +192,7 @@ public class Configs {
                     }
     }
 
+    @SuppressWarnings("unchecked")
     private static <T> T getMin(Class<T> targetType, Map<String, Object> annotationData, StringBuilder tcmt) {
         Pair<Object[], Function<String, ?>> e = DEFAULTS.get(targetType);
         if (annotationData.containsKey("min") && !((String)annotationData.get("min")).isEmpty()) {
@@ -202,17 +204,19 @@ public class Configs {
         return (T)e.getFirst()[1];
     }
 
+    @SuppressWarnings("unchecked")
     private static <T> T getMax(Class<T> targetType, Map<String, Object> annotationData, StringBuilder tcmt) {
         Pair<Object[], Function<String, ?>> e = DEFAULTS.get(targetType);
         if (annotationData.containsKey("max") && !((String)annotationData.get("min")).isEmpty()) {
             if (tcmt.length() > 0)
                 tcmt.append('\n');
-            tcmt.append("Maximum value: '" + annotationData.get("max") + "'");
+            tcmt.append("Maximum value: '").append(annotationData.getOrDefault("max", "")).append("'");
             return (T) e.getSecond().apply((String) annotationData.get("max"));
         }
         return (T)e.getFirst()[2];
     }
 
+    @SuppressWarnings("unchecked")
     private static <T> List<T> getValid(Class<T> compType, Map<String, Object> annotationData, StringBuilder tcmt) {
         Pair<Object[], Function<String, ?>> e = DEFAULTS.get(compType);
         if (annotationData.containsKey("valid")) {
@@ -233,6 +237,7 @@ public class Configs {
         return null;
     }
 
+    @SuppressWarnings("unchecked")
     private static void loadConfig(ModConfig.Type side, boolean isReload) {
         if (!GETTERS.containsKey(side)) return;
         for (Map.Entry<String, Pair<Supplier<?>, Boolean>> entry : GETTERS.get(side).entrySet()) {

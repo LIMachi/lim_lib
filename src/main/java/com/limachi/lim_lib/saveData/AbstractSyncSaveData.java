@@ -16,9 +16,14 @@ public abstract class AbstractSyncSaveData extends SavedData {
     private int lastMarkDirty = 0;
     private CompoundTag prevState;
 
-    public AbstractSyncSaveData(String name, SaveSync sync) {
+    protected AbstractSyncSaveData(String name, SaveSync sync) {
         this.name = name;
         this.sync = sync;
+    }
+
+    protected AbstractSyncSaveData(String name) {
+        this.name = name;
+        this.sync = SaveSync.SERVER_TO_CLIENT;
     }
 
     public AbstractSyncSaveData setLevel(Level level) { this.level = World.asString(level); return this; }

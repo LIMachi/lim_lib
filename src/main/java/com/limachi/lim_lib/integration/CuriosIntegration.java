@@ -1,4 +1,4 @@
-package com.limachi.lim_lib;
+package com.limachi.lim_lib.integration;
 
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.resources.ResourceLocation;
@@ -148,15 +148,19 @@ public class CuriosIntegration {
         Inventory inv = entity instanceof Player ? ((Player)entity).getInventory() : null;
 
         if (isPlayer) {
+            if (inv == null)
+                return out;
             if (clazz.isInstance(inv.getSelected().getItem()) && predicate.test(inv.getSelected())) {
                 int current = inv.selected;
                 out.add(new ProxySlotModifier(() -> inv.getItem(current), stack -> inv.setItem(current, stack)));
             }
         } else {
-            Iterator<ItemStack> tit = entity.getHandSlots().iterator();
-            ItemStack test = tit.hasNext() ? tit.next() : ItemStack.EMPTY;
-            if (clazz.isInstance(test.getItem()) && predicate.test(test))
-                out.add(new ProxySlotModifier(()->entity.getHandSlots().iterator().next(), stack->entity.setItemSlot(EquipmentSlot.MAINHAND, stack)));
+            if (entity.getHandSlots() != null) { //Yes, somehow I managed to get an entity with null hand slots...
+                Iterator<ItemStack> tit = entity.getHandSlots().iterator();
+                ItemStack test = tit.hasNext() ? tit.next() : ItemStack.EMPTY;
+                if (clazz.isInstance(test.getItem()) && predicate.test(test))
+                    out.add(new ProxySlotModifier(() -> entity.getHandSlots().iterator().next(), stack -> entity.setItemSlot(EquipmentSlot.MAINHAND, stack)));
+            }
         }
         if (!continueAfterOne && out.size() > 0)
             return out;
@@ -171,17 +175,19 @@ public class CuriosIntegration {
                 out.add(new ProxySlotModifier(() -> inv.offhand.get(0), stack -> inv.setItem(slot, stack)));
             }
         } else {
-            it = entity.getHandSlots().iterator();
-            if (it.hasNext()) {
-                it.next();
+            if (entity.getHandSlots() != null) { //Yes, somehow I managed to get an entity with null hand slots...
+                it = entity.getHandSlots().iterator();
                 if (it.hasNext()) {
-                    ItemStack test = it.next();
-                    if (clazz.isInstance(test.getItem()) && predicate.test(test))
-                        out.add(new ProxySlotModifier(() -> {
-                            Iterator<ItemStack> i = entity.getHandSlots().iterator();
-                            i.next();
-                            return i.next();
-                        }, stack -> entity.setItemSlot(EquipmentSlot.OFFHAND, stack)));
+                    it.next();
+                    if (it.hasNext()) {
+                        ItemStack test = it.next();
+                        if (clazz.isInstance(test.getItem()) && predicate.test(test))
+                            out.add(new ProxySlotModifier(() -> {
+                                Iterator<ItemStack> i = entity.getHandSlots().iterator();
+                                i.next();
+                                return i.next();
+                            }, stack -> entity.setItemSlot(EquipmentSlot.OFFHAND, stack)));
+                    }
                 }
             }
         }
@@ -215,6 +221,8 @@ public class CuriosIntegration {
         } else  {
             s = 4;
             d = 0;
+            if (entity.getArmorSlots() == null) //Yes, somehow I managed to get an entity with null armor slots...
+                return out;
             it = entity.getArmorSlots().iterator();
         }
         for (int i = 0; i < s; ++i) {

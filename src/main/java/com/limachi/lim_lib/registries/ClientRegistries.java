@@ -1,11 +1,11 @@
-package com.limachi.lim_lib.registries.client;
+package com.limachi.lim_lib.registries;
 
 import com.limachi.lim_lib.ModAnnotation;
 import com.limachi.lim_lib.Strings;
 import com.limachi.lim_lib.reflection.Classes;
-import com.limachi.lim_lib.registries.Registries;
-import com.limachi.lim_lib.registries.client.annotations.RegisterMenuScreen;
-import com.limachi.lim_lib.registries.client.annotations.RegisterSkin;
+import com.limachi.lim_lib.registries.annotations.EntityAttributeBuilder;
+import com.limachi.lim_lib.registries.clientAnnotations.RegisterMenuScreen;
+import com.limachi.lim_lib.registries.clientAnnotations.RegisterSkin;
 import net.minecraft.client.color.block.BlockColor;
 import net.minecraft.client.color.block.BlockColors;
 import net.minecraft.client.color.item.ItemColor;
@@ -103,8 +103,11 @@ public class ClientRegistries {
 
     private static final ArrayList<Constructor<?>> SKINS = new ArrayList<>();
     private static void discoverRegisterSkin(String modId) {
-        for (ModAnnotation a : ModAnnotation.iterModAnnotations(modId, RegisterSkin.class))
+        for (ModAnnotation a : ModAnnotation.iterModAnnotations(modId, RegisterSkin.class)) {
+            String name = Registries.name(a);
+            if (Registries.skip(a, RegisterSkin.class, name)) continue;
             SKINS.add(a.getAnnotatedClassConstructor(PlayerRenderer.class, EntityModelSet.class));
+        }
     }
 
     protected record OpaqueMenuScreenRegistry<M extends AbstractContainerMenu, S extends Screen & MenuAccess<M>>(RegistryObject<MenuType<M>> menu, Class<S> clazz) {
@@ -119,8 +122,11 @@ public class ClientRegistries {
     public static <M extends AbstractContainerMenu, S extends Screen & MenuAccess<M>> void menuScreen(RegistryObject<MenuType<M>> menu, Class<S> clazz) { MENU_SCREEN.add(new OpaqueMenuScreenRegistry<>(menu, clazz)); }
 
     private static <M extends AbstractContainerMenu, S extends Screen & MenuAccess<M>> void discoverRegisterMenuScreen(String modId) {
-        for (ModAnnotation a : ModAnnotation.iterModAnnotations(modId, RegisterMenuScreen.class))
-            menuScreen(Registries.getMenuType(modId, a.getData("menu", Strings.camelToSnake(a.getAnnotatedClassSimplifiedName()).replace("_screen", "_menu"))), (Class<S>)a.getAnnotatedClass());
+        for (ModAnnotation a : ModAnnotation.iterModAnnotations(modId, RegisterMenuScreen.class)) {
+            String name = Registries.name(a);
+            if (Registries.skip(a, RegisterMenuScreen.class, name)) continue;
+            menuScreen(Registries.getMenuType(modId, a.getData("menu", name.replace("_screen", "_menu"))), (Class<S>) a.getAnnotatedClass());
+        }
     }
 
     @SubscribeEvent

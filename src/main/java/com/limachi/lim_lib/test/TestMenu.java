@@ -24,11 +24,11 @@ import org.jetbrains.annotations.Nullable;
 
 public class TestMenu extends AbstractContainerMenu {
 
-    @RegisterMenu
+    @RegisterMenu(skip = "com.limachi.lim_lib.LimLib:useTests")
     public static RegistryObject<MenuType<TestMenu>> R_MENU;
 
     protected TestMenu(int menuId, Inventory playerInventory, Container container) {
-        super((MenuType<TestMenu>)Registries.getRegistryObject(LimLib.COMMON_ID, Strings.camelToSnake(Classes.getSimpleClassName())).get(), menuId);
+        super((MenuType<TestMenu>)Registries.getRegistryObject(LimLib.COMMON_ID, MenuType.class, Strings.camelToSnake(Classes.getSimpleClassName())).get(), menuId);
         playerSlots(this, playerInventory, 84);
         build();
     }

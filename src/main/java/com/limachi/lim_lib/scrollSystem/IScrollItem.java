@@ -19,7 +19,7 @@ public interface IScrollItem {
     void scrollFeedBack(Player player, int slot, int delta);
 
     /**
-     * called on both side to test if the scroll is locked on this item
+     * called client side to test if the scroll is locked on this item
      */
     boolean canScroll(Player player, int slot);
 }

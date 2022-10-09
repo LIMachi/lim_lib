@@ -54,7 +54,7 @@ public class ScrollEvent {
                     BlockPos pos = ((BlockHitResult) target).getBlockPos();
                     BlockEntity be = player.level.getBlockEntity(pos);
                     Block block = player.level.getBlockState(pos).getBlock();
-                    if ((block instanceof IScrollBlock sb && sb.canScroll(player.level, pos)) || (be instanceof IScrollBlock sbe && sbe.canScroll(player.level, pos))) {
+                    if ((block instanceof IScrollBlock sb && sb.canScroll(player, pos)) || (be instanceof IScrollBlock sbe && sbe.canScroll(player, pos))) {
                         POS = pos;
                         DELTA += event.getScrollDelta();
                         COUNTDOWN = COUNTDOWN_LENGTH_BLOCK;

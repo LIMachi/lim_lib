@@ -73,27 +73,27 @@ public class World {
         return new BlockPos(data.getXSpawn(), data.getYSpawn(), data.getZSpawn());
     }
 
-    public static boolean replaceBlockAndGiveBack(BlockPos pos, Block block, Player player) {
+    public static boolean replaceBlockAndGiveBack(@Nullable Level level, BlockPos pos, Block block, Player player) {
         ItemStack prev = player.getMainHandItem();
         player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(block, 64));
-        boolean ok = replaceBlockAndGiveBack(pos, player, InteractionHand.MAIN_HAND, !player.isCreative(), p->true);
+        boolean ok = replaceBlockAndGiveBack(level == null ? player.level : level, pos, player, InteractionHand.MAIN_HAND, !player.isCreative(), p->true);
         player.setItemInHand(InteractionHand.MAIN_HAND, prev);
         return ok;
     }
 
-    public static boolean replaceBlockAndGiveBack(BlockPos pos, Player player, InteractionHand hand, boolean giveBack, Predicate<BlockState> isNewStateValid) {
-        if (player.level.isClientSide()) return false;
+    public static boolean replaceBlockAndGiveBack(Level level, BlockPos pos, Player player, InteractionHand hand, boolean giveBack, Predicate<BlockState> isNewStateValid) {
+        if (level == null || level.isClientSide()) return false;
         ItemStack block = player.getItemInHand(hand);
         if (!(block.getItem() instanceof BlockItem)) return false;
         Block replace = ((BlockItem)block.getItem()).getBlock();
         Direction dir = Direction.orderedByNearest(player)[0];
         Vec3 hit = new Vec3((double)pos.getX() + 0.5D + (double)dir.getStepX() * 0.5D, (double)pos.getY() + 0.5D + (double)dir.getStepY() * 0.5D, (double)pos.getZ() + 0.5D + (double)dir.getStepZ() * 0.5D);
-        BlockState prev = player.level.getBlockState(pos);
-        player.level.setBlock(pos, Blocks.AIR.defaultBlockState(), 3);
+        BlockState prev = level.getBlockState(pos);
+        level.setBlock(pos, Blocks.AIR.defaultBlockState(), 3);
         BlockPlaceContext use = new BlockPlaceContext(player, hand, block, new BlockHitResult(hit, dir, pos, true));
         BlockState next = replace.getStateForPlacement(use);
         if (!isNewStateValid.test(next)) {
-            player.level.setBlock(pos, prev, 3);
+            level.setBlock(pos, prev, 3);
             return false;
         }
         InteractionResult ok = ((BlockItem)block.getItem()).place(use);
@@ -101,7 +101,7 @@ public class World {
             if (giveBack) PlayerUtils.giveOrDrop(player, new ItemStack(prev.getBlock()));
             return true;
         } else {
-            player.level.setBlock(pos, prev, 3);
+            level.setBlock(pos, prev, 3);
             return false;
         }
     }
@@ -148,7 +148,7 @@ public class World {
                 Entity entity = entityIn;
                 entityIn = entityIn.getType().create(worldIn);
                 if (entityIn == null)
-                    return entityIn;
+                    return null;
                 entityIn.restoreFrom(entity);
                 entityIn.moveTo(x, y, z, f1, f);
                 entityIn.setYHeadRot(f1);

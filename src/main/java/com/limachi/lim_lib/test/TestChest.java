@@ -19,17 +19,17 @@ import net.minecraftforge.registries.RegistryObject;
 
 public class TestChest {
     public static class TestChestBlock extends BlockEntityBlock {
-        @RegisterBlock
+        @RegisterBlock(skip = "com.limachi.lim_lib.LimLib:useTests")
         public static RegistryObject<Block> R_BLOCK;
 
-        @RegisterBlockItem
+        @RegisterBlockItem(skip = "com.limachi.lim_lib.LimLib:useTests")
         public static RegistryObject<Item> R_ITEM;
 
         public TestChestBlock() { super(Properties.of(Material.WOOD, MaterialColor.DIRT).strength(2.0F, 6.0F), TestChestBlockEntity.R_TYPE); }
     }
 
     public static class TestChestBlockEntity extends ListContainerBlockEntity {
-        @RegisterBlockEntity
+        @RegisterBlockEntity(skip = "com.limachi.lim_lib.LimLib:useTests")
         public static RegistryObject<BlockEntityType<BlockEntity>> R_TYPE;
 
         public TestChestBlockEntity(BlockPos pos, BlockState state) { super(R_TYPE.get(), pos, state); }
