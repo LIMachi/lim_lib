@@ -7,7 +7,7 @@ import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.InterModEnqueueEvent;
-
+/*
 @Mod.EventBusSubscriber(modid = LimLib.COMMON_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class TOPPlugin {
 
@@ -22,3 +22,4 @@ public class TOPPlugin {
             InterModComms.sendTo("theoneprobe", "getTheOneProbe", TOPIMC::new);
     }
 }
+*/

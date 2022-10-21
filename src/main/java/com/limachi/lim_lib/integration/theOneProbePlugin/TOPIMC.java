@@ -8,7 +8,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 
 import java.util.function.Function;
-
+/*
 public class TOPIMC  implements IProbeInfoProvider, Function<ITheOneProbe, Void> {
     @Override
     public Void apply(ITheOneProbe iTheOneProbe) {
@@ -24,4 +24,4 @@ public class TOPIMC  implements IProbeInfoProvider, Function<ITheOneProbe, Void>
         if (blockState.getBlock() instanceof IProbeInfoGiver g)
             g.addProbeInfo(probeMode, iProbeInfo, player, level, blockState, iProbeHitData);
     }
-}
+}*/
