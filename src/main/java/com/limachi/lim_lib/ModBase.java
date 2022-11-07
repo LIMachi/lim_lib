@@ -1,6 +1,5 @@
 package com.limachi.lim_lib;
 
-import com.limachi.lim_lib.constructorEnforcer.ConstructorEnforcer;
 import com.limachi.lim_lib.integration.CuriosIntegration;
 import com.limachi.lim_lib.network.NetworkManager;
 import com.limachi.lim_lib.registries.Stage;
@@ -39,13 +38,13 @@ public class ModBase {
         Registries.register(modId);
         DistExecutor.unsafeCallWhenOn(Dist.CLIENT, ()->()->{ ClientRegistries.register(modId); return true; });
         MinecraftForge.EVENT_BUS.register(this);
-        Configs.register(modId, name);
+        Configs.register(modId, name.replace(" ", "_"));
         NetworkManager.register(modId);
         SaveDataManager.annotations(modId);
         FMLJavaModLoadingContext.get().getModEventBus().addListener(CuriosIntegration::enqueueIMC);
         Log.debug("Last Registration Stage");
         StaticInitializer.initialize(modId, Stage.LAST);
-        ConstructorEnforcer.testAllClass(modId);
+//        ConstructorEnforcer.testAllClass(modId);
     }
 
     public CreativeModeTab tab() { return tab; }

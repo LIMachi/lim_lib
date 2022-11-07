@@ -1,3 +1,9 @@
+---- 1.19.2-A1.3.0 ----
+removed redundant TOP code
+fixed config duplication/bleeding in other config files
+temporary disabling the construct enforcer system as it was loadding unwanted (client) classes (server side)
+fixed save datas not working with multiple instances of data (datas using the : where not sync client side)
+
 ---- 1.19.2-A1.2.1 ----
 forgot to do a changelog for the previous versions, oupsy :P
 fixed ConstructorEnforcer class loadding facultative classes, resulting in crashes if JEI or TOP is not loadded

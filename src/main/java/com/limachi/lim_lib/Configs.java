@@ -99,18 +99,24 @@ public class Configs {
         boolean reload() default false;
     }
 
-    private static final Map<ModConfig.Type, ForgeConfigSpec.Builder> BUILDERS = new HashMap<>();
-    private static ForgeConfigSpec.Builder getOrCreateBuilder(ModConfig.Type side) {
-        if (!BUILDERS.containsKey(side))
-            BUILDERS.put(side, new ForgeConfigSpec.Builder());
-        return BUILDERS.get(side);
+    private static final Map<String, Map<ModConfig.Type, ForgeConfigSpec.Builder>> BUILDERS = new HashMap<>();
+    private static ForgeConfigSpec.Builder getOrCreateBuilder(String modId, ModConfig.Type side) {
+        if (!BUILDERS.containsKey(modId))
+            BUILDERS.put(modId, new HashMap<>());
+        Map<ModConfig.Type, ForgeConfigSpec.Builder> b = BUILDERS.get(modId);
+        if (!b.containsKey(side))
+            b.put(side, new ForgeConfigSpec.Builder());
+        return b.get(side);
     }
 
-    private static final Map<ModConfig.Type, Map<String, Pair<Supplier<?>, Boolean>>> GETTERS = new HashMap<>();
-    private static Map<String, Pair<Supplier<?>, Boolean>> getOrCreateGetterMap(ModConfig.Type side) {
-        if (!GETTERS.containsKey(side))
-            GETTERS.put(side, new HashMap<>());
-        return GETTERS.get(side);
+    private static final Map<String, Map<ModConfig.Type, Map<String, Pair<Supplier<?>, Boolean>>>> GETTERS = new HashMap<>();
+    private static Map<String, Pair<Supplier<?>, Boolean>> getOrCreateGetterMap(String modId, ModConfig.Type side) {
+        if (!GETTERS.containsKey(modId))
+            GETTERS.put(modId, new HashMap<>());
+        Map<ModConfig.Type, Map<String, Pair<Supplier<?>, Boolean>>> t = GETTERS.get(modId);
+        if (!t.containsKey(side))
+            t.put(side, new HashMap<>());
+        return t.get(side);
     }
 
     private static final HashMap<Class<?>, Pair<Object[], Function<String, ?>>> DEFAULTS = new HashMap<>();
@@ -164,7 +170,7 @@ public class Configs {
                         String pathOverride = (String)data.getOrDefault("path", "");
                         boolean reload = (boolean)data.getOrDefault("reload", false);
                         ModConfig.Type side = (ModConfig.Type)data.getOrDefault("side", ModConfig.Type.COMMON);
-                        ForgeConfigSpec.Builder builder = getOrCreateBuilder(side);
+                        ForgeConfigSpec.Builder builder = getOrCreateBuilder(modId, side);
                         Class<?> compType = targetType.isArray() ? targetType.getComponentType() : targetType;
                         List<?> valid = getValid(compType, data, tcmt);
                         Object min = getMin(compType, data, tcmt);
@@ -180,14 +186,14 @@ public class Configs {
                                 builder.comment(cmt);
                             if (!reload)
                                 builder.worldRestart();
-                            getOrCreateGetterMap(side).put(path, Pair.of(builder.defineList(tomlPath, def, pred), reload));
+                            getOrCreateGetterMap(modId, side).put(path, Pair.of(builder.defineList(tomlPath, def, pred), reload));
                         } else {
                             final Object def = f.get(null);
                             if (!cmt.equals(""))
                                 builder.comment(cmt);
                             if (!reload)
                                 builder.worldRestart();
-                            getOrCreateGetterMap(side).put(path, Pair.of(builder.define(tomlPath, def, pred), reload));
+                            getOrCreateGetterMap(modId, side).put(path, Pair.of(builder.define(tomlPath, def, pred), reload));
                         }
                     }
     }
@@ -239,25 +245,27 @@ public class Configs {
 
     @SuppressWarnings("unchecked")
     private static void loadConfig(ModConfig.Type side, boolean isReload) {
-        if (!GETTERS.containsKey(side)) return;
-        for (Map.Entry<String, Pair<Supplier<?>, Boolean>> entry : GETTERS.get(side).entrySet()) {
-            if (isReload && !entry.getValue().getSecond()) continue;
-            String path = entry.getKey();
-            Supplier<?> getter = entry.getValue().getFirst();
-            try {
-                int cut = path.lastIndexOf('.');
-                Field f = getUnlockedField(Class.forName(path.substring(0, cut)), path.substring(cut + 1));
-                if (!f.getType().isArray())
-                    f.set(null, getter.get());
-                else {
-                    ArrayList<Object> ar = (ArrayList<Object>)getter.get();
-                    f.set(null, Array.newInstance(f.getType().getComponentType(), ar.size()));
-                    Object[] fo = (Object[])f.get(null);
-                    for (int i = 0; i < ar.size(); ++i)
-                        fo[i] = ar.get(i);
+        for (Map.Entry<String, Map<ModConfig.Type, Map<String, Pair<Supplier<?>, Boolean>>>> me : GETTERS.entrySet()) {
+            String modId = me.getKey();
+            for (Map.Entry<String, Pair<Supplier<?>, Boolean>> entry : me.getValue().get(side).entrySet()) {
+                if (isReload && !entry.getValue().getSecond()) continue;
+                String path = entry.getKey();
+                Supplier<?> getter = entry.getValue().getFirst();
+                try {
+                    int cut = path.lastIndexOf('.');
+                    Field f = getUnlockedField(Class.forName(path.substring(0, cut)), path.substring(cut + 1));
+                    if (!f.getType().isArray())
+                        f.set(null, getter.get());
+                    else {
+                        ArrayList<Object> ar = (ArrayList<Object>) getter.get();
+                        f.set(null, Array.newInstance(f.getType().getComponentType(), ar.size()));
+                        Object[] fo = (Object[]) f.get(null);
+                        for (int i = 0; i < ar.size(); ++i)
+                            fo[i] = ar.get(i);
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
-            } catch (Exception e) {
-                e.printStackTrace();
             }
         }
     }
@@ -275,9 +283,12 @@ public class Configs {
         IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
         bus.addListener(Configs::onLoadConfig);
         bus.addListener(Configs::onReloadConfig);
-        for (ModConfig.Type t : ModConfig.Type.values()) {
-            if (BUILDERS.containsKey(t))
-                ModLoadingContext.get().registerConfig(t, BUILDERS.get(t).build(), configsName + "-" + t.extension() + ".toml");
+        if (BUILDERS.containsKey(modId)) {
+            Map<ModConfig.Type, ForgeConfigSpec.Builder> m = BUILDERS.get(modId);
+            for (ModConfig.Type t : ModConfig.Type.values()) {
+                if (m.containsKey(t))
+                    ModLoadingContext.get().registerConfig(t, m.get(t).build(), configsName + "-" + t.extension() + ".toml");
+            }
         }
     }
 }
