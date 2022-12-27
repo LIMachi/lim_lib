@@ -11,6 +11,7 @@ import net.minecraft.commands.SharedSuggestionProvider;
 
 import java.util.function.Predicate;
 
+@SuppressWarnings({"unchecked", "rawtypes", "unused", "UnusedReturnValue"})
 public abstract class AbstractCommandArgument {
     protected ArgumentType<?> type = null;
     private String label;

@@ -6,7 +6,6 @@ import com.limachi.lim_lib.Strings;
 import com.limachi.lim_lib.constructorEnforcer.enforcers.Default;
 import com.limachi.lim_lib.reflection.Classes;
 import com.limachi.lim_lib.saveData.AbstractSyncSaveData;
-import com.limachi.lim_lib.saveData.SaveSync;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
@@ -23,6 +22,7 @@ import java.util.Map;
 
 import static com.limachi.lim_lib.Strings.getSimpleConstructor;
 
+@SuppressWarnings("unused")
 public class ConstructorEnforcer {
     private static final HashSet<String> IGNORED_CLASS_PATTERNS = new HashSet<>();
     private static final ArrayListMultimap<Class<?>, Pair<Class<?>[], HashSet<Class<?>>>> CONSTRUCTOR_PATTERNS = ArrayListMultimap.create();

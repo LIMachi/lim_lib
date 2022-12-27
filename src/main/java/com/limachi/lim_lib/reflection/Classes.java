@@ -69,6 +69,7 @@ public class Classes {
         }
     }
 
+    @SuppressWarnings("unchecked")
     public static <T extends Class<O>, O> T classByType(Type type) {
         try {
             return (T) Class.forName(type.getClassName());

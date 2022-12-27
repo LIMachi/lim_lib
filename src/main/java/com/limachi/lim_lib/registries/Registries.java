@@ -63,7 +63,7 @@ import java.util.function.Supplier;
 import java.lang.reflect.Field;
 import java.util.stream.Collectors;
 
-@SuppressWarnings("unused")
+@SuppressWarnings({"unchecked", "unused", "UnusedReturnValue"})
 public class Registries {
     public static final UUID NULL_UUID = new UUID(0, 0);
 

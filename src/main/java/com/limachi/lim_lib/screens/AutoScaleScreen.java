@@ -4,11 +4,7 @@ import com.limachi.lim_lib.menus.AutoScaleMenu;
 import com.limachi.lim_lib.registries.clientAnnotations.RegisterMenuScreen;
 import com.limachi.lim_lib.render.RenderUtils;
 import com.limachi.lim_lib.widgets.ScrollBarWidget;
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
-import net.minecraft.client.gui.components.events.GuiEventListener;
-import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
-import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.Slot;
@@ -19,9 +15,9 @@ import java.util.List;
 
 @OnlyIn(Dist.CLIENT)
 @RegisterMenuScreen
-public class AutoScaleScreen extends AbstractContainerScreen<AutoScaleMenu> {
+public class AutoScaleScreen extends AbstractWidgetContainerScreen<AutoScaleMenu> implements ILimLibScreen {
 
-    protected final ScrollBarWidget scrollBar = new ScrollBarWidget(152, 15, 110, 0, 0, this::reorganiseSlots);
+    protected final ScrollBarWidget scrollBar = new ScrollBarWidget(152, 15, 110, 0, 0, s->reorganiseSlots());
 
     public AutoScaleScreen(AutoScaleMenu menu, Inventory playerInventory, Component title) { super(menu, playerInventory, title); }
 
@@ -59,13 +55,6 @@ public class AutoScaleScreen extends AbstractContainerScreen<AutoScaleMenu> {
         }
     }
 
-    @Override
-    public boolean mouseDragged(double mouseX, double mouseY, int button, double prevX, double prevY) {
-        for (GuiEventListener widget : children())
-            if (widget.mouseDragged(mouseX, mouseY, button, prevX, prevY)) return true;
-        return super.mouseDragged(mouseX, mouseY, button, prevX, prevY);
-    }
-
     protected int validSlots() {
         int t = menu.validSlots();
         if (t <= 54) return t;
@@ -74,11 +63,15 @@ public class AutoScaleScreen extends AbstractContainerScreen<AutoScaleMenu> {
 
     @Override
     protected void renderBg(PoseStack stack, float tick, int mouseX, int mouseY) { //FIXME
-        renderBackground(stack);
-        RenderSystem.setShader(GameRenderer::getPositionTexShader);
-        RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
-        RenderUtils.background(this, stack);
+        super.renderBg(stack, tick, mouseX, mouseY);
         RenderUtils.playerSlots(this, stack, 7, 29 + menu.getRows() * 18, true);
         RenderUtils.slots(this, stack, 7 + (menu.validSlots() <= 9 ? 3 * 18 : 0), 16, menu.getRows(), menu.getColumns(), validSlots());
+    }
+
+    @Override
+    public boolean overrideTooltip(List<Component> tooltip) {
+        if (tooltipOverride.size() > 0) return false;
+        tooltipOverride.addAll(tooltip);
+        return true;
     }
 }

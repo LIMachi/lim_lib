@@ -1,3 +1,22 @@
+---- 1.19.2-B1.1 ----
+new widgets (button, text field, cycling button)
+reworked some aspects of the basic widget
+new message to send any (tag) data from a client menu to a server menu (if the menu implements IAcceptUpstreamNBT)
+
+---- 1.19.2-B1.0.1 ----
+quick fix of widget hover detection catching 1 pixel outside the widget
+
+---- 1.19.2-B1.0 ----
+moved to beta (to fix visibility issues with CurseForge)
+moved ProxySlotModifier outside the CuriosIntegration class
+new render utils to create overlays on blocks
+added back client events
+fixed bug with keymap controller
+added scroll system on NbtTooltip (for NBT too big to render)
+changed teleport to use double instead of float (fixing rounding error on far teleports)
+new client annotation to register Model Properties on items
+StaticInitClient is now compatible with static methods
+
 ---- 1.19.2-A1.3.0 ----
 removed redundant TOP code
 fixed config duplication/bleeding in other config files

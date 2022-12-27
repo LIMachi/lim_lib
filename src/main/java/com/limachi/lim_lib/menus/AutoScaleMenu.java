@@ -14,6 +14,9 @@ import net.minecraft.world.inventory.Slot;
 import net.minecraftforge.network.NetworkHooks;
 import net.minecraftforge.registries.RegistryObject;
 
+import javax.annotation.Nonnull;
+
+@SuppressWarnings("unused")
 public class AutoScaleMenu extends CommonContainerMenu {
 
     public static void open(Player player, Container container, Component title) {
@@ -73,5 +76,5 @@ public class AutoScaleMenu extends CommonContainerMenu {
     }
 
     @Override
-    public boolean stillValid(Player player) { return container.stillValid(player); }
+    public boolean stillValid(@Nonnull Player player) { return container.stillValid(player); }
 }

@@ -1,7 +1,9 @@
 package com.limachi.lim_lib.widgets;
 
+import com.limachi.lim_lib.Log;
 import com.limachi.lim_lib.maths.Box2d;
 import com.limachi.lim_lib.render.RenderUtils;
+import com.limachi.lim_lib.screens.ILimLibScreen;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.gui.components.Widget;
@@ -10,19 +12,29 @@ import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.narration.NarratableEntry;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.phys.Vec2;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
+import javax.annotation.Nonnull;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
-public abstract class BaseWidget extends AbstractContainerEventHandler implements Widget, NarratableEntry {
+@SuppressWarnings({"unused", "UnusedReturnValue", "unchecked"})
+@OnlyIn(Dist.CLIENT)
+public abstract class BaseWidget<T extends BaseWidget<T>> extends AbstractContainerEventHandler implements Widget, NarratableEntry {
 
     protected Box2d area;
     private AbstractContainerScreen<?> screen = null;
-    private ResourceLocation backgroundTexture;
-    private Box2d backgroundCutout;
+    protected ResourceLocation backgroundTexture;
+    protected Box2d backgroundCutout;
     protected List<? extends GuiEventListener> children = new ArrayList<>();
+
+    protected final ArrayList<Component> tooltip = new ArrayList<>();
     private boolean simpleBlit;
 
     public BaseWidget(int x, int y, int w, int h, ResourceLocation texture, Box2d cutout, boolean simpleBlit) {
@@ -32,48 +44,83 @@ public abstract class BaseWidget extends AbstractContainerEventHandler implement
         this.simpleBlit = simpleBlit;
     }
 
-    public void attachToScreen(AbstractContainerScreen<?> containerScreen) {
-        screen = containerScreen;
+    public T attachToScreen(AbstractContainerScreen<?> containerScreen) {
+        if (containerScreen instanceof ILimLibScreen)
+            screen = containerScreen;
+        else
+            Log.error(containerScreen, "invalid screen type attached, must implement ILimLibScreen");
+        return (T)this;
     }
 
     public AbstractContainerScreen<?> getScreen() { return screen; }
 
     public Box2d getArea() { return area; }
 
-    public <T extends BaseWidget> T moveTo(int x, int y) {
+    public T moveTo(int x, int y) {
         area.setX1(x).setY1(y);
         return (T)this;
     }
 
-    public <T extends BaseWidget> T rescale(int width, int height) {
+    public T rescale(int width, int height) {
         area.setWidth(width).setHeight(height);
         return (T)this;
     }
 
-    public <T extends BaseWidget> T setBackground(ResourceLocation texture, Box2d cutout) {
+    public T setBackground(ResourceLocation texture, Box2d cutout) {
         backgroundTexture = texture;
         backgroundCutout = cutout;
         simpleBlit = false;
         return (T)this;
     }
 
-    public <T extends BaseWidget> T setBackground(ResourceLocation texture, Vec2 origin) {
+    public T setBackground(ResourceLocation texture, Vec2 origin) {
         backgroundTexture = texture;
         backgroundCutout.setX1(origin.x).setY1(origin.y);
         simpleBlit = true;
         return (T)this;
     }
 
+    public T addTooltip(Collection<Component> tooltipAddition) {
+        tooltip.addAll(tooltipAddition);
+        return (T)this;
+    }
+
+    public T addTooltip(Component ... tooltipAddition) {
+        tooltip.addAll(Arrays.stream(tooltipAddition).toList());
+        return (T)this;
+    }
+
+    public T clearTooltip() {
+        tooltip.clear();
+        return (T)this;
+    }
+
+    public ArrayList<Component> getTooltip() {
+        return tooltip;
+    }
+
     @Override
-    public void render(PoseStack stack, int mouseX, int mouseY, float partialTick) {
+    public void render(@Nonnull PoseStack stack, int mouseX, int mouseY, float partialTick) {
         if (screen != null) {
             RenderSystem.setShaderTexture(0, backgroundTexture);
             if (simpleBlit)
                 RenderUtils.blitUnscaled(screen, stack, getBlitOffset(), area, backgroundCutout.getOrigins());
             else
                 RenderUtils.blitMiddleExp(screen, stack, getBlitOffset(), area, backgroundCutout);
+            boolean isMouseOver = isMouseOver(mouseX, mouseY);
+            stack.pushPose();
+            stack.translate(screen.getGuiLeft() + area.getX1(), screen.getGuiTop() + area.getY1(), 0);
+            renderRelative(stack, relativeMouseOverX(mouseX), relativeMouseOverY(mouseY), partialTick, isMouseOver);
+            stack.popPose();
+            if (isMouseOver && tooltip.size() > 0 && screen instanceof ILimLibScreen s)
+                s.overrideTooltip(tooltip);
         }
     }
+
+    /**
+     * called after background was rendered, the stack will be set so pixel(0,0) and mouse(0,0) are the top left corner of the widget
+     */
+    public void renderRelative(PoseStack stack, int mouseX, int mouseY, float partialTick, boolean isMouseOver) {}
 
     @Override
     public boolean isMouseOver(double mouseX, double mouseY) {
@@ -81,7 +128,7 @@ public abstract class BaseWidget extends AbstractContainerEventHandler implement
     }
 
     public boolean isMouseOverBox(double mouseX, double mouseY, Box2d box) {
-        return screen != null && screen.getGuiLeft() + box.getX1() <= mouseX && mouseX <= screen.getGuiLeft() + box.getX2() && screen.getGuiTop() + box.getY1() <= mouseY && mouseY <= screen.getGuiTop() + box.getY2();
+        return screen != null && screen.getGuiLeft() + box.getX1() <= mouseX && mouseX < screen.getGuiLeft() + box.getX2() && screen.getGuiTop() + box.getY1() <= mouseY && mouseY < screen.getGuiTop() + box.getY2(); //fixed minor overlap issue due to check including 1 more pixel than expected
     }
 
     public boolean isFocused() { return screen != null && screen.getFocused() == this; }
@@ -102,11 +149,21 @@ public abstract class BaseWidget extends AbstractContainerEventHandler implement
     public double fractionalMouseOverY(double mouseY) { return relativeMouseOverY(mouseY) / area.getHeight(); }
 
     @Override
+    @Nonnull
     public List<? extends GuiEventListener> children() { return children; }
 
     @Override
+    @Nonnull
     public NarrationPriority narrationPriority() { return NarratableEntry.NarrationPriority.NONE; }
 
     @Override
-    public void updateNarration(NarrationElementOutput output) {}
+    public void updateNarration(@Nonnull NarrationElementOutput output) {}
+
+    public T focus(boolean takeFocus) {
+        if (screen != null)
+            screen.setFocused(takeFocus ? this : null);
+        return (T)this;
+    }
+
+    public boolean shouldCloseOnEsc() { return true; }
 }

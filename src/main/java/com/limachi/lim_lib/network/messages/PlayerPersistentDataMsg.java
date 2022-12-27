@@ -6,6 +6,7 @@ import com.limachi.lim_lib.network.RegisterMsg;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.player.Player;
 
+@SuppressWarnings("unused")
 @RegisterMsg(5)
 public record PlayerPersistentDataMsg(Actions action, CompoundTag nbt) implements IRecordMsg {
     public enum Actions {

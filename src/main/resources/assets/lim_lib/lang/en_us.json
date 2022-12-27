@@ -1,3 +1,4 @@
 {
-  "extended_tooltip.nbt_tooltip.use_alt": "[Alt]: Show NBT"
+  "extended_tooltip.nbt_tooltip.use_alt": "[Alt]: Show NBT",
+  "extended_tooltip.nbt_tooltip.scroll_suggestion": "[Scroll up/down]: Show more NBT"
 }

@@ -25,7 +25,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.function.Predicate;
 
-@SuppressWarnings("unused")
+@SuppressWarnings({"unused", "rawtypes"})
 @Mod.EventBusSubscriber
 public class CommandManager {
     private static final ArrayList<Pair<Integer, LiteralArgumentBuilder<CommandSourceStack>>> CMDS = new ArrayList<>();

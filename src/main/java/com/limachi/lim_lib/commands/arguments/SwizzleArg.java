@@ -7,7 +7,6 @@ import net.minecraft.commands.arguments.coordinates.SwizzleArgument;
 import net.minecraft.core.Direction;
 
 import java.util.EnumSet;
-import java.util.Optional;
 import com.limachi.lim_lib.commands.FunctionThrowsCommandSyntaxException;
 
 @SuppressWarnings("unused")

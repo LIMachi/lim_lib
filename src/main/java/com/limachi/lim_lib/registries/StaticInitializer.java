@@ -12,7 +12,6 @@ import java.lang.annotation.ElementType;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
 
-@SuppressWarnings("UnstableApiUsage")
 public class StaticInitializer {
 
     private static boolean valueMatch(ModFileScanData.AnnotationData a, Stage stage) {
@@ -49,7 +48,11 @@ public class StaticInitializer {
         ModList.get().getAllScanData().stream().filter(fsd -> fsd.getTargets().containsKey(modId)).map(ModFileScanData::getAnnotations).flatMap(Collection::stream).filter(a->type.equals(a.annotationType())).forEach(a -> {
             try {
                 ConstructorEnforcer.testClass(Class.forName(a.clazz().getClassName()));
-            } catch (ClassNotFoundException e) {
+                if (a.targetType() == ElementType.METHOD) {
+                    String name = a.memberName().replace("()V", "");
+                    Class.forName(a.clazz().getClassName()).getMethod(name).invoke(null);
+                }
+            } catch (ClassNotFoundException | NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
                 e.printStackTrace();
             }
         });

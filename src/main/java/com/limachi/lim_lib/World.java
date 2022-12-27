@@ -169,7 +169,7 @@ public class World {
         return entityIn;
     }
 
-    public static Entity teleportEntity(Entity entity, ResourceKey<Level> destType, float x, float y, float z, float xRot, float yRot) {
+    public static Entity teleportEntity(Entity entity, ResourceKey<Level> destType, double x, double y, double z, float xRot, float yRot) {
         if (entity == null || entity.level.isClientSide()) return null;
         ServerLevel world;
         if (destType != null && entity.getServer() != null)
@@ -180,18 +180,27 @@ public class World {
     }
 
     public static Entity teleportEntity(Entity entity, ResourceKey<Level> destType, BlockPos destPos, float xRot, float yRot) {
-        return teleportEntity(entity, destType, destPos.getX() + 0.5f, destPos.getY(), destPos.getZ() + 0.5f, xRot, yRot);
+        return teleportEntity(entity, destType, destPos.getX() + 0.5, destPos.getY(), destPos.getZ() + 0.5, xRot, yRot);
     }
 
     public static Entity teleportEntity(Entity entity, ResourceKey<Level> destType, BlockPos destPos) {
-        return teleportEntity(entity, destType, destPos.getX() + 0.5f, destPos.getY(), destPos.getZ() + 0.5f, entity.getXRot(), entity.getYRot());
+        return teleportEntity(entity, destType, destPos.getX() + 0.5, destPos.getY(), destPos.getZ() + 0.5, entity.getXRot(), entity.getYRot());
     }
 
     public static Entity teleportEntity(Entity entity, ResourceKey<Level> destType, Vec3 vec, float xRot, float yRot) {
-        return teleportEntity(entity, destType, (float)vec.x, (float)vec.y, (float)vec.z, xRot, yRot);
+        return teleportEntity(entity, destType, vec.x, vec.y, vec.z, xRot, yRot);
     }
 
     public static Entity teleportEntity(Entity entity, ResourceKey<Level> destType, Vec3 vec) {
-        return teleportEntity(entity, destType, (float)vec.x, (float)vec.y, (float)vec.z, entity.getXRot(), entity.getYRot());
+        return teleportEntity(entity, destType, vec.x, vec.y, vec.z, entity.getXRot(), entity.getYRot());
+    }
+
+    public static void temporaryChunkLoad(Level level, BlockPos pos, int area) {
+        if (level instanceof ServerLevel sl)
+            sl.getChunkSource().addRegionTicket(TicketType.PORTAL, new ChunkPos(pos), area, pos, true);
+    }
+
+    public static void temporaryChunkLoad(Level level, BlockPos pos) {
+        temporaryChunkLoad(level, pos, 3);
     }
 }

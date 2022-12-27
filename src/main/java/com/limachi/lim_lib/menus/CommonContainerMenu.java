@@ -10,9 +10,11 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.*;
 import net.minecraft.world.item.ItemStack;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 
+@SuppressWarnings("unused")
 public abstract class CommonContainerMenu extends AbstractContainerMenu {
     protected Container container = null;
     protected Inventory playerInventory = null;
@@ -87,7 +89,8 @@ public abstract class CommonContainerMenu extends AbstractContainerMenu {
      * To prevent invalid infinite loops with the calling function, we ALWAYS return ItemStack.EMPTY.
      */
     @Override
-    public ItemStack quickMoveStack(Player player, int slot) {
+    @Nonnull
+    public ItemStack quickMoveStack(@Nonnull Player player, int slot) {
         if (slot < 0 || slot >= slots.size() || !slots.get(slot).hasItem()) return ItemStack.EMPTY;
         int sectionStart = 0;
         ItemStack tmp = slots.get(slot).getItem();

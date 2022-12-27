@@ -10,6 +10,7 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiComponent;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
+import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.phys.Vec2;
@@ -52,10 +53,12 @@ public class RenderUtils {
         if (box.getHeight() < 0.01 || box.getWidth() < 0.01) return;
         Matrix4f matrix = matrixStack.last().pose();
         Vector4f ec = expandColor(color, false);
-        BufferBuilder bufferbuilder = Tesselator.getInstance().getBuilder();
-        RenderSystem.enableBlend();
+        Tesselator tesselator = Tesselator.getInstance();
+        BufferBuilder bufferbuilder = tesselator.getBuilder();
         RenderSystem.disableTexture();
+        RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
+        RenderSystem.setShader(GameRenderer::getPositionColorShader);
         bufferbuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
         bufferbuilder.vertex(matrix, (float)box.getX1(), (float)box.getY2(), depth).color(ec.x(), ec.y(), ec.z(), ec.w()).endVertex();
         bufferbuilder.vertex(matrix, (float)box.getX2(), (float)box.getY2(), depth).color(ec.x(), ec.y(), ec.z(), ec.w()).endVertex();
@@ -63,7 +66,8 @@ public class RenderUtils {
         bufferbuilder.vertex(matrix, (float)box.getX1(), (float)box.getY1(), depth).color(ec.x(), ec.y(), ec.z(), ec.w()).endVertex();
 //        bufferbuilder.end(); // VERSION 1.18.2
 //        BufferUploader.end(bufferbuilder); // VERSION 1.18.2
-        BufferUploader.drawWithShader(bufferbuilder.end()); // VERSION 1.19.2
+//        BufferUploader.drawWithShader(bufferbuilder.end()); // VERSION 1.19.2
+        tesselator.end();
         RenderSystem.enableTexture();
         RenderSystem.disableBlend();
     }

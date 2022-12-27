@@ -4,6 +4,7 @@ import com.mojang.math.Matrix4f;
 import com.mojang.math.Vector4f;
 import net.minecraft.world.phys.Vec2;
 
+@SuppressWarnings({"unused", "UnusedReturnValue"})
 public class Box2d {
     private double x;
     private double y;
@@ -50,11 +51,6 @@ public class Box2d {
 
     /**
      * if the given point is outside the box, expand the box so the point fits inside
-     * @param px
-     * @param py
-     * @param xMargin
-     * @param yMargin
-     * @return
      */
 
     public Box2d expandToContain(double px, double py, double xMargin, double yMargin) {

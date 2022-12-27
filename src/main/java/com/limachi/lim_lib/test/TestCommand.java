@@ -5,7 +5,9 @@ import com.limachi.lim_lib.commands.CommandManager;
 import com.limachi.lim_lib.commands.arguments.*;
 import com.limachi.lim_lib.registries.Stage;
 import com.limachi.lim_lib.registries.StaticInit;
+import com.limachi.lim_lib.render.BlockRenderUtils;
 import com.mojang.brigadier.context.CommandContext;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.core.BlockPos;
 //import net.minecraft.network.chat.TextComponent; //VERSION 1.18.2
@@ -13,6 +15,7 @@ import net.minecraft.network.chat.Component; //VERSION 1.19.2
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 
 import java.util.Collection;
@@ -28,6 +31,13 @@ public class TestCommand {
         CommandManager.registerCmd(TestCommand.class, "test_literal", "/test_commands pred <literal>", new LiteralArg(false).requirePerm(2));
         CommandManager.registerCmd(TestCommand.class, "test_source", "/test_commands test_source");
         CommandManager.registerCmd(TestCommand.class, "test_empty", "/test_commands test_empty");
+        CommandManager.registerCmd(TestCommand.class, "test_overlay", "/test_commands test_overlay <at>", new BlockPosArg());
+    }
+
+    public static int test_overlay(CommandSourceStack src, BlockPos pos) throws CommandSyntaxException {
+        Player player = src.getPlayerOrException();
+        BlockRenderUtils.queueOverlayRenderer(player.level, pos, null, BlockRenderUtils.DEFAULT_OVERLAY, 100);
+        return 1;
     }
 
     public static int enter_dim(CommandContext<CommandSourceStack> ctx, Collection<? extends Entity> entities, ServerLevel dim) {

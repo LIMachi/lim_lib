@@ -106,7 +106,8 @@ public class KeyMapController {
     private static final ArrayList<KeyMapping> toRegister = new ArrayList<>(); //VERSION 1.19.2
 
     static {
-        FMLJavaModLoadingContext.get().getModEventBus().addListener(KeyMapController::registerKeybinds); //VERSION 1.19.2
+        if (Sides.isPhysicalClient())
+            FMLJavaModLoadingContext.get().getModEventBus().addListener(KeyMapController::registerKeybinds); //VERSION 1.19.2
     }
 
     public static void registerKeybinds(RegisterKeyMappingsEvent event) { //VERSION 1.19.2

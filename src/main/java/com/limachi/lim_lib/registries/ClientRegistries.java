@@ -4,6 +4,7 @@ import com.limachi.lim_lib.ModAnnotation;
 import com.limachi.lim_lib.Strings;
 import com.limachi.lim_lib.reflection.Classes;
 import com.limachi.lim_lib.registries.annotations.EntityAttributeBuilder;
+import com.limachi.lim_lib.registries.clientAnnotations.RegisterItemModelProperty;
 import com.limachi.lim_lib.registries.clientAnnotations.RegisterMenuScreen;
 import com.limachi.lim_lib.registries.clientAnnotations.RegisterSkin;
 import net.minecraft.client.color.block.BlockColor;
@@ -16,18 +17,24 @@ import net.minecraft.client.gui.screens.inventory.MenuAccess;
 import net.minecraft.client.model.geom.EntityModelSet;
 import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.client.model.geom.builders.LayerDefinition;
+import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.player.PlayerRenderer;
+import net.minecraft.client.renderer.item.ItemProperties;
+import net.minecraft.client.renderer.item.ItemPropertyFunction;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -39,13 +46,16 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.registries.RegistryObject;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Supplier;
 
-@SuppressWarnings("unused")
+@SuppressWarnings({"unchecked", "unused", "UnusedReturnValue", "deprecation"})
 public class ClientRegistries {
     protected static final HashMap<RegistryObject<?>, RenderType> RENDER_LAYERS = new HashMap<>();
     protected static final HashMap<RegistryObject<Block>, BlockColor> BLOCK_COLORS = new HashMap<>();
@@ -54,6 +64,28 @@ public class ClientRegistries {
     protected static final ArrayList<OpaqueMenuScreenRegistry<?, ?>> MENU_SCREEN = new ArrayList<>();
     protected static final ArrayList<OpaqueBERRegistry<?>> BER = new ArrayList<>();
     protected static final ArrayList<OpaqueEntityRendererRegistry<?>> ER = new ArrayList<>();
+    protected static final HashMap<RegistryObject<Item>, HashMap<ResourceLocation, ItemPropertyFunction>> ITEM_PROPERTIES = new HashMap<>();
+
+
+    public static void registerItemModelProperty(RegistryObject<Item> item, ResourceLocation location, ItemPropertyFunction prop) {
+        if (!ITEM_PROPERTIES.containsKey(item))
+            ITEM_PROPERTIES.put(item, new HashMap<>());
+        ITEM_PROPERTIES.get(item).put(location, prop);
+    }
+
+    private static void discoverRegisterItemModelProperty(String modId) {
+        for (ModAnnotation a : ModAnnotation.iterModAnnotations(modId, RegisterItemModelProperty.class)) {
+            String name = Registries.name(a);
+            RegistryObject<Item> item = Registries.getRegistryObject(modId, Item.class, name);
+            registerItemModelProperty(item, new ResourceLocation(modId, name), (ItemPropertyFunction)((s, l, e, i)-> {
+                try {
+                    return (float)a.getAnnotatedMethod(ItemStack.class, ClientLevel.class, LivingEntity.class, int.class).invoke(null, s, l, e, i);
+                } catch (IllegalAccessException | InvocationTargetException ignored) {
+                }
+                return 0;
+            }));
+        }
+    }
 
     protected record OpaqueBERRegistry<T extends BlockEntity>(RegistryObject<BlockEntityType<T>> gbe, BlockEntityRendererProvider<T> gr) {
         void register(EntityRenderersEvent.RegisterRenderers event) { event.registerBlockEntityRenderer(gbe.get(), gr); }
@@ -85,6 +117,11 @@ public class ClientRegistries {
                 ItemBlockRenderTypes.setRenderLayer((Fluid)o, entry.getValue());
         }
         for (OpaqueMenuScreenRegistry<?, ?> entry : MENU_SCREEN) entry.register();
+        for (Map.Entry<RegistryObject<Item>, HashMap<ResourceLocation, ItemPropertyFunction>> e : ITEM_PROPERTIES.entrySet()) {
+            Item item = e.getKey().get();
+            for (Map.Entry<ResourceLocation, ItemPropertyFunction> rf : e.getValue().entrySet())
+                ItemProperties.register(item, rf.getKey(), rf.getValue());
+        }
     }
 
     @SubscribeEvent
@@ -113,7 +150,7 @@ public class ClientRegistries {
     protected record OpaqueMenuScreenRegistry<M extends AbstractContainerMenu, S extends Screen & MenuAccess<M>>(RegistryObject<MenuType<M>> menu, Class<S> clazz) {
         void register() { MenuScreens.register(menu.get(), new MenuScreens.ScreenConstructor<M, S>() {
                 @Override
-                public S create(M menu, Inventory inventory, Component title) {
+                public S create(@Nonnull M menu, @Nonnull Inventory inventory, @Nonnull Component title) {
                     return Classes.newClass(clazz, menu, inventory, title);
                 }
             });
@@ -160,5 +197,6 @@ public class ClientRegistries {
     public static void register(String modId) {
         discoverRegisterSkin(modId);
         discoverRegisterMenuScreen(modId);
+        discoverRegisterItemModelProperty(modId);
     }
 }

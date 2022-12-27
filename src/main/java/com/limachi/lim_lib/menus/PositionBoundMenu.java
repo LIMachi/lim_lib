@@ -8,8 +8,10 @@ import net.minecraft.world.inventory.ContainerLevelAccess;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraftforge.items.IItemHandlerModifiable;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+@SuppressWarnings("unused")
 public abstract class PositionBoundMenu extends CommonItemHandlerMenu {
     protected ContainerLevelAccess accessor;
 
@@ -22,7 +24,7 @@ public abstract class PositionBoundMenu extends CommonItemHandlerMenu {
     }
 
     @Override
-    public boolean stillValid(Player player) {
+    public boolean stillValid(@Nonnull Player player) {
         return stillValid(accessor, player, TestChest.TestChestBlock.R_BLOCK.get());
     }
 }

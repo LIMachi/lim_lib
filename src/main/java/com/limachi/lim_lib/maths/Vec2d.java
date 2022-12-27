@@ -1,5 +1,6 @@
 package com.limachi.lim_lib.maths;
 
+@SuppressWarnings("unused")
 public class Vec2d {
     public double x;
     public double y;

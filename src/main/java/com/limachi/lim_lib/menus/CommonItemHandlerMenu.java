@@ -8,6 +8,7 @@ import net.minecraftforge.items.SlotItemHandler;
 
 import javax.annotation.Nullable;
 
+@SuppressWarnings("unused")
 public abstract class CommonItemHandlerMenu extends CommonContainerMenu {
     protected IItemHandlerModifiable handler = null;
 

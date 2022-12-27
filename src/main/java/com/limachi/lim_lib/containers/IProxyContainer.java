@@ -20,25 +20,46 @@ import javax.annotation.Nonnull;
  * `proxy()`. By doing so, all methods of Container, IItemHandlerModifiable, StackedContentsCompatible  IAsTag and
  * IFromTag will be generated. `proxy()` is expected to be a direct return of a final non static field.
  */
+@SuppressWarnings("unused")
 public interface IProxyContainer extends Container, IItemHandlerModifiable, StackedContentsCompatible, NBT.IAsTag, NBT.IFromTag {
     Container proxy();
 
-    @Override default int getContainerSize() { return proxy().getContainerSize(); }
-    @Override default boolean isEmpty() { return proxy().isEmpty(); }
-    @Override default @Nonnull ItemStack getItem(int slot) { return proxy().getItem(slot); }
-    @Override default @Nonnull ItemStack removeItem(int slot, int qty) { return proxy().removeItem(slot, qty); }
-    @Override default @Nonnull ItemStack removeItemNoUpdate(int slot) { return proxy().removeItemNoUpdate(slot); }
-    @Override default void setItem(int slot, @Nonnull ItemStack stack) { proxy().setItem(slot, stack); }
-    @Override default void setChanged() { proxy().setChanged(); }
-    @Override default boolean stillValid(@Nonnull Player player) { return proxy().stillValid(player); }
-    @Override default void clearContent() { proxy().clearContent(); }
-    @Override default void setStackInSlot(int slot, @Nonnull ItemStack stack) { proxy().setItem(slot, stack); }
-    @Override default int getSlots() { return proxy().getContainerSize(); }
-    @Override default @Nonnull ItemStack getStackInSlot(int slot) { return getItem(slot); }
-    @Override default int getMaxStackSize() { return proxy().getMaxStackSize(); }
-    @Override default boolean canPlaceItem(int slot, @Nonnull ItemStack stack) { return proxy().canPlaceItem(slot, stack); }
+    @Override
+    default int getContainerSize() { return proxy().getContainerSize(); }
+    @Override
+    default boolean isEmpty() { return proxy().isEmpty(); }
+    @Override
+    @Nonnull
+    default ItemStack getItem(int slot) { return proxy().getItem(slot); }
+    @Override
+    @Nonnull
+    default ItemStack removeItem(int slot, int qty) { return proxy().removeItem(slot, qty); }
+    @Override
+    @Nonnull
+    default ItemStack removeItemNoUpdate(int slot) { return proxy().removeItemNoUpdate(slot); }
+    @Override
+    default void setItem(int slot, @Nonnull ItemStack stack) { proxy().setItem(slot, stack); }
+    @Override
+    default void setChanged() { proxy().setChanged(); }
+    @Override
+    default boolean stillValid(@Nonnull Player player) { return proxy().stillValid(player); }
+    @Override
+    default void clearContent() { proxy().clearContent(); }
+    @Override
+    default void setStackInSlot(int slot, @Nonnull ItemStack stack) { proxy().setItem(slot, stack); }
+    @Override
+    default int getSlots() { return proxy().getContainerSize(); }
+    @Override
+    @Nonnull
+    default ItemStack getStackInSlot(int slot) { return getItem(slot); }
+    @Override
+    default int getMaxStackSize() { return proxy().getMaxStackSize(); }
+    @Override
+    default boolean canPlaceItem(int slot, @Nonnull ItemStack stack) { return proxy().canPlaceItem(slot, stack); }
 
-    @Override default @Nonnull ItemStack insertItem(int slot, @Nonnull ItemStack stack, boolean simulate) {
+    @Override
+    @Nonnull
+    default ItemStack insertItem(int slot, @Nonnull ItemStack stack, boolean simulate) {
         if (stack.isEmpty() || slot < 0 || slot >= proxy().getContainerSize()) return ItemStack.EMPTY;
         ItemStack s = proxy().getItem(slot);
         if (!StackUtils.canMerge(stack, s)) return ItemStack.EMPTY;
@@ -48,7 +69,9 @@ public interface IProxyContainer extends Container, IItemHandlerModifiable, Stac
         return m.getSecond();
     }
 
-    @Override default @Nonnull ItemStack extractItem(int slot, int amount, boolean simulate) {
+    @Override
+    @Nonnull
+    default ItemStack extractItem(int slot, int amount, boolean simulate) {
         if (amount <= 0 || slot < 0 || slot >= proxy().getContainerSize()) return ItemStack.EMPTY;
         Pair<ItemStack, ItemStack> m = StackUtils.extract(proxy().getItem(slot), amount);
         if (!simulate)
@@ -56,10 +79,13 @@ public interface IProxyContainer extends Container, IItemHandlerModifiable, Stac
         return m.getFirst();
     }
 
-    @Override default int getSlotLimit(int slot) { return proxy().getMaxStackSize(); }
-    @Override default boolean isItemValid(int slot, @Nonnull ItemStack stack) { return proxy().canPlaceItem(slot, stack); }
+    @Override
+    default int getSlotLimit(int slot) { return proxy().getMaxStackSize(); }
+    @Override
+    default boolean isItemValid(int slot, @Nonnull ItemStack stack) { return proxy().canPlaceItem(slot, stack); }
 
-    @Override default void fillStackedContents(@Nonnull StackedContents stacked) {
+    @Override
+    default void fillStackedContents(@Nonnull StackedContents stacked) {
         Container c = proxy();
         for (int i = 0; i < c.getContainerSize(); ++i)
             stacked.accountStack(c.getItem(i));

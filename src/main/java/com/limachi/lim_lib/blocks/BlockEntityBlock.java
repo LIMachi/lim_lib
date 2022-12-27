@@ -15,6 +15,9 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraftforge.registries.RegistryObject;
 import org.jetbrains.annotations.Nullable;
 
+import javax.annotation.Nonnull;
+
+@SuppressWarnings("deprecation")
 public class BlockEntityBlock extends BaseEntityBlock {
 
     RegistryObject<BlockEntityType<BlockEntity>> betr;
@@ -26,12 +29,12 @@ public class BlockEntityBlock extends BaseEntityBlock {
 
     @Nullable
     @Override
-    public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
+    public BlockEntity newBlockEntity(@Nonnull BlockPos pos, @Nonnull BlockState state) {
         return betr.get().create(pos, state);
     }
 
     @Override
-    public void onRemove(BlockState block, Level level, BlockPos pos, BlockState state, boolean bool) {
+    public void onRemove(BlockState block, @Nonnull Level level, @Nonnull BlockPos pos, BlockState state, boolean bool) {
         if (!block.is(state.getBlock())) {
             if (level.getBlockEntity(pos) instanceof IOnRemoveBlockListener be)
                 be.onRemove(block, level, pos, state, bool);
@@ -40,7 +43,7 @@ public class BlockEntityBlock extends BaseEntityBlock {
     }
 
     @Override
-    public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
+    public InteractionResult use(@Nonnull BlockState state, Level level, @Nonnull BlockPos pos, @Nonnull Player player, @Nonnull InteractionHand hand, @Nonnull BlockHitResult hit) {
         if (level.getBlockEntity(pos) instanceof IOnUseBlockListener be)
             be.use(state, level, pos, player, hand, hit);
         return super.use(state, level, pos, player, hand, hit);

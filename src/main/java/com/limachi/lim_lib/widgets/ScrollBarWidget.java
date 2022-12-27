@@ -7,8 +7,15 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec2;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
+import org.jetbrains.annotations.NotNull;
 
-public class ScrollBarWidget extends BaseWidget {
+import java.util.function.Consumer;
+
+@SuppressWarnings({"unused", "UnusedReturnValue"})
+@OnlyIn(Dist.CLIENT)
+public class ScrollBarWidget extends BaseWidget<ScrollBarWidget> {
 
     public static final int WIDTH = 16;
     public static final int CURSOR_WIDTH = 12;
@@ -29,28 +36,28 @@ public class ScrollBarWidget extends BaseWidget {
     protected int step;
     protected int scroll;
     protected int prev;
-    protected IWidgetCallback callback;
+    protected Consumer<ScrollBarWidget> onScrollCHange;
 
-    public ScrollBarWidget(int x, int y, int height, int min, int max, int scroll, IWidgetCallback callback) {
-        this(x, y, height, min, max, min <= max ? 1 : -1, scroll, callback);
+    public ScrollBarWidget(int x, int y, int height, int min, int max, int scroll, Consumer<ScrollBarWidget> onScrollCHange) {
+        this(x, y, height, min, max, min <= max ? 1 : -1, scroll, onScrollCHange);
     }
 
-    public ScrollBarWidget(int x, int y, int height, int min, int max, IWidgetCallback callback) {
-        this(x, y, height, min, max, min <= max ? 1 : -1, min, callback);
+    public ScrollBarWidget(int x, int y, int height, int min, int max, Consumer<ScrollBarWidget> onScrollCHange) {
+        this(x, y, height, min, max, min <= max ? 1 : -1, min, onScrollCHange);
     }
 
-    public ScrollBarWidget(int x, int y, int height, int min, int max, int step, int scroll, IWidgetCallback callback) {
+    public ScrollBarWidget(int x, int y, int height, int min, int max, int step, int scroll, Consumer<ScrollBarWidget> onScrollCHange) {
         super(x, y, WIDTH, height, SCROLL_BAR_TEXTURE, SCROLL_BAR_CUTOUT, false);
         this.min = min;
         this.max = max;
         this.step = step;
         this.scroll = scroll;
         this.prev = scroll;
-        this.callback = callback;
+        this.onScrollCHange = onScrollCHange;
     }
 
     @Override
-    public void render(PoseStack stack, int mouseX, int mouseY, float partialTick) {
+    public void render(@NotNull PoseStack stack, int mouseX, int mouseY, float partialTick) {
         super.render(stack, mouseX, mouseY, partialTick);
         Box2d cursor = new Box2d(SCROLL_BAR_CURSOR_VOLUME);
         cursor.setY1((((scroll - min) / (double)(max - min)) * (area.getHeight() - cursor.getHeight() - DOUBLE_BORDER)) + area.getY1() + BORDER);
@@ -110,8 +117,8 @@ public class ScrollBarWidget extends BaseWidget {
         }
         prev = scroll;
         scroll = value;
-        if (runCallbackIfChanged && prev != scroll && callback != null)
-            callback.apply();
+        if (runCallbackIfChanged && prev != scroll && onScrollCHange != null)
+            onScrollCHange.accept(this);
     }
 
     @Override

@@ -7,7 +7,6 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.arguments.GameProfileArgument;
 
 import java.util.Collection;
-import java.util.Optional;
 import com.limachi.lim_lib.commands.FunctionThrowsCommandSyntaxException;
 
 @SuppressWarnings("unused")

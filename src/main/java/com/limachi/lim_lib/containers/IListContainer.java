@@ -26,11 +26,17 @@ import java.util.List;
 public interface IListContainer extends Container, IItemHandlerModifiable, StackedContentsCompatible, NBT.IAsTag, NBT.IFromTag {
     List<ItemStack> stacks();
 
-    @Override default int getContainerSize() { return stacks().size(); }
-    @Override default boolean isEmpty() { return stacks().stream().allMatch(ItemStack::isEmpty); }
-    @Override default @Nonnull ItemStack getItem(int slot) { return slot >= 0 && slot < stacks().size() ? stacks().get(slot) : ItemStack.EMPTY; }
+    @Override
+    default int getContainerSize() { return stacks().size(); }
+    @Override
+    default boolean isEmpty() { return stacks().stream().allMatch(ItemStack::isEmpty); }
+    @Override
+    @Nonnull
+    default ItemStack getItem(int slot) { return slot >= 0 && slot < stacks().size() ? stacks().get(slot) : ItemStack.EMPTY; }
 
-    @Override default @Nonnull ItemStack removeItem(int slot, int qty) {
+    @Override
+    @Nonnull
+    default ItemStack removeItem(int slot, int qty) {
         if (slot < 0 || slot >= stacks().size() || qty <= 0) return ItemStack.EMPTY;
         ItemStack ss = stacks().get(slot);
         qty = Integer.min(Integer.min(ss.getCount(), qty), ss.getItem()
@@ -44,33 +50,45 @@ public interface IListContainer extends Container, IItemHandlerModifiable, Stack
         return out;
     }
 
-    @Override default @Nonnull ItemStack removeItemNoUpdate(int slot) {
+    @Override
+    @Nonnull
+    default ItemStack removeItemNoUpdate(int slot) {
         if (slot < 0 || slot >= stacks().size()) return ItemStack.EMPTY;
         ItemStack out = stacks().get(slot);
         stacks().set(slot, ItemStack.EMPTY);
         return out;
     }
 
-    @Override default void setItem(int slot, @Nonnull ItemStack stack) {
+    @Override
+    default void setItem(int slot, @Nonnull ItemStack stack) {
         if (slot < 0 || slot >= stacks().size() || stacks().get(slot).equals(stack, false)) return;
         stacks().set(slot, stack);
         setChanged();
     }
 
-    @Override default void setChanged() {
+    @Override
+    default void setChanged() {
         if (this instanceof IContainerListenerHandler lh) {
             for (ContainerListener listener : lh.listeners())
                 listener.containerChanged(this);
         }
     }
 
-    @Override default boolean stillValid(@Nonnull Player player) { return true; }
-    @Override default void clearContent() { stacks().replaceAll(s->ItemStack.EMPTY); }
-    @Override default void setStackInSlot(int slot, @Nonnull ItemStack stack) { setItem(slot, stack); }
-    @Override default int getSlots() { return getContainerSize(); }
-    @Override default @Nonnull ItemStack getStackInSlot(int slot) { return getItem(slot); }
+    @Override
+    default boolean stillValid(@Nonnull Player player) { return true; }
+    @Override
+    default void clearContent() { stacks().replaceAll(s->ItemStack.EMPTY); }
+    @Override
+    default void setStackInSlot(int slot, @Nonnull ItemStack stack) { setItem(slot, stack); }
+    @Override
+    default int getSlots() { return getContainerSize(); }
+    @Override
+    @Nonnull
+    default ItemStack getStackInSlot(int slot) { return getItem(slot); }
 
-    @Override default @Nonnull ItemStack insertItem(int slot, @Nonnull ItemStack stack, boolean simulate) {
+    @Override
+    @Nonnull
+    default ItemStack insertItem(int slot, @Nonnull ItemStack stack, boolean simulate) {
         if (stack.isEmpty() || slot < 0 || slot >= getContainerSize()) return ItemStack.EMPTY;
         ItemStack s = getItem(slot);
         if (!StackUtils.canMerge(stack, s)) return ItemStack.EMPTY;
@@ -80,7 +98,9 @@ public interface IListContainer extends Container, IItemHandlerModifiable, Stack
         return m.getSecond();
     }
 
-    @Override default @Nonnull ItemStack extractItem(int slot, int amount, boolean simulate) {
+    @Override
+    @Nonnull
+    default ItemStack extractItem(int slot, int amount, boolean simulate) {
         if (amount <= 0 || slot < 0 || slot >= getContainerSize()) return ItemStack.EMPTY;
         Pair<ItemStack, ItemStack> m = StackUtils.extract(stacks().get(slot), amount);
         if (!simulate)
@@ -88,10 +108,13 @@ public interface IListContainer extends Container, IItemHandlerModifiable, Stack
         return m.getFirst();
     }
 
-    @Override default int getSlotLimit(int slot) { return getMaxStackSize(); }
-    @Override default boolean isItemValid(int slot, @Nonnull ItemStack stack) { return canPlaceItem(slot, stack); }
+    @Override
+    default int getSlotLimit(int slot) { return getMaxStackSize(); }
+    @Override
+    default boolean isItemValid(int slot, @Nonnull ItemStack stack) { return canPlaceItem(slot, stack); }
 
-    @Override default void fillStackedContents(@Nonnull StackedContents stacked) {
+    @Override
+    default void fillStackedContents(@Nonnull StackedContents stacked) {
         for (int i = 0; i < getContainerSize(); ++i)
             stacked.accountStack(getItem(i));
     }

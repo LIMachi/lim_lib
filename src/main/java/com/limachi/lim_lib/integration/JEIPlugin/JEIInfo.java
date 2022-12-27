@@ -7,6 +7,7 @@ import net.minecraftforge.registries.RegistryObject;
 import java.util.HashMap;
 import java.util.function.Supplier;
 
+@SuppressWarnings("unused")
 public class JEIInfo {
     static final HashMap<Supplier<ItemStack>, String> INFOS = new HashMap<>();
 
