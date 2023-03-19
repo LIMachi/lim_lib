@@ -13,7 +13,7 @@ import java.util.function.Predicate;
 public class BlockPredicateArg extends AbstractCommandArgument {
     public BlockPredicateArg() { type = BlockPredicateArgument.blockPredicate(
             //VERSION 1.18.2
-            CommandManager.builderContext //VERSION 1.19.2
+//            CommandManager.builderContext //VERSION 1.19.2
     ); }
     @Override
     public Class<?>[] debugGetType() { return new Class[]{Predicate.class, BlockInWorld.class}; }

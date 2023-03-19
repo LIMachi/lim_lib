@@ -8,7 +8,7 @@ plugins {
 
 apply plugin: 'net.minecraftforge.gradle'
 
-version = '1.19.2-B1.2.1a'
+version = '1.18.2-B1.1'
 group = 'com.limachi.lim_lib'
 archivesBaseName = 'lim_lib'
 
@@ -16,7 +16,7 @@ java.toolchain.languageVersion = JavaLanguageVersion.of(17)
 
 println "Java: ${System.getProperty 'java.version'}, JVM: ${System.getProperty 'java.vm.version'} (${System.getProperty 'java.vendor'}), Arch: ${System.getProperty 'os.arch'}"
 minecraft {
-    mappings channel: 'official', version: '1.19.2'
+    mappings channel: 'official', version: '1.18.2'
 
      accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
 
@@ -99,16 +99,12 @@ repositories {
 }
 
 dependencies {
-    minecraft 'net.minecraftforge:forge:1.19.2-43.1.25'
+    minecraft "net.minecraftforge:forge:${mc_version}-${forge_version}"
     dependencies {
-        runtimeOnly fg.deobf("top.theillusivec4.curios:curios-forge:1.19.2-5.1.1.0")
-        compileOnly fg.deobf("top.theillusivec4.curios:curios-forge:1.19.2-5.1.1.0:api")
+        runtimeOnly fg.deobf("top.theillusivec4.curios:curios-forge:${mc_version}-${curios_version}")
+        compileOnly fg.deobf("top.theillusivec4.curios:curios-forge:${mc_version}-${curios_version}:api")
 
-        // compile against the JEI API but do not include it at runtime
-        compileOnly(fg.deobf("mezz.jei:jei-${mc_version}-common-api:${jei_version}"))
-        compileOnly(fg.deobf("mezz.jei:jei-${mc_version}-forge-api:${jei_version}"))
-        // at runtime, use the full JEI jar for Forge
-        runtimeOnly(fg.deobf("mezz.jei:jei-${mc_version}-forge:${jei_version}"))
+        compileOnly(fg.deobf("mezz.jei:jei-${jei_version}:api"))
 
         implementation(fg.deobf("curse.maven:the-one-probe-245211:${top_file}") { transitive = false })
     }

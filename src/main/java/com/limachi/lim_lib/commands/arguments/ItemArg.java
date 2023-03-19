@@ -12,7 +12,7 @@ import com.limachi.lim_lib.commands.FunctionThrowsCommandSyntaxException;
 public class ItemArg extends AbstractCommandArgument {
     public ItemArg() { type = ItemArgument.item(
             // VERSION 1.18.2
-            CommandManager.builderContext // VERSION 1.19.2
+//            CommandManager.builderContext // VERSION 1.19.2
     ); }
     @Override
     public Class<?>[] debugGetType() { return new Class[]{ItemInput.class}; }

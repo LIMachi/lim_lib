@@ -3,9 +3,10 @@ package com.limachi.lim_lib;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
-//import net.minecraft.network.chat.TranslatableComponent; //VERSION 1.18.2
+import net.minecraft.network.chat.TranslatableComponent; //VERSION 1.18.2
 import net.minecraft.util.Mth;
 import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.client.event.InputEvent;
 import net.minecraftforge.client.event.ScreenEvent;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -28,9 +29,13 @@ public class NbtTooltip {
     private static boolean can_scroll = false;
     private static int scroll = 0;
 
-    private static final Component SCROLL_SUGGESTION = Component.translatable("extended_tooltip.nbt_tooltip.scroll_suggestion").withStyle(ChatFormatting.LIGHT_PURPLE);
-    private static final Component SHOW_NBT_SUGGESTION = // new TranslatableComponent( //VERSION 1.18.2
-            Component.translatable( //VERSION 1.19.2
+    private static final Component SCROLL_SUGGESTION =
+            new TranslatableComponent( //VERSION 1.18.2
+//            Component.translatable( //VERSION 1.19.2
+                    "extended_tooltip.nbt_tooltip.scroll_suggestion").withStyle(ChatFormatting.LIGHT_PURPLE);
+    private static final Component SHOW_NBT_SUGGESTION =
+            new TranslatableComponent( //VERSION 1.18.2
+//            Component.translatable( //VERSION 1.19.2
                     "extended_tooltip.nbt_tooltip.use_alt").withStyle(ChatFormatting.LIGHT_PURPLE);
 
     @SubscribeEvent
@@ -66,7 +71,10 @@ public class NbtTooltip {
     }
 
     @SubscribeEvent
-    public static void scrollNbtTooltip(ScreenEvent.MouseScrolled.Pre event) {
+    public static void scrollNbtTooltip(
+//            ScreenEvent.MouseScrolled.Pre //VERSION 1.19.2
+            ScreenEvent.MouseScrollEvent.Pre //VERSION 1.18.2
+                    event) {
         if (can_scroll) {
             scroll += event.getScrollDelta() * (WIDOWS_SCROLL ? -1 : 1);
             event.setCanceled(true);

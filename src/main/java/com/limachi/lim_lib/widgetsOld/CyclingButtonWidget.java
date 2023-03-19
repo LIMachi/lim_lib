@@ -1,6 +1,7 @@
 package com.limachi.lim_lib.widgetsOld;
 
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent; //VERSION 1.18.2
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -12,7 +13,10 @@ import java.util.List;
 @OnlyIn(Dist.CLIENT)
 public class CyclingButtonWidget extends BaseButtonWidget<CyclingButtonWidget> {
 
-    public static final Component MISSING_TITLE = Component.empty();
+    public static final Component MISSING_TITLE =
+//            Component.empty(); //VERSION 1.19.2
+            new TextComponent(""); //VERSION 1.18.2
+
     protected final ArrayList<Component> values = new ArrayList<>();
     protected int selected = 0;
 

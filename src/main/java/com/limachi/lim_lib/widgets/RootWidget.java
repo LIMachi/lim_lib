@@ -40,13 +40,15 @@ public class RootWidget extends BaseWidget<RootWidget> implements Widget {
             box = new Rect2i(box.getX(), box.getY(), box.getWidth(), box.getHeight()).intersect(scissors.getFirst());
             scissors.addFirst(box);
         }
-        GuiComponent.enableScissor(box.getX(), box.getY(), box.getX() + box.getWidth(), box.getY() + box.getHeight());
+        //FIXME 1.18.2
+//        GuiComponent.enableScissor(box.getX(), box.getY(), box.getX() + box.getWidth(), box.getY() + box.getHeight()); //VERSION 1.19.2
     }
 
     public void popScissor() {
         scissors.removeFirst();
         if (scissors.isEmpty())
-            GuiComponent.disableScissor();
+            ;//FIXME 1.18.2
+//            GuiComponent.disableScissor(); //VERSION 1.19.2
     }
 
     public void setDragButton(int button) {

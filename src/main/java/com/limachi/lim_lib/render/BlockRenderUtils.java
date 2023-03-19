@@ -23,7 +23,8 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.client.event.RenderLevelStageEvent;
+//import net.minecraftforge.client.event.RenderLevelStageEvent; //VERSION 1.19.2
+import net.minecraftforge.client.event.RenderLevelLastEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
@@ -117,7 +118,10 @@ public class BlockRenderUtils extends RenderType {
     }
 
     @OnlyIn(Dist.CLIENT)
-    static void renderOverlays(RenderLevelStageEvent event) {
+    static void renderOverlays(
+//            RenderLevelStageEvent //VERSION 1.19.2
+            RenderLevelLastEvent //VERSION 1.18.2
+                    event) {
         Minecraft mc = Minecraft.getInstance();
         if (mc.level == null) return;
         String levelName = mc.level.dimension().location().toString();
@@ -155,8 +159,11 @@ public class BlockRenderUtils extends RenderType {
     public static class BlockRenderEvents {
 
         @SubscribeEvent
-        static void renderLevelStageEvent(RenderLevelStageEvent event) {
-            if (event.getStage() != RenderLevelStageEvent.Stage.AFTER_TRANSLUCENT_BLOCKS) return;
+        static void renderLevelStageEvent(
+//                RenderLevelStageEvent //VERSION 1.19.2
+                RenderLevelLastEvent //VERSION 1.18.2
+                event) {
+//            if (event.getStage() != RenderLevelStageEvent.Stage.AFTER_TRANSLUCENT_BLOCKS) return; //VERSION 1.19.2
             renderOverlays(event);
         }
     }

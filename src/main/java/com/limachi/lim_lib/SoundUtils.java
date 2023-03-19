@@ -33,9 +33,18 @@ public class SoundUtils {
         in.playSound(null, at, instrument.getSoundEvent(), SoundSource.RECORDS, 3.f, (float)Math.pow(2.f, (double)(id - 12) / 12.));
     }
 
+    /* VERSION 1.19.2
     public static void playNoteWithEvent(Level in, BlockPos at, NoteBlockInstrument instrument, int id) {
         net.minecraftforge.event.level.NoteBlockEvent.Play e = new net.minecraftforge.event.level.NoteBlockEvent.Play(in, at, in.getBlockState(at), id, instrument);
         if (net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(e)) return;
         playNote((Level)e.getLevel(), e.getPos(), e.getInstrument(), e.getVanillaNoteId());
+    }
+     */
+
+    //VERSION 1.18.2
+    public static void playNoteWithEvent(Level in, BlockPos at, NoteBlockInstrument instrument, int id) {
+        net.minecraftforge.event.world.NoteBlockEvent.Play e = new net.minecraftforge.event.world.NoteBlockEvent.Play(in, at, in.getBlockState(at), id, instrument);
+        if (net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(e)) return;
+        playNote((Level)e.getWorld(), e.getPos(), e.getInstrument(), e.getVanillaNoteId());
     }
 }

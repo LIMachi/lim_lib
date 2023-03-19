@@ -8,7 +8,7 @@ import com.limachi.lim_lib.registries.annotations.RegisterMenu;
 import com.limachi.lim_lib.menus.WidgetContainerMenu;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
-//import net.minecraft.network.chat.TextComponent; //VERSION 1.18.2
+import net.minecraft.network.chat.TextComponent; //VERSION 1.18.2
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Container;
 import net.minecraft.world.MenuProvider;
@@ -61,14 +61,14 @@ public class TestMenu extends WidgetContainerMenu {
     public static <T extends TestMenu> void open(Class<T> menu, Player player, Container container) {
         if (!player.level.isClientSide()) {
             NetworkHooks
-//                    .openGui( //VERSION 1.18.2
-                    .openScreen( //VERSION 1.19.2
+                    .openGui( //VERSION 1.18.2
+//                    .openScreen( //VERSION 1.19.2
                             (ServerPlayer) player, new MenuProvider() {
                 @Override
                 public Component getDisplayName() {
                     return
-//                            new TextComponent( //VERSION 1.18.2
-                            Component.literal( //VERSION 1.19.2
+                            new TextComponent( //VERSION 1.18.2
+//                            Component.literal( //VERSION 1.19.2
                                     "test");
                 }
 

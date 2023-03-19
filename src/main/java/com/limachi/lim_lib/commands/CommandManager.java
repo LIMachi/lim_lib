@@ -12,11 +12,11 @@ import com.mojang.brigadier.tree.ArgumentCommandNode;
 import com.mojang.brigadier.tree.CommandNode;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import com.mojang.datafixers.util.Pair;
-import net.minecraft.commands.CommandBuildContext;
+//import net.minecraft.commands.CommandBuildContext; //1.19.2
 import net.minecraft.commands.CommandSourceStack;
-//import net.minecraft.network.chat.TextComponent; //VERSION 1.18.2
+import net.minecraft.network.chat.TextComponent; //VERSION 1.18.2
 import net.minecraft.core.RegistryAccess;
-import net.minecraft.network.chat.Component; //VERSION 1.19.2
+//import net.minecraft.network.chat.Component; //VERSION 1.19.2
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -45,12 +45,12 @@ public class CommandManager {
         return out.toString();
     }
 
-    public static CommandBuildContext builderContext = new CommandBuildContext(RegistryAccess.BUILTIN.get()); //VERSION 1.19.2
+//    public static CommandBuildContext builderContext = new CommandBuildContext(RegistryAccess.BUILTIN.get()); //VERSION 1.19.2
 
     @SubscribeEvent
     public static void registerCommands(RegisterCommandsEvent event) {
         CMDS.forEach(c->{
-            builderContext = event.getBuildContext(); //technically do nothing as 'builderContext' probably already was referenced in the construction of commands
+//            builderContext = event.getBuildContext(); //technically do nothing as 'builderContext' probably already was referenced in the construction of commands
             Log.LOGGER.info("Registering command: " + builderAsStrings(c.getSecond()));
             event.getDispatcher().register(c.getSecond());
         });
@@ -140,8 +140,8 @@ public class CommandManager {
                         }
                     } catch (Exception caught) {
                         ctx.getSource().sendFailure(
-//                                new TextComponent( //VERSION 1.18.2
-                                Component.literal( //VERSION 1.19.2
+                                new TextComponent( //VERSION 1.18.2
+//                                Component.literal( //VERSION 1.19.2
                                         "Exception in command '" + cmd + "' -> public static " + execute.getMethod(false) + ". Please check game log for further details."));
                         caught.printStackTrace();
                         return 0;
@@ -157,8 +157,8 @@ public class CommandManager {
                         output.append(", ").append(vargs[j].debugType()).append(" var").append(j + 2);
                 }
                 ctx.getSource().sendSuccess(
-//                        new TextComponent( //VERSION 1.18.2
-                        Component.literal( //VERSION 1.19.2
+                        new TextComponent( //VERSION 1.18.2
+//                        Component.literal( //VERSION 1.19.2
                                 output.append(')').toString()), true);
                 return nonLiteral.size();
             };

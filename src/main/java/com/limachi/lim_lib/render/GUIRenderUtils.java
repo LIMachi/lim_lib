@@ -19,6 +19,8 @@ import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent; //VERSION 1.18.2
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.item.ItemStack;
@@ -27,7 +29,8 @@ import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.client.extensions.common.IClientFluidTypeExtensions;
+//import net.minecraftforge.client.extensions.common.IClientFluidTypeExtensions; //VERSION 1.19.2
+import net.minecraftforge.fluids.FluidAttributes;
 import net.minecraftforge.fluids.FluidStack;
 import org.lwjgl.glfw.GLFW;
 
@@ -110,7 +113,8 @@ public class GUIRenderUtils {
                 RenderSystem.enableDepthTest();
             }
 
-            net.minecraftforge.client.ItemDecoratorHandler.of(stack).render(MINECRAFT.font, stack, x, y, ITEM_RENDERER.blitOffset); //the scalling will probably fail here, we might be hable to hack something using the PoseStack
+//            net.minecraftforge.client.ItemDecoratorHandler //VERSION 1.19.2
+//                    .of(stack).render(MINECRAFT.font, stack, x, y, ITEM_RENDERER.blitOffset); //the scalling will probably fail here, we might be hable to hack something using the PoseStack
         }
     }
 
@@ -120,12 +124,18 @@ public class GUIRenderUtils {
     public static void renderFluid(FluidStack stack, int x, int y, int w, int h, int color, boolean decorate) {
         Fluid fluid = stack.getFluid();
         if (w <= 0 || h <= 0 || fluid.isSame(Fluids.EMPTY)) return;
-        TextureAtlasSprite sprite = MINECRAFT.getTextureAtlas(InventoryMenu.BLOCK_ATLAS).apply(IClientFluidTypeExtensions.of(stack.getFluid()).getStillTexture());
+        TextureAtlasSprite sprite = MINECRAFT.getTextureAtlas(InventoryMenu.BLOCK_ATLAS).apply(
+//                IClientFluidTypeExtensions.of(stack.getFluid()).getStillTexture() //VERSION 1.19.2
+                fluid.getAttributes().getStillTexture(stack) //VERSION 1.18.2
+        );
         RenderSystem.enableBlend();
         RenderSystem.setShader(GameRenderer::getPositionTexShader);
         RenderSystem.setShaderTexture(0, InventoryMenu.BLOCK_ATLAS);
         RenderSystem.setShaderColor(255f / ((color & 0xFF0000) >> 16), 255f / ((color & 0xFF00) >> 8), 255f / (color & 0xFF), 255f / ((color & 0xFF000000) >> 24));
-        BufferUploader.drawWithShader(tiledSquareUVVertex(RenderSystem.getModelViewStack().last().pose(), x, y, w, h, sprite.getWidth(), sprite.getHeight(), sprite.getU0(), sprite.getV0(), sprite.getU1(), sprite.getV1(), ITEM_RENDERER.blitOffset + 100).end());
+//        BufferUploader.drawWithShader( //VERSION 1.19.2
+                tiledSquareUVVertex(RenderSystem.getModelViewStack().last().pose(), x, y, w, h, sprite.getWidth(), sprite.getHeight(), sprite.getU0(), sprite.getV0(), sprite.getU1(), sprite.getV1(), ITEM_RENDERER.blitOffset + 100).end()
+//        ) //VERSION 1.19.2
+        ;
         RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
         RenderSystem.disableBlend();
         if (decorate) {
@@ -133,11 +143,20 @@ public class GUIRenderUtils {
             String s;
             int a = Math.abs(stack.getAmount());
             if (a < 1000)
-                s = a + Component.translatable("gui.fluid.milli-bucket").getString();
+                s = a +
+                        new TranslatableComponent( //VERSION 1.18.2
+//                        Component.translatable( //VERSION 1.19.2
+                        "gui.fluid.milli-bucket").getString();
             else if (a > 1000000)
-                s = (int)Math.floor(a / 1000000d) + Component.translatable("gui.fluid.kilo-bucket").getString() + (int)Math.floor(a / 1000d) % 1000;
+                s = (int)Math.floor(a / 1000000d) +
+                        new TranslatableComponent( //VERSION 1.18.2
+//                        Component.translatable( //VERSION 1.19.2
+                        "gui.fluid.kilo-bucket").getString() + (int)Math.floor(a / 1000d) % 1000;
             else
-                s = (int)Math.floor(a / 1000d) + Component.translatable("gui.fluid.bucket").getString() + ((a % 1000 > 0) ? (a % 1000) : "");
+                s = (int)Math.floor(a / 1000d) +
+                        new TranslatableComponent( //VERSION 1.18.2
+//                        Component.translatable( //VERSION 1.19.2
+                        "gui.fluid.bucket").getString() + ((a % 1000 > 0) ? (a % 1000) : "");
             if (stack.getAmount() < 0)
                 s = "-" + s;
             posestack.translate(0, 0, ITEM_RENDERER.blitOffset + 200);
@@ -197,6 +216,9 @@ public class GUIRenderUtils {
         p_115153_.vertex((double)(p_115154_ + 0), (double)(p_115155_ + p_115157_), 0.0D).color(p_115158_, p_115159_, p_115160_, p_115161_).endVertex();
         p_115153_.vertex((double)(p_115154_ + p_115156_), (double)(p_115155_ + p_115157_), 0.0D).color(p_115158_, p_115159_, p_115160_, p_115161_).endVertex();
         p_115153_.vertex((double)(p_115154_ + p_115156_), (double)(p_115155_ + 0), 0.0D).color(p_115158_, p_115159_, p_115160_, p_115161_).endVertex();
-        BufferUploader.drawWithShader(p_115153_.end());
+//        BufferUploader.drawWithShader( //VERSION 1.19.2
+                p_115153_.end()
+//        ) //VERSION 1.19.2
+        ;
     }
 }

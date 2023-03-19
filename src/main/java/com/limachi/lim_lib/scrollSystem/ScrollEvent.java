@@ -32,8 +32,8 @@ public class ScrollEvent {
     private static int SLOT = -1;
 
     @SubscribeEvent
-//    public static void scrollBlockEvent(InputEvent.MouseScrollEvent event) { //VERSION 1.18.2
-    public static void scrollBlockEvent(InputEvent.MouseScrollingEvent event) { //VERSION 1.19.2
+    public static void scrollBlockEvent(InputEvent.MouseScrollEvent event) { //VERSION 1.18.2
+//    public static void scrollBlockEvent(InputEvent.MouseScrollingEvent event) { //VERSION 1.19.2
         Player player = Minecraft.getInstance().player;
         if (player != null) {
             if (player.getMainHandItem().getItem() instanceof IScrollItem item && item.canScroll(player, player.getInventory().selected)) {

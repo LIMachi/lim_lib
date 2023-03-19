@@ -6,7 +6,8 @@ import mezz.jei.api.JeiPlugin;
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.registration.IGuiHandlerRegistration;
 import mezz.jei.api.registration.IRecipeRegistration;
-import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.Component; //VERSION 1.19.2
+import net.minecraft.network.chat.TranslatableComponent; //VERSION 1.18.2
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 
@@ -24,7 +25,8 @@ public class JEIImpl implements IModPlugin {
     @Override
     public void registerRecipes(@Nonnull IRecipeRegistration registration) {
         for (Map.Entry<Supplier<ItemStack>, String> info : JEIInfo.INFOS.entrySet())
-            registration.addIngredientInfo(info.getKey().get(), VanillaTypes.ITEM_STACK, Component.translatable(info.getValue()));
+//            registration.addIngredientInfo(info.getKey().get(), VanillaTypes.ITEM_STACK, Component.translatable(info.getValue())); //VERSION 1.19.2
+            registration.addIngredientInfo(info.getKey().get(), VanillaTypes.ITEM, new TranslatableComponent(info.getValue()));
     }
 
     @Override

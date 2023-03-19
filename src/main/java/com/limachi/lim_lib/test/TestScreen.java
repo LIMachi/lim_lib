@@ -5,6 +5,7 @@ import com.limachi.lim_lib.registries.clientAnnotations.RegisterMenuScreen;
 import com.limachi.lim_lib.screens.WidgetContainerScreen;
 import com.limachi.lim_lib.widgets.*;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent; //VERSION 1.18.2
 import net.minecraft.world.Container;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.player.Inventory;
@@ -45,10 +46,16 @@ public class TestScreen extends WidgetContainerScreen<TestMenu> {
             @Nullable
             @Override
             protected List<Component> getTooltip() {
-                return isOvered ? Collections.singletonList(Component.literal("Hovered!")) : null;
+                return isOvered ? Collections.singletonList(
+                        new TextComponent( //VERSION 1.18.2
+//                        Component.literal( //VERSION 1.19.2
+                                "Hovered!")) : null;
             }
         }.addChild(new TextFieldWidget(AnchoredBox.centeredBox(100, 20)).setText("Test")))
-                        .addChild(new ButtonWidget(AnchoredBox.topLeftDeltaBox(0, 0, 20, 20), Component.literal("B"), b->{}))
+                        .addChild(new ButtonWidget(AnchoredBox.topLeftDeltaBox(0, 0, 20, 20),
+                                new TextComponent( //VERSION 1.18.2
+//                                Component.literal( //VERSION 1.19.2
+                                "B"), b->{}))
         );
 //        root.addChild(new TestSlotWidget(new AnchoredBox(AnchorPoint.TOP_RIGHT, 18, 18, AnchorPoint.TOP_LEFT), new Slot(t, 0, 0, 0)));
         root.addChild(new ScrollBarWidget(AnchoredBox.topRightBox(16, 100), 0, 10, 1, 3, w->{}));

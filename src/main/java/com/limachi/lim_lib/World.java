@@ -197,7 +197,9 @@ public class World {
 
     public static void temporaryChunkLoad(Level level, BlockPos pos, int area) {
         if (level instanceof ServerLevel sl)
-            sl.getChunkSource().addRegionTicket(TicketType.PORTAL, new ChunkPos(pos), area, pos, true);
+            sl.getChunkSource().addRegionTicket(TicketType.PORTAL, new ChunkPos(pos), area, pos
+//                    , true //VERSION 1.19.2
+            );
     }
 
     public static void temporaryChunkLoad(Level level, BlockPos pos) {

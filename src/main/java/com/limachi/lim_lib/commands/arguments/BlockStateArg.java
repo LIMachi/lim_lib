@@ -12,7 +12,7 @@ import com.limachi.lim_lib.commands.FunctionThrowsCommandSyntaxException;
 public class BlockStateArg extends AbstractCommandArgument {
     public BlockStateArg() { type = BlockStateArgument.block(
             //VERSION 1.18.2
-            CommandManager.builderContext // VERSION 1.19.2
+//            CommandManager.builderContext // VERSION 1.19.2
     ); }
     @Override
     public Class<?>[] debugGetType() { return new Class[]{BlockInput.class}; }

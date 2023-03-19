@@ -39,8 +39,8 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.material.Fluid;
-//import net.minecraftforge.client.event.ColorHandlerEvent; //VERSION 1.18.2
-import net.minecraftforge.client.event.RegisterColorHandlersEvent; //VERSION 1.19.2
+import net.minecraftforge.client.event.ColorHandlerEvent; //VERSION 1.18.2
+//import net.minecraftforge.client.event.RegisterColorHandlersEvent; //VERSION 1.19.2
 import net.minecraftforge.client.event.EntityRenderersEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
@@ -125,15 +125,15 @@ public class ClientRegistries {
     }
 
     @SubscribeEvent
-//    static void registerBlockColor(ColorHandlerEvent.Block event) { //VERSION 1.18.2
-    static void registerBlockColor(RegisterColorHandlersEvent.Block event) { //VERSION 1.19.2
+    static void registerBlockColor(ColorHandlerEvent.Block event) { //VERSION 1.18.2
+//    static void registerBlockColor(RegisterColorHandlersEvent.Block event) { //VERSION 1.19.2
         BlockColors blockcolors = event.getBlockColors();
         for (Map.Entry<RegistryObject<Block>, BlockColor> entry : BLOCK_COLORS.entrySet()) blockcolors.register(entry.getValue(), entry.getKey().get());
     }
 
     @SubscribeEvent
-//    static void registerBlockColor(ColorHandlerEvent.Item event) { //VERSION 1.18.2
-    static void registerBlockColor(RegisterColorHandlersEvent.Item event) { //VERSION 1.19.2
+    static void registerBlockColor(ColorHandlerEvent.Item event) { //VERSION 1.18.2
+//    static void registerBlockColor(RegisterColorHandlersEvent.Item event) { //VERSION 1.19.2
         ItemColors blockcolors = event.getItemColors();
         for (Map.Entry<RegistryObject<Item>, ItemColor> entry : ITEM_COLORS.entrySet()) blockcolors.register(entry.getValue(), entry.getKey().get());
     }

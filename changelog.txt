@@ -1,3 +1,6 @@
+---- 1.18.2-B1.1 ----
+backport of all features from 1.19.2 to 1.18.2 (missing verifications)
+
 ---- 1.19.2-B1.2.1 ----
 fix root widget not calling the correct tooltip gatherer, added simple method to add a default tooltip for widgets
 fixed some errors in WidgetContainerScreen

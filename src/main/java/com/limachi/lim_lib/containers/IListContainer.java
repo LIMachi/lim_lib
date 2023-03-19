@@ -40,8 +40,8 @@ public interface IListContainer extends Container, IItemHandlerModifiable, Stack
         if (slot < 0 || slot >= stacks().size() || qty <= 0) return ItemStack.EMPTY;
         ItemStack ss = stacks().get(slot);
         qty = Integer.min(Integer.min(ss.getCount(), qty), ss.getItem()
-//                .getItemStackLimit( //VERSION 1.18.2
-                .getMaxStackSize( //VERSION 1.19.2
+                .getItemStackLimit( //VERSION 1.18.2
+//                .getMaxStackSize( //VERSION 1.19.2
                         ss));
         if (qty <= 0) return ItemStack.EMPTY;
         ItemStack out = ss.split(qty);

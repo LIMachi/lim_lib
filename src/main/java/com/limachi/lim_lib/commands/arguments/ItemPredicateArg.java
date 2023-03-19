@@ -13,7 +13,7 @@ import java.util.function.Predicate;
 public class ItemPredicateArg extends AbstractCommandArgument {
     public ItemPredicateArg() { type = ItemPredicateArgument.itemPredicate(
             // VERSION 1.18.2
-            CommandManager.builderContext // VERSION 1.19.2
+//            CommandManager.builderContext // VERSION 1.19.2
     ); }
     @Override
     public Class<?>[] debugGetType() { return new Class[]{Predicate.class, ItemStack.class}; }

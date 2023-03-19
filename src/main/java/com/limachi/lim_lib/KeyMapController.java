@@ -9,8 +9,8 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-//import net.minecraftforge.client.ClientRegistry; VERSION 1.18.2
-import net.minecraftforge.client.event.RegisterKeyMappingsEvent; //VERSION 1.19.2
+import net.minecraftforge.client.ClientRegistry; //VERSION 1.18.2
+//import net.minecraftforge.client.event.RegisterKeyMappingsEvent; //VERSION 1.19.2
 import net.minecraftforge.client.event.InputEvent;
 import net.minecraftforge.client.settings.IKeyConflictContext;
 import net.minecraftforge.client.settings.KeyConflictContext;
@@ -76,14 +76,14 @@ public class KeyMapController {
     }
 
     @SubscribeEvent
-//  public static void onMouseInput(InputEvent.MouseInputEvent event) { //VERSION 1.18.2
-    public static void onMouseInput(InputEvent.MouseButton event) { //VERSION 1.19.2
+  public static void onMouseInput(InputEvent.MouseInputEvent event) { //VERSION 1.18.2
+//    public static void onMouseInput(InputEvent.MouseButton event) { //VERSION 1.19.2
         KeyMapController.syncKeyMap(event.getButton(), 0, true, event.getAction() == GLFW.GLFW_PRESS || event.getAction() == GLFW.GLFW_REPEAT);
     }
 
     @SubscribeEvent
-//    public static void onKeyInput(InputEvent.KeyInputEvent event) { //VERSION 1.18.2
-    public static void onKeyInput(InputEvent.Key event) { //VERSION 1.19.2
+    public static void onKeyInput(InputEvent.KeyInputEvent event) { //VERSION 1.18.2
+//    public static void onKeyInput(InputEvent.Key event) { //VERSION 1.19.2
         KeyMapController.syncKeyMap(event.getKey(), event.getScanCode(), false, event.getAction() == GLFW.GLFW_PRESS || event.getAction() == GLFW.GLFW_REPEAT);
     }
 
@@ -103,17 +103,17 @@ public class KeyMapController {
         }
     }
 
-    private static final ArrayList<KeyMapping> toRegister = new ArrayList<>(); //VERSION 1.19.2
+//    private static final ArrayList<KeyMapping> toRegister = new ArrayList<>(); //VERSION 1.19.2
 
-    static {
-        if (Sides.isPhysicalClient())
-            FMLJavaModLoadingContext.get().getModEventBus().addListener(KeyMapController::registerKeybinds); //VERSION 1.19.2
-    }
+//    static {
+//        if (Sides.isPhysicalClient())
+//            FMLJavaModLoadingContext.get().getModEventBus().addListener(KeyMapController::registerKeybinds); //VERSION 1.19.2
+//    }
 
-    public static void registerKeybinds(RegisterKeyMappingsEvent event) { //VERSION 1.19.2
-        for (KeyMapping keybind : toRegister)
-            event.register(keybind);
-    }
+//    public static void registerKeybinds(RegisterKeyMappingsEvent event) { //VERSION 1.19.2
+//        for (KeyMapping keybind : toRegister)
+//            event.register(keybind);
+//    }
 
     public static class GlobalKeyBinding {
         final public String name;
@@ -125,8 +125,8 @@ public class KeyMapController {
             this.keybinding = DistExecutor.unsafeCallWhenOn(Dist.CLIENT, () -> () -> {
                 KeyMapping k = keybinding.get().call();
                 if (needRegister)
-//                    ClientRegistry.registerKeyBinding(k); //VERSION 1.18.2
-                    toRegister.add(k); //VERSION 1.19.2
+                    ClientRegistry.registerKeyBinding(k); //VERSION 1.18.2
+//                    toRegister.add(k); //VERSION 1.19.2
                 return k;
             });
         }
