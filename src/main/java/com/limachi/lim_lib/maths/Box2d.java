@@ -2,6 +2,7 @@ package com.limachi.lim_lib.maths;
 
 import com.mojang.math.Matrix4f;
 import com.mojang.math.Vector4f;
+import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.world.phys.Vec2;
 
 @SuppressWarnings({"unused", "UnusedReturnValue"})
@@ -43,7 +44,7 @@ public class Box2d {
 
     public static Box2d fromCorners(double x1, double y1, double x2, double y2) { return new Box2d(x1, y1,x2 - x1, y2 - y1); }
 
-    public static Box2d fromCorners(Vec2d topLeft, Vec2d bottomRight) { return fromCorners(topLeft.x, topLeft.y, bottomRight.x, bottomRight.y); }
+    public static Box2d fromCorners(IVec2d topLeft, IVec2d bottomRight) { return fromCorners(topLeft.x(), topLeft.y(), bottomRight.x(), bottomRight.y()); }
 
     public Box2d centerOn(double cx, double cy) { return setX1(cx - getWidth() / 2).setY1(cy - getHeight() / 2); }
 
@@ -98,10 +99,10 @@ public class Box2d {
     public double getWidth() { return w; }
     public double getHeight() { return h; }
 
-    public Vec2d getTopLeft() { return new Vec2d(x, y); }
-    public Vec2d getTopRight() { return new Vec2d(x + w, y); }
-    public Vec2d getBottomLeft() { return new Vec2d(x, y + h); }
-    public Vec2d getBottomRight() { return new Vec2d(x + w, y + h); }
+    public IVec2d getTopLeft() { return new IVec2d(x, y); }
+    public IVec2d getTopRight() { return new IVec2d(x + w, y); }
+    public IVec2d getBottomLeft() { return new IVec2d(x, y + h); }
+    public IVec2d getBottomRight() { return new IVec2d(x + w, y + h); }
 
     public Box2d setX1(double x1) { x = x1; return this; }
     public Box2d setY1(double y1) { y = y1; return this; }
@@ -111,13 +112,22 @@ public class Box2d {
     public Box2d setHeight(double height) { h = height; return this; }
 
     public Box2d move(double dx, double dy) { x += dx; y += dy; return this; }
+    public Box2d move(IVec2d vec) { x += vec.x(); y += vec.y(); return this; }
     public Box2d expand(double x, double y) { w += x; h += y; return this; }
     public Box2d scaleWidthAndHeight(double fw, double fh) { w *= fw; h *= fh; return this; }
 
     public boolean isIn(double tx, double ty) { return tx >= x && tx <= x + w && ty >= y && ty <= y + h; }
-    public boolean isIn(Vec2d v) { return isIn(v.x, v.y); }
+    public boolean isIn(IVec2d v) { return isIn(v.x(), v.y()); }
 
     public Box2d mergeCut(Box2d area) {
         return fromCorners(Math.max(x, area.x), Math.max(y, area.y), Math.min(getX2(), area.getX2()), Math.min(getY2(), area.getY2()));
+    }
+
+    public boolean containedIn(Rect2i vb) {
+        return w <= vb.getWidth() && h <= vb.getHeight() && vb.contains((int)x, (int)y) && vb.contains((int)(x + w), (int)(y + h)) && vb.contains((int)(x + w), (int)y) && vb.contains((int)x, (int)(y + h));
+    }
+
+    public Rect2i asRect() {
+        return new Rect2i((int)x, (int)y, (int)w, (int)h);
     }
 }

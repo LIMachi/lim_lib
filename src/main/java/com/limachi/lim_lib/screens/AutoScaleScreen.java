@@ -1,21 +1,11 @@
 package com.limachi.lim_lib.screens;
 
-import com.limachi.lim_lib.menus.AutoScaleMenu;
-import com.limachi.lim_lib.registries.clientAnnotations.RegisterMenuScreen;
-import com.limachi.lim_lib.render.RenderUtils;
-import com.limachi.lim_lib.widgets.ScrollBarWidget;
-import com.mojang.blaze3d.vertex.PoseStack;
-import net.minecraft.network.chat.Component;
-import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.world.inventory.Slot;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+//import com.limachi.lim_lib.menus.AutoScaleMenu;
 
-import java.util.List;
-
-@OnlyIn(Dist.CLIENT)
-@RegisterMenuScreen
-public class AutoScaleScreen extends AbstractWidgetContainerScreen<AutoScaleMenu> implements ILimLibScreen {
+//@OnlyIn(Dist.CLIENT)
+//@RegisterMenuScreen
+//public class AutoScaleScreen extends WidgetContainerScreen/*AbstractWidgetContainerScreen*/<AutoScaleMenu> implements ILimLibScreen {
+/*
 
     protected final ScrollBarWidget scrollBar = new ScrollBarWidget(152, 15, 110, 0, 0, s->reorganiseSlots());
 
@@ -75,3 +65,4 @@ public class AutoScaleScreen extends AbstractWidgetContainerScreen<AutoScaleMenu
         return true;
     }
 }
+*/

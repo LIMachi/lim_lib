@@ -1,11 +1,33 @@
 package com.limachi.lim_lib.widgets;
 
+import com.limachi.lim_lib.maths.AnchoredBox;
 import net.minecraft.network.chat.Component;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import org.jetbrains.annotations.NotNull;
 
-@SuppressWarnings("unused")
-@OnlyIn(Dist.CLIENT)
+import java.util.function.Consumer;
+
 public class ButtonWidget extends BaseButtonWidget<ButtonWidget> {
-    public ButtonWidget(int x, int y, int w, int h, Component title) { super(x, y, w, h, title); }
+
+    public ButtonWidget(@NotNull AnchoredBox box, Component title, Consumer<ButtonWidget> onStateChange) {
+        super(box, title, onStateChange);
+    }
+
+    @Override
+    protected void onMouseStopOver(double mouseX, double mouseY) {
+        updatePressedState(false, 0);
+        super.onMouseStopOver(mouseX, mouseY);
+    }
+
+    @Override
+    protected boolean onMouseClicked(double mouseX, double mouseY, int button) {
+        updatePressedState(isOvered, button);
+        return isOvered;
+    }
+
+    @Override
+    protected boolean onMouseReleased(double mouseX, double mouseY, int button) {
+        boolean t = pressedState;
+        updatePressedState(false, button);
+        return t;
+    }
 }

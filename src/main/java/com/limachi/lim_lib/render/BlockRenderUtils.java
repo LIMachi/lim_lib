@@ -34,18 +34,18 @@ public class BlockRenderUtils extends RenderType {
 
     public static final int DEFAULT_OVERLAY = 0x22FF2255; //transparent green
 
-    public static final RenderType BLOCK_OVERLAY_RENDER_TYPE = create("BlockOverlay",
-            DefaultVertexFormat.POSITION_COLOR, VertexFormat.Mode.QUADS, 256,false, false,
-            RenderType.CompositeState.builder()
-                    .setShaderState(RenderStateShard.ShaderStateShard.POSITION_COLOR_SHADER)
-                    .setLayeringState(VIEW_OFFSET_Z_LAYERING)
-                    .setTransparencyState(TRANSLUCENT_TRANSPARENCY)
-                    .setTextureState(NO_TEXTURE)
-                    .setDepthTestState(LEQUAL_DEPTH_TEST)
-                    .setCullState(CULL)
-                    .setLightmapState(NO_LIGHTMAP)
-                    .setWriteMaskState(COLOR_DEPTH_WRITE)
-                    .createCompositeState(false));
+//    public static final RenderType BLOCK_OVERLAY_RENDER_TYPE = create("BlockOverlay",
+//            DefaultVertexFormat.POSITION_COLOR, VertexFormat.Mode.QUADS, 256, false, false,
+//            RenderType.CompositeState.builder()
+//                    .setShaderState(RenderStateShard.ShaderStateShard.POSITION_COLOR_SHADER)
+//                    .setLayeringState(VIEW_OFFSET_Z_LAYERING)
+//                    .setTransparencyState(TRANSLUCENT_TRANSPARENCY)
+//                    .setTextureState(NO_TEXTURE)
+//                    .setDepthTestState(LEQUAL_DEPTH_TEST)
+//                    .setCullState(CULL)
+//                    .setLightmapState(NO_LIGHTMAP)
+//                    .setWriteMaskState(COLOR_DEPTH_WRITE)
+//                    .createCompositeState(false));
 
     private static final HashMap<String, HashMap<BlockPos, Pair<Integer, Integer>>> CLIENT_OVERLAYS = new HashMap<>();
 
@@ -130,7 +130,7 @@ public class BlockRenderUtils extends RenderType {
         pose.translate(-cam.x(), -cam.y(), -cam.z());
 
         MultiBufferSource.BufferSource buffer = mc.renderBuffers().bufferSource();
-        VertexConsumer builder = buffer.getBuffer(BLOCK_OVERLAY_RENDER_TYPE);
+        VertexConsumer builder = buffer.getBuffer(RenderType.translucentNoCrumbling());
 
         overlays.replaceAll((pos, ticksColor)->{
             if (ticksColor == null || ClientEvents.tick > ticksColor.getFirst()) return null;
@@ -148,7 +148,7 @@ public class BlockRenderUtils extends RenderType {
 
         pose.popPose();
         RenderSystem.disableDepthTest();
-        buffer.endBatch(BLOCK_OVERLAY_RENDER_TYPE);
+        buffer.endBatch(RenderType.translucentNoCrumbling());
     }
 
     @Mod.EventBusSubscriber(value = Dist.CLIENT)

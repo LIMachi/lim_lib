@@ -1,4 +1,4 @@
-package com.limachi.lim_lib.widgets;
+package com.limachi.lim_lib.widgetsOld;
 
 import net.minecraft.network.chat.Component;
 import net.minecraftforge.api.distmarker.Dist;

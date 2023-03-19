@@ -1,32 +1,58 @@
 package com.limachi.lim_lib.test;
 
+import com.limachi.lim_lib.maths.AnchoredBox;
 import com.limachi.lim_lib.registries.clientAnnotations.RegisterMenuScreen;
-import com.limachi.lim_lib.screens.AbstractWidgetContainerScreen;
-import com.limachi.lim_lib.widgets.ButtonWidget;
-import com.limachi.lim_lib.widgets.CyclingButtonWidget;
-import com.limachi.lim_lib.widgets.TextFieldWidget;
-import com.mojang.blaze3d.vertex.PoseStack;
+import com.limachi.lim_lib.screens.WidgetContainerScreen;
+import com.limachi.lim_lib.widgets.*;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.Container;
+import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.player.Inventory;
-import org.jetbrains.annotations.NotNull;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.Collections;
+import java.util.List;
 
 @RegisterMenuScreen(skip = "com.limachi.lim_lib.LimLib:useTests")
-public class TestScreen extends AbstractWidgetContainerScreen<TestMenu> {
+public class TestScreen extends WidgetContainerScreen<TestMenu> {
+
+    Container t = new SimpleContainer(new ItemStack(Items.ANDESITE));
+
+    boolean state = true;
+
+    AnchoredBox s1 = AnchoredBox.topLeftDeltaBox(20, 20, 140, 40);
+    AnchoredBox s2 = AnchoredBox.centeredBox(220, 60);
 
     public TestScreen(TestMenu menu, Inventory inventory, Component title) {
         super(menu, inventory, title);
-        initWidgets.add(new TextFieldWidget(20, 20, 140).setOnFinish(t->t.clearTooltip().addTooltip(Component.literal(t.getText()))).setValidator((s, t)->!s.contains("fuck")));
-        initWidgets.add(new ButtonWidget(20, 40, 80, 16, Component.literal("Test Button")).setOnStateChange(b->{
-            if (b.getPressedState())
-                b.addTooltip(Component.literal("Got Pressed!"));
-            else
-                b.clearTooltip();
-        }));
-        initWidgets.add(new CyclingButtonWidget(20, 60, 80, 16, Component.literal("Test 1"), Component.literal("Test 2"), Component.literal("Test 3")).setOnStateChange(c->c.clearTooltip().addTooltip(c.getValues().get(c.getSelected()))));
-    }
+        root.addChild(new BackgroundWidget(s1.copy()) {
+            @Override
+            public void tick() {
+                if (!widgetOptions.catchMouseEvents())
+                    widgetOptions.catchMouseEvents(true);
+            }
 
-    @Override
-    public void render(@NotNull PoseStack poseStack, int mouseX, int mouseY, float partialTick) {
-        super.render(poseStack, mouseX, mouseY, partialTick);
+            @Override
+            protected boolean onMouseClicked(double mouseX, double mouseY, int button) {
+                if (!isOvered || isAreaAnimated()) return false;
+                animateArea(state ? s2 : s1, 10);
+                state = !state;
+                return true;
+            }
+        }.addChild(new BackgroundWidget(AnchoredBox.topRightBox(120, 30)) {
+            @Nullable
+            @Override
+            protected List<Component> getTooltip() {
+                return isOvered ? Collections.singletonList(Component.literal("Hovered!")) : null;
+            }
+        }.addChild(new TextFieldWidget(AnchoredBox.centeredBox(100, 20)).setText("Test")))
+                        .addChild(new ButtonWidget(AnchoredBox.topLeftDeltaBox(0, 0, 20, 20), Component.literal("B"), b->{}))
+        );
+//        root.addChild(new TestSlotWidget(new AnchoredBox(AnchorPoint.TOP_RIGHT, 18, 18, AnchorPoint.TOP_LEFT), new Slot(t, 0, 0, 0)));
+        root.addChild(new ScrollBarWidget(AnchoredBox.topRightBox(16, 100), 0, 10, 1, 3, w->{}));
+//        root.addChild(new TextWidget(AnchoredBox.centeredBox(100, 20), Component.literal("Test string")));
+        root.addChild(new TestRenderWidget(100, 20));
     }
 }

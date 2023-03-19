@@ -21,10 +21,11 @@ public class JEIShouldNotRenderOverWidgets implements IGlobalGuiHandler {
         Screen screen = Minecraft.getInstance().screen;
         if (screen != null)
             screen.renderables.forEach(t->{
-                if (t instanceof BaseWidget w) {
+                if (t instanceof com.limachi.lim_lib.widgetsOld.BaseWidget w) {
                     Box2d b = w.getArea();
                     widgets.add(new Rect2i((int)b.getX1(), (int)b.getX2(), (int)b.getWidth(), (int)b.getHeight()));
-                }
+                } else if (t instanceof BaseWidget<?> w)
+                    w.gatherScreenUsage(widgets);
             });
         return widgets;
     }

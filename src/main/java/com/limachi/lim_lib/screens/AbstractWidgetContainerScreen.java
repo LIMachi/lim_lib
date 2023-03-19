@@ -1,7 +1,7 @@
 package com.limachi.lim_lib.screens;
 
 import com.limachi.lim_lib.render.RenderUtils;
-import com.limachi.lim_lib.widgets.BaseWidget;
+import com.limachi.lim_lib.widgetsOld.BaseWidget;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.gui.components.Widget;
@@ -19,7 +19,7 @@ import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-
+/*
 public class AbstractWidgetContainerScreen<M extends AbstractContainerMenu> extends AbstractContainerScreen<M> implements ILimLibScreen {
 
     protected List<BaseWidget> initWidgets = new ArrayList<>();
@@ -97,3 +97,4 @@ public class AbstractWidgetContainerScreen<M extends AbstractContainerMenu> exte
         return true;
     }
 }
+*/

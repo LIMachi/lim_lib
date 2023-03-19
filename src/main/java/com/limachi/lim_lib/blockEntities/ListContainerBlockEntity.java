@@ -1,7 +1,7 @@
 package com.limachi.lim_lib.blockEntities;
 
 import com.limachi.lim_lib.containers.IListContainer;
-import com.limachi.lim_lib.menus.AutoScaleMenu;
+//import com.limachi.lim_lib.menus.AutoScaleMenu;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.Containers;
@@ -72,8 +72,8 @@ public abstract class ListContainerBlockEntity extends BaseContainerBlockEntity 
 
     @Override
     public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
-        if (!level.isClientSide())
-            AutoScaleMenu.open(player, this, getDisplayName());
+//        if (!level.isClientSide())
+//            AutoScaleMenu.open(player, this, getDisplayName());
         return InteractionResult.sidedSuccess(level.isClientSide());
     }
 }

@@ -1,23 +1,8 @@
 package com.limachi.lim_lib.menus;
 
-import com.limachi.lim_lib.registries.annotations.RegisterMenu;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.chat.Component;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.Container;
-import net.minecraft.world.SimpleContainer;
-import net.minecraft.world.SimpleMenuProvider;
-import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.inventory.MenuType;
-import net.minecraft.world.inventory.Slot;
-import net.minecraftforge.network.NetworkHooks;
-import net.minecraftforge.registries.RegistryObject;
-
-import javax.annotation.Nonnull;
-
-@SuppressWarnings("unused")
-public class AutoScaleMenu extends CommonContainerMenu {
+//@SuppressWarnings("unused")
+//public class AutoScaleMenu extends WidgetContainerMenu/*CommonContainerMenu*/ {
+/*
 
     public static void open(Player player, Container container, Component title) {
         if (!player.level.isClientSide())
@@ -78,3 +63,4 @@ public class AutoScaleMenu extends CommonContainerMenu {
     @Override
     public boolean stillValid(@Nonnull Player player) { return container.stillValid(player); }
 }
+*/

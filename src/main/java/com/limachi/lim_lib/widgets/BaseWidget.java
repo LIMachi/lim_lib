@@ -1,169 +1,210 @@
 package com.limachi.lim_lib.widgets;
 
-import com.limachi.lim_lib.Log;
-import com.limachi.lim_lib.maths.Box2d;
+import com.limachi.lim_lib.maths.*;
 import com.limachi.lim_lib.render.RenderUtils;
-import com.limachi.lim_lib.screens.ILimLibScreen;
+import com.limachi.lim_lib.data.IAreaUser;
+import com.limachi.lim_lib.data.TreeNode;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.gui.components.Widget;
-import net.minecraft.client.gui.components.events.AbstractContainerEventHandler;
-import net.minecraft.client.gui.components.events.GuiEventListener;
-import net.minecraft.client.gui.narration.NarratableEntry;
-import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.phys.Vec2;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraft.world.inventory.tooltip.TooltipComponent;
+import net.minecraft.world.item.ItemStack;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 
-@SuppressWarnings({"unused", "UnusedReturnValue", "unchecked"})
-@OnlyIn(Dist.CLIENT)
-public abstract class BaseWidget<T extends BaseWidget<T>> extends AbstractContainerEventHandler implements Widget, NarratableEntry {
+public abstract class BaseWidget<T extends BaseWidget<T>> implements IAreaUser, Widget {
 
-    protected Box2d area;
-    private AbstractContainerScreen<?> screen = null;
-    protected ResourceLocation backgroundTexture;
-    protected Box2d backgroundCutout;
-    protected List<? extends GuiEventListener> children = new ArrayList<>();
+    @Nullable
+    protected ResourceLocation backgroundTexture = null;
+    protected Box2d backgroundCutout = new Box2d(0, 0);
 
-    protected final ArrayList<Component> tooltip = new ArrayList<>();
-    private boolean simpleBlit;
+    protected final TreeNode<BaseWidget<?>> node = new TreeNode<>(this);
 
-    public BaseWidget(int x, int y, int w, int h, ResourceLocation texture, Box2d cutout, boolean simpleBlit) {
-        area = new Box2d(x, y, w, h);
-        backgroundTexture = texture;
-        backgroundCutout = cutout;
-        this.simpleBlit = simpleBlit;
+    private RootWidget root = null;
+
+    @Nullable
+    protected BaseWidget<?> previousFocus = null;
+
+    protected boolean isOvered = false;
+
+    protected WidgetOptions widgetOptions;
+
+    protected final Area areaHandler;
+
+    protected List<Component> defaultTooltip;
+
+    protected BaseWidget(@Nonnull Area areaHandler, @Nonnull WidgetOptions options) {
+        this.areaHandler = areaHandler;
+        widgetOptions = options;
     }
 
-    public T attachToScreen(AbstractContainerScreen<?> containerScreen) {
-        if (containerScreen instanceof ILimLibScreen)
-            screen = containerScreen;
-        else
-            Log.error(containerScreen, "invalid screen type attached, must implement ILimLibScreen");
-        return (T)this;
+    protected BaseWidget(@Nonnull AnchoredBox box, @Nonnull WidgetOptions options) {
+        areaHandler = new Area(box, ()->node.safeParentCall(p->p.getContent().areaHandler, null));
+        widgetOptions = options;
     }
 
-    public AbstractContainerScreen<?> getScreen() { return screen; }
+    protected AbstractContainerScreen<?> screen() { return root != null ? root.screen : null; }
 
-    public Box2d getArea() { return area; }
-
-    public T moveTo(int x, int y) {
-        area.setX1(x).setY1(y);
-        return (T)this;
+    protected RootWidget root() {
+        if (root != null) return root;
+        return root = (node.getRoot().getContent() instanceof RootWidget w ? w : null);
     }
 
-    public T rescale(int width, int height) {
-        area.setWidth(width).setHeight(height);
-        return (T)this;
-    }
-
-    public T setBackground(ResourceLocation texture, Box2d cutout) {
-        backgroundTexture = texture;
-        backgroundCutout = cutout;
-        simpleBlit = false;
-        return (T)this;
-    }
-
-    public T setBackground(ResourceLocation texture, Vec2 origin) {
-        backgroundTexture = texture;
-        backgroundCutout.setX1(origin.x).setY1(origin.y);
-        simpleBlit = true;
-        return (T)this;
-    }
-
-    public T addTooltip(Collection<Component> tooltipAddition) {
-        tooltip.addAll(tooltipAddition);
-        return (T)this;
-    }
-
-    public T addTooltip(Component ... tooltipAddition) {
-        tooltip.addAll(Arrays.stream(tooltipAddition).toList());
-        return (T)this;
-    }
-
-    public T clearTooltip() {
-        tooltip.clear();
-        return (T)this;
-    }
-
-    public ArrayList<Component> getTooltip() {
-        return tooltip;
-    }
+    protected BaseWidget<?> parent() { return node.safeParentCall(TreeNode::getContent, null); }
 
     @Override
-    public void render(@Nonnull PoseStack stack, int mouseX, int mouseY, float partialTick) {
-        if (screen != null) {
-            RenderSystem.setShaderTexture(0, backgroundTexture);
-            if (simpleBlit)
-                RenderUtils.blitUnscaled(screen, stack, getBlitOffset(), area, backgroundCutout.getOrigins());
-            else
-                RenderUtils.blitMiddleExp(screen, stack, getBlitOffset(), area, backgroundCutout);
-            boolean isMouseOver = isMouseOver(mouseX, mouseY);
-            stack.pushPose();
-            stack.translate(screen.getGuiLeft() + area.getX1(), screen.getGuiTop() + area.getY1(), 0);
-            renderRelative(stack, relativeMouseOverX(mouseX), relativeMouseOverY(mouseY), partialTick, isMouseOver);
-            stack.popPose();
-            if (isMouseOver && tooltip.size() > 0 && screen instanceof ILimLibScreen s)
-                s.overrideTooltip(tooltip);
-        }
+    public Area areaHandler() { return areaHandler; }
+
+    public BaseWidget<T> addDefaultTooltip(List<Component> components) {
+        this.defaultTooltip = components;
+        return this;
+    }
+
+    public BaseWidget<T> addDefaultTooltip(Component ... components) {
+        return addDefaultTooltip(Arrays.stream(components).toList());
+    }
+
+    public BaseWidget<T> addChild(BaseWidget<?> widget) {
+        node.addChild(widget.node);
+        widget.updateArea();
+        return this;
+    }
+
+    public boolean gatherScreenUsage(ArrayList<Rect2i> usage) {
+        boolean shouldAdd = true;
+        for (Rect2i u : usage)
+            if (currentArea().containedIn(u)) {
+                shouldAdd = false;
+                break;
+            }
+        if (shouldAdd)
+            usage.add(new Rect2i((int)currentArea().getX1(), (int)currentArea().getY1(), (int)currentArea().getWidth(), (int)currentArea().getHeight()));
+        node.propagateDown(n->n.getContent().gatherScreenUsage(usage), true, -1);
+        return false;
+    }
+
+    protected void onAreaResize() {}
+
+    public void tick() {}
+
+    protected T setBackground(@Nullable ResourceLocation backgroundTexture, Box2d backgroundCutout) {
+        this.backgroundTexture = backgroundTexture;
+        this.backgroundCutout = backgroundCutout;
+        return (T)this;
     }
 
     /**
-     * called after background was rendered, the stack will be set so pixel(0,0) and mouse(0,0) are the top left corner of the widget
+     * Will be called after the backgrounds (of the screen and self) have been rendered, before children render.
+     * Use it if the background render is not enough (animation, object render, etc...).
      */
-    public void renderRelative(PoseStack stack, int mouseX, int mouseY, float partialTick, boolean isMouseOver) {}
+    public void backRender(@Nonnull PoseStack stack, double mouseX, double mouseY, float partialTick) {}
+
+    /**
+     * Will be called at the VERY END of the screen render (but before tooltip rendering), in inverse order (top widget last).
+     * Used for overlays/transparent textures.
+     */
+    public void frontRender(@Nonnull PoseStack stack, double mouseX, double mouseY, float partialTick) {}
 
     @Override
-    public boolean isMouseOver(double mouseX, double mouseY) {
-        return isMouseOverBox(mouseX, mouseY, area);
+    public void render(@Nonnull PoseStack stack, int mouseX, int mouseY, float partialTick) {
+        if (!root().frontRenderPass) {
+            partialTick(partialTick);
+            if (widgetOptions.shouldRender()) {
+                if (backgroundTexture != null) {
+                    RenderSystem.setShaderTexture(0, backgroundTexture);
+                    RenderUtils.blitMiddleExp(null, stack, 0, currentArea(), backgroundCutout);
+                }
+                backRender(stack, mouseX, mouseY, partialTick);
+            }
+        } else if (widgetOptions.scissorRender())
+            root().pushScissor(currentArea().asRect());
+        if (widgetOptions.shouldRenderChildren())
+            node.propagateDown(n->{n.getContent().render(stack, mouseX, mouseY, partialTick); return false;}, false, 1);
+        if (root().frontRenderPass && widgetOptions.shouldRender())
+            frontRender(stack, mouseX, mouseY, partialTick);
+        if (widgetOptions.scissorRender())
+            root().popScissor();
     }
 
-    public boolean isMouseOverBox(double mouseX, double mouseY, Box2d box) {
-        return screen != null && screen.getGuiLeft() + box.getX1() <= mouseX && mouseX < screen.getGuiLeft() + box.getX2() && screen.getGuiTop() + box.getY1() <= mouseY && mouseY < screen.getGuiTop() + box.getY2(); //fixed minor overlap issue due to check including 1 more pixel than expected
+    @Nullable
+    protected List<Component> getTooltip() { return isOvered ? defaultTooltip : null; }
+    protected ItemStack getTooltipStack() { return ItemStack.EMPTY; }
+    @Nullable
+    protected TooltipComponent getTooltipImage() { return null; }
+
+    protected void onMouseStartOver(double mouseX, double mouseY) {}
+
+    protected void onMouseStopOver(double mouseX, double mouseY) {}
+
+    protected void onMouseMove() {}
+
+    protected boolean onMouseClicked(double mouseX, double mouseY, int button) { return false; }
+
+    protected boolean onMouseReleased(double mouseX, double mouseY, int button) { return false; }
+
+    protected boolean onMouseDragged(double mouseX, double mouseY, int button, double fromX, double fromY) { return false; }
+
+    protected boolean onMouseScrolled(double mouseX, double mouseY, double amount) { return false; }
+
+    protected boolean onKeyPressed(int keyCode, int scanCode, int modifiers) { return false; }
+
+    protected boolean onKeyReleased(int keyCode, int scanCode, int modifiers) { return false; }
+
+    protected boolean onCharTyped(char codePoint, int modifiers) { return false; }
+
+    public boolean isFocused() { return root().getFocused() == this; }
+
+    public boolean isDragged() { return isFocused() && screen().isDragging(); }
+
+    public final boolean isOvered() { return isOvered; }
+
+    protected boolean changeFocus(boolean take) {
+        BaseWidget<?> t = root().getFocused();
+        if (take) {
+            if (t == this)
+                return true;
+            if (t != null)
+                previousFocus = t;
+            root().setFocused(this);
+            return true;
+        }
+        if (t == this)
+            root().setFocused(previousFocus);
+        return false;
     }
 
-    public boolean isFocused() { return screen != null && screen.getFocused() == this; }
-    public boolean isDragged() { return isFocused() && screen.isDragging(); }
-
-    public int relativeMouseOverX(double mouseX) {
-        if (screen == null) return Integer.MIN_VALUE;
-        return (int)(mouseX - (screen.getGuiLeft() + area.getX1()));
+    protected boolean isMouseOver(double mouseX, double mouseY) {
+        boolean out = currentArea().isIn(mouseX, mouseY);
+        if (out && !isOvered) {
+            isOvered = true;
+            if (widgetOptions.catchMouseEvents())
+                onMouseStartOver(mouseX, mouseY);
+        } else if (!out && isOvered) {
+            isOvered = false;
+            if (widgetOptions.catchMouseEvents())
+                onMouseStopOver(mouseX, mouseY);
+        }
+        return out;
     }
 
-    public int relativeMouseOverY(double mouseY) {
-        if (screen == null) return Integer.MIN_VALUE;
-        return (int)(mouseY - (screen.getGuiTop() + area.getY1()));
+    public double relativeMouseX() { return root().mouseX() - currentArea().getX1(); }
+
+    public double relativeMouseY() { return root().mouseY() - currentArea().getY1(); }
+
+    public AnchorPoint parentAnchorPointUnderMouse() {
+        Box2d parentArea = node.safeParentCall(n->n.getContent().currentArea(), null);
+        if (parentArea == null)
+            return AnchorPoint.CENTER;
+        return new AnchorPoint((root().mouseX() - parentArea.getX1()) / parentArea.getWidth(), false, (root().mouseY() - parentArea.getY1()) / parentArea.getHeight(), false, true);
     }
 
-    public double fractionalMouseOverX(double mouseX) { return relativeMouseOverX(mouseX) / area.getWidth(); }
-
-    public double fractionalMouseOverY(double mouseY) { return relativeMouseOverY(mouseY) / area.getHeight(); }
-
-    @Override
-    @Nonnull
-    public List<? extends GuiEventListener> children() { return children; }
-
-    @Override
-    @Nonnull
-    public NarrationPriority narrationPriority() { return NarratableEntry.NarrationPriority.NONE; }
-
-    @Override
-    public void updateNarration(@Nonnull NarrationElementOutput output) {}
-
-    public T focus(boolean takeFocus) {
-        if (screen != null)
-            screen.setFocused(takeFocus ? this : null);
-        return (T)this;
-    }
-
-    public boolean shouldCloseOnEsc() { return true; }
+    protected boolean canCatchEsc() { return false; }
 }

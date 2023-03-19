@@ -5,6 +5,7 @@ import com.limachi.lim_lib.Strings;
 import com.limachi.lim_lib.reflection.Classes;
 import com.limachi.lim_lib.registries.Registries;
 import com.limachi.lim_lib.registries.annotations.RegisterMenu;
+import com.limachi.lim_lib.menus.WidgetContainerMenu;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 //import net.minecraft.network.chat.TextComponent; //VERSION 1.18.2
@@ -22,7 +23,7 @@ import net.minecraftforge.network.NetworkHooks;
 import net.minecraftforge.registries.RegistryObject;
 import org.jetbrains.annotations.Nullable;
 
-public class TestMenu extends AbstractContainerMenu {
+public class TestMenu extends WidgetContainerMenu {
 
     @RegisterMenu(skip = "com.limachi.lim_lib.LimLib:useTests")
     public static RegistryObject<MenuType<TestMenu>> R_MENU;

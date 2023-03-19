@@ -1,4 +1,4 @@
-package com.limachi.lim_lib.widgets;
+package com.limachi.lim_lib.widgetsOld;
 
 @FunctionalInterface
 public interface IWidgetCallback {
