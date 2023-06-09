@@ -101,13 +101,15 @@ public class RootWidget extends BaseWidget<RootWidget> implements Widget {
         final ItemStack []stack = {ItemStack.EMPTY};
         final TooltipComponent []image = {null};
         Predicate<BaseWidget<?>> r = w->{
-            List<Component> t = w.getTooltip();
-            if (t != null)
-                tooltip.addAll(t);
-            if (stack[0].isEmpty())
-                stack[0] = w.getTooltipStack();
-            if (image[0] == null)
-                image[0] = w.getTooltipImage();
+            if (w.widgetOptions.active()) {
+                List<Component> t = w.getTooltip();
+                if (t != null)
+                    tooltip.addAll(t);
+                if (stack[0].isEmpty())
+                    stack[0] = w.getTooltipStack();
+                if (image[0] == null)
+                    image[0] = w.getTooltipImage();
+            }
             return false;
         };
         node.propagateDown(r, -1, false);
@@ -131,7 +133,7 @@ public class RootWidget extends BaseWidget<RootWidget> implements Widget {
         this.mouseX = mouseX;
         this.mouseY = mouseY;
         node.propagateDown(w->{
-            if (w.widgetOptions.catchMouseEvents()) {
+            if (w.widgetOptions.active() && w.widgetOptions.catchMouseEvents()) {
                 w.isMouseOver(mouseX, mouseY);
                 w.onMouseMove();
             }
@@ -148,7 +150,7 @@ public class RootWidget extends BaseWidget<RootWidget> implements Widget {
         this.mouseY = mouseY;
         return node.propagateDown(w->{
             w.isMouseOver(mouseX, mouseY);
-            if (w.widgetOptions.catchMouseEvents() && w.onMouseClicked(mouseX, mouseY, button)) {
+            if (w.widgetOptions.active() && w.widgetOptions.catchMouseEvents() && w.onMouseClicked(mouseX, mouseY, button)) {
                 if (w.isOvered && w.widgetOptions.canTakeFocus())
                     w.changeFocus(true);
                 w.root().setDragButton(button);
@@ -163,9 +165,9 @@ public class RootWidget extends BaseWidget<RootWidget> implements Widget {
         this.mouseY = mouseY;
         return node.propagateDown(w->{
             w.isMouseOver(mouseX, mouseY);
-            if (!w.isOvered && w.widgetOptions.looseFocusOnClickOff())
+            if (w.widgetOptions.active() && !w.isOvered && w.widgetOptions.looseFocusOnClickOff())
                 w.changeFocus(false);
-            return w.widgetOptions.catchMouseEvents() && w.onMouseReleased(mouseX, mouseY, button);
+            return w.widgetOptions.active() && w.widgetOptions.catchMouseEvents() && w.onMouseReleased(mouseX, mouseY, button);
         }, -1, false);
     }
 
@@ -174,7 +176,7 @@ public class RootWidget extends BaseWidget<RootWidget> implements Widget {
         this.mouseY = mouseY;
         return node.propagateDown(w->{
             w.isMouseOver(mouseX, mouseY);
-            return w.widgetOptions.catchMouseEvents() && w.onMouseDragged(mouseX, mouseY, button, fromX, fromY);
+            return w.widgetOptions.active() && w.widgetOptions.catchMouseEvents() && w.onMouseDragged(mouseX, mouseY, button, fromX, fromY);
         }, -1, false);
     }
 
@@ -183,20 +185,20 @@ public class RootWidget extends BaseWidget<RootWidget> implements Widget {
         this.mouseY = mouseY;
         return node.propagateDown(w->{
             w.isMouseOver(mouseX, mouseY);
-            return w.widgetOptions.catchMouseEvents() && w.onMouseScrolled(mouseX, mouseY, amount);
+            return w.widgetOptions.active() && w.widgetOptions.catchMouseEvents() && w.onMouseScrolled(mouseX, mouseY, amount);
         }, -1, false);
     }
 
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        return node.propagateDown(w->w.widgetOptions.catchKeyboardEvents() && w.onKeyPressed(keyCode, scanCode, modifiers), -1, false);
+        return node.propagateDown(w->w.widgetOptions.active() && w.widgetOptions.catchKeyboardEvents() && w.onKeyPressed(keyCode, scanCode, modifiers), -1, false);
     }
 
     public boolean keyReleased(int keyCode, int scanCode, int modifiers) {
-        return node.propagateDown(w->w.widgetOptions.catchKeyboardEvents() && w.onKeyReleased(keyCode, scanCode, modifiers), -1, false);
+        return node.propagateDown(w->w.widgetOptions.active() && w.widgetOptions.catchKeyboardEvents() && w.onKeyReleased(keyCode, scanCode, modifiers), -1, false);
     }
 
     public boolean charTyped(char codePoint, int modifiers) {
-        return node.propagateDown(w->w.widgetOptions.catchKeyboardEvents() && w.onCharTyped(codePoint, modifiers), -1, false);
+        return node.propagateDown(w->w.widgetOptions.active() && w.widgetOptions.catchKeyboardEvents() && w.onCharTyped(codePoint, modifiers), -1, false);
     }
 
     @Override
@@ -210,7 +212,7 @@ public class RootWidget extends BaseWidget<RootWidget> implements Widget {
         node.propagateDown((Consumer<BaseWidget<?>>)IAreaUser::updateArea, -1, true);
     }
 
-    public void containerTick() { node.propagateDown((Consumer<BaseWidget<?>>)BaseWidget::tick, -1, true); }
+    public void containerTick() { node.propagateDown(w->{if (w.widgetOptions.active()) w.tick();}, -1, true); }
 
-    public boolean catchEsc() { return node.propagateDown((Predicate<BaseWidget<?>>)BaseWidget::canCatchEsc, -1, false); }
+    public boolean catchEsc() { return node.propagateDown(w->w.widgetOptions.active() && w.canCatchEsc(), -1, false); }
 }

@@ -1,7 +1,15 @@
 package com.limachi.lim_lib;
 
 import com.mojang.datafixers.util.Pair;
+import net.minecraft.world.Container;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.SlotAccess;
+import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
+import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.items.IItemHandlerModifiable;
+
+import java.util.function.Predicate;
 
 public class StackUtils {
     /**
@@ -58,5 +66,98 @@ public class StackUtils {
         ItemStack rem = stack.copy();
         rem.setCount(stack.getCount() - out.getCount());
         return new Pair<>(out, rem);
+    }
+
+    public static SlotAccess slotAccessForItemHandler(final IItemHandler inv, final int slot, final Predicate<ItemStack> pred) {
+        return new SlotAccess() {
+            @Override
+            public ItemStack get() { return inv.getStackInSlot(slot); }
+
+            @Override
+            public boolean set(ItemStack stack) {
+                if (!pred.test(stack) || !inv.isItemValid(slot, stack))
+                    return false;
+                if (inv instanceof IItemHandlerModifiable mod)
+                    mod.setStackInSlot(slot, stack);
+                else {
+                    inv.extractItem(slot, inv.getStackInSlot(slot).getCount(), false);
+                    inv.insertItem(slot, stack, false);
+                }
+                return true;
+            }
+        };
+    }
+
+    public static SlotAccess slotAccessForItemHandler(final IItemHandler inv, final int slot) {
+        return slotAccessForItemHandler(inv, slot, s->true);
+    }
+
+    public static SlotAccess slotAccessForItemEntity(final ItemEntity entity, final Predicate<ItemStack> pred) {
+        return new SlotAccess() {
+            @Override
+            public ItemStack get() { return entity.getItem(); }
+
+            @Override
+            public boolean set(ItemStack stack) {
+                if (pred.test(stack)) {
+                    if (stack.isEmpty()) {
+                        entity.getItem().setCount(0);
+                        entity.remove(Entity.RemovalReason.DISCARDED);
+                        return true;
+                    }
+                    if (ItemStack.isSameItemSameTags(stack, entity.getItem())) {
+                        entity.getItem().setCount(stack.getCount());
+                        return true;
+                    }
+                }
+                return false;
+            }
+        };
+    }
+
+    public static SlotAccess slotAccessForItemEntity(final ItemEntity entity) { return slotAccessForItemEntity(entity, s->true); }
+
+    public static SlotAccess slotAccessForStack(final ItemStack stack, final Predicate<ItemStack> pred) {
+        return new SlotAccess() {
+            @Override
+            public ItemStack get() { return stack; }
+
+            @Override
+            public boolean set(ItemStack in) {
+                if (pred.test(in)) {
+                    if (in.isEmpty()) {
+                        stack.setCount(0);
+                        return true;
+                    }
+                    if (ItemStack.isSameItemSameTags(in, stack)) {
+                        stack.setCount(in.getCount());
+                        return true;
+                    }
+                }
+                return false;
+            }
+        };
+    }
+
+    public static SlotAccess slotAccessForStack(final ItemStack stack) { return slotAccessForStack(stack, s->true); }
+
+    public static void mergeSlots(SlotAccess from, SlotAccess to, boolean doCheck) {
+        if (doCheck) {}
+        ItemStack ts = to.get();
+        int room = ts.getMaxStackSize() - ts.getCount();
+        if (room > 0) {
+            ItemStack fs = from.get();
+            int toInsert = Integer.min(Integer.min(room, fs.getCount()), fs.getMaxStackSize());
+            if (toInsert > 0) {
+                if (ts.isEmpty()) {
+                    ts = fs.copy();
+                    ts.setCount(toInsert);
+                } else
+                    ts.setCount(ts.getCount() + toInsert);
+                fs.setCount(fs.getCount() - toInsert);
+                from.set(fs);
+                to.set(ts);
+            }
+        }
     }
 }

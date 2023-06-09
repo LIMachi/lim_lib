@@ -1,6 +1,6 @@
 package com.limachi.lim_lib.containers;
 
-import com.limachi.lim_lib.NBT;
+import com.limachi.lim_lib.nbt.NBT;
 import com.limachi.lim_lib.StackUtils;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.nbt.CompoundTag;
@@ -21,7 +21,7 @@ import javax.annotation.Nonnull;
  * IFromTag will be generated. `proxy()` is expected to be a direct return of a final non static field.
  */
 @SuppressWarnings("unused")
-public interface IProxyContainer extends Container, IItemHandlerModifiable, StackedContentsCompatible, NBT.IAsTag, NBT.IFromTag {
+public interface IProxyContainer extends Container, IItemHandlerModifiable, StackedContentsCompatible {
     Container proxy();
 
     @Override
@@ -91,7 +91,6 @@ public interface IProxyContainer extends Container, IItemHandlerModifiable, Stac
             stacked.accountStack(c.getItem(i));
     }
 
-    @Override
     default Tag asTag() {
         ListTag out = new ListTag();
         Container c = proxy();
@@ -105,7 +104,6 @@ public interface IProxyContainer extends Container, IItemHandlerModifiable, Stac
         return out;
     }
 
-    @Override
     default void fromTag(Tag tag) {
         Container c = proxy();
         if (tag instanceof ListTag list && list.getElementType() == Tag.TAG_COMPOUND) {

@@ -9,5 +9,6 @@ public enum Stage {
     ENTITY_ATTRIBUTE,
     ENTITY,
     MENU,
-    LAST
+    LAST,
+    CAPABILITY
 }

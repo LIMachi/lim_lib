@@ -27,7 +27,7 @@ public class TestScreen extends WidgetContainerScreen<TestMenu> {
 
     public TestScreen(TestMenu menu, Inventory inventory, Component title) {
         super(menu, inventory, title);
-        root.addChild(new BackgroundWidget(s1.copy()) {
+        addWidget(new BackgroundWidget(s1.copy()) {
             @Override
             public void tick() {
                 if (!widgetOptions.catchMouseEvents())
@@ -50,9 +50,9 @@ public class TestScreen extends WidgetContainerScreen<TestMenu> {
         }.addChild(new TextFieldWidget(AnchoredBox.centeredBox(100, 20)).setText("Test")))
                         .addChild(new ButtonWidget(AnchoredBox.topLeftDeltaBox(0, 0, 20, 20), Component.literal("B"), b->{}))
         );
-//        root.addChild(new TestSlotWidget(new AnchoredBox(AnchorPoint.TOP_RIGHT, 18, 18, AnchorPoint.TOP_LEFT), new Slot(t, 0, 0, 0)));
-        root.addChild(new ScrollBarWidget(AnchoredBox.topRightBox(16, 100), 0, 10, 1, 3, w->{}));
-//        root.addChild(new TextWidget(AnchoredBox.centeredBox(100, 20), Component.literal("Test string")));
-        root.addChild(new TestRenderWidget(100, 20));
+//        addWidget(new TestSlotWidget(new AnchoredBox(AnchorPoint.TOP_RIGHT, 18, 18, AnchorPoint.TOP_LEFT), new Slot(t, 0, 0, 0)));
+        addWidget(new ScrollBarWidget(AnchoredBox.topRightBox(16, 100), 0, 10, 1, 3, w->{}));
+//        addWidget(new TextWidget(AnchoredBox.centeredBox(100, 20), Component.literal("Test string")));
+        addWidget(new TestRenderWidget(100, 20));
     }
 }

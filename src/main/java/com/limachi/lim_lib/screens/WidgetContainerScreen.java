@@ -17,12 +17,23 @@ import javax.annotation.Nonnull;
 
 public class WidgetContainerScreen<T extends AbstractContainerMenu> extends AbstractContainerScreen<T> {
 
-    public final RootWidget root;
+    private final RootWidget root;
+    private boolean disableTitles = false;
 
     public WidgetContainerScreen(T menu, Inventory playerInventory, Component title) {
         super(menu, playerInventory, title);
         root = new RootWidget(this);
         addRenderableOnly(root);
+    }
+
+    public void disableTitles(boolean state) {
+        disableTitles = state;
+    }
+
+    @Override
+    protected void renderLabels(PoseStack stack, int x, int y) {
+        if (!disableTitles)
+            super.renderLabels(stack, x, y);
     }
 
     @Override

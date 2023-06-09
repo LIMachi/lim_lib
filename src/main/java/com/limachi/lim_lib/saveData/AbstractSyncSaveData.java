@@ -1,6 +1,7 @@
 package com.limachi.lim_lib.saveData;
 
 import com.limachi.lim_lib.*;
+import com.limachi.lim_lib.nbt.NBT;
 import com.limachi.lim_lib.network.NetworkManager;
 import com.limachi.lim_lib.network.messages.SaveDataSyncMsg;
 import net.minecraft.nbt.CompoundTag;
@@ -35,7 +36,7 @@ public abstract class AbstractSyncSaveData extends SavedData {
             lastMarkDirty = Events.tick;
             if (Sides.isLogicalClient() && sync == SaveSync.BOTH_WAY)
                 Events.delayedTask(1, ()-> NetworkManager.toServer(ModBase.COMMON_ID, pack(prevState == null)));
-            else if (!Sides.isLogicalClient() && sync == SaveSync.SERVER_TO_CLIENT)
+            else if (!Sides.isLogicalClient() && (sync == SaveSync.SERVER_TO_CLIENT || sync == SaveSync.BOTH_WAY))
                 Events.delayedTask(1, ()-> NetworkManager.toClients(ModBase.COMMON_ID, pack(prevState == null)));
         }
     }

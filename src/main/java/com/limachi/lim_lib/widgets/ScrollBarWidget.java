@@ -11,6 +11,7 @@ import net.minecraft.world.phys.Vec2;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 public class ScrollBarWidget extends BaseWidget<ScrollBarWidget> {
 
@@ -24,9 +25,8 @@ public class ScrollBarWidget extends BaseWidget<ScrollBarWidget> {
 
     public static final ResourceLocation SCROLL_BAR_TEXTURE = new ResourceLocation(LimLib.COMMON_ID, "textures/screen/scroll_bar.png");
     public static final Box2d SCROLL_BAR_CUTOUT = new Box2d(WIDTH, RenderUtils.DEFAULT_FILE_HEIGHT);
-    public static final Vec2 SCROLL_BAR_CURSOR_VOLUME = new Vec2(CURSOR_WIDTH, CURSOR_HEIGHT);
-    public static final Vec2 SCROLL_BAR_CURSOR_POSITION = new Vec2(WIDTH, 0);
-    public static final Vec2 SCROLL_BAR_CURSOR_PRESSED_POSITION = new Vec2(WIDTH, CURSOR_HEIGHT);
+    public static final Box2d SCROLL_BAR_CURSOR_POSITION = new Box2d(WIDTH, 0, CURSOR_WIDTH, CURSOR_HEIGHT);
+    public static final Box2d SCROLL_BAR_CURSOR_PRESSED_POSITION = new Box2d(WIDTH, CURSOR_HEIGHT, CURSOR_WIDTH, CURSOR_HEIGHT);
 
     protected int min;
     protected int max;
@@ -47,9 +47,15 @@ public class ScrollBarWidget extends BaseWidget<ScrollBarWidget> {
         this.onScrollChange = onScrollChange;
     }
 
+    public int getMin() { return min; }
+
+    public int getMax() { return max; }
+
+    public int getStep() { return step; }
+
     @Override
     public void backRender(@NotNull PoseStack stack, double mouseX, double mouseY, float partialTick) {
-        Box2d cursor = new Box2d(SCROLL_BAR_CURSOR_VOLUME);
+        Box2d cursor = new Box2d(CURSOR_WIDTH, CURSOR_HEIGHT);
         cursor.setY1((((scroll - min) / (double)(max - min)) * (currentArea().getHeight() - cursor.getHeight() - DOUBLE_BORDER)) + currentArea().getY1() + BORDER);
         cursor.setX1(currentArea().getX1() + BORDER);
         RenderUtils.blitUnscaled(null, stack, 0, cursor, isDragged() || isOvered ? SCROLL_BAR_CURSOR_PRESSED_POSITION : SCROLL_BAR_CURSOR_POSITION);

@@ -184,6 +184,7 @@ public class World {
     }
 
     public static Entity teleportEntity(Entity entity, ResourceKey<Level> destType, BlockPos destPos) {
+        if (entity == null) return null;
         return teleportEntity(entity, destType, destPos.getX() + 0.5, destPos.getY(), destPos.getZ() + 0.5, entity.getXRot(), entity.getYRot());
     }
 

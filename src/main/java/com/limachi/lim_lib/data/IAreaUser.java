@@ -14,35 +14,47 @@ import java.util.function.Supplier;
  */
 public interface IAreaUser {
     class Area {
-        public record Animation(AnchoredBox origin, AnchoredBox target, double frames){}
+        public record Animation(AnchoredBox origin, AnchoredBox target, double frames, Runnable onFinishedAnimation){}
         private Animation animation = null;
         private double frame = 0;
-        private AnchoredBox box;
+        public AnchoredBox box;
         private IVec2i defaultAnchor = new IVec2i(0, 0);
         private Box2d currentArea = new Box2d(0, 0);
         private final Supplier<Area> parentGetter;
+        private boolean clamping;
 
         public Area(AnchoredBox box, @Nonnull Supplier<Area> parentGetter) {
+            this(box, parentGetter, false);
+        }
+
+        public Area(AnchoredBox box, @Nonnull Supplier<Area> parentGetter, boolean clamping) {
             this.box = box.copy();
             this.parentGetter = parentGetter;
+            this.clamping = clamping;
         }
 
         public void onlyRootShouldUseThis(AbstractContainerScreen<?> screen) {
             box = AnchoredBox.topLeftDeltaBox(screen.getGuiLeft(), screen.getGuiTop(), screen.getXSize(), screen.getYSize());
             defaultAnchor = new IVec2i(screen.getGuiLeft(), screen.getGuiTop());
         }
+
+        public void setClamping(boolean state) { clamping = state; }
     }
 
     Area areaHandler();
 
-    default boolean animateArea(AnchoredBox target, int frames) {
+    default boolean animateArea(AnchoredBox target, int frames, Runnable onFinishedAnimation) {
         Area handler = areaHandler();
         if (handler.animation == null) {
-            handler.animation = new Area.Animation(handler.box.copy(), target, frames);
+            handler.animation = new Area.Animation(handler.box.copy(), target, frames, onFinishedAnimation);
             handler.frame = 0;
             return true;
         }
         return false;
+    }
+
+    default boolean animateArea(AnchoredBox target, int frames) {
+        return animateArea(target, frames, null);
     }
 
     default boolean isAreaAnimated() { return areaHandler().animation != null; }
@@ -80,7 +92,10 @@ public interface IAreaUser {
         Area parent = handler.parentGetter.get();
         if (parent != null) {
             IVec2i d = box.delta(parent.box.area());
-            return new Box2d(parent.currentArea.getX1() + d.x(), parent.currentArea.getY1() + d.y(), box.width(), box.height());
+            Box2d out = new Box2d(parent.currentArea.getX1() + d.x(), parent.currentArea.getY1() + d.y(), box.width(), box.height());
+            if (parent.clamping)
+                out.mergeCut(parent.currentArea);
+            return out;
         }
         return new Box2d(handler.defaultAnchor.x(), handler.defaultAnchor.y(), box.width(), box.height());
     }
@@ -91,6 +106,7 @@ public interface IAreaUser {
         if (handler.animation != null) {
             if ((handler.frame += partialTick) > handler.animation.frames) {
                 handler.box = handler.animation.target;
+                handler.animation.onFinishedAnimation.run();
                 handler.animation = null;
                 handler.frame = 0;
             }

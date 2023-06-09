@@ -53,12 +53,10 @@ import net.minecraft.world.level.material.Fluid;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.network.IContainerFactory;
 import net.minecraftforge.registries.*;
+import org.objectweb.asm.Type;
 
 import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.function.Supplier;
 import java.lang.reflect.Field;
 import java.util.stream.Collectors;
@@ -165,6 +163,31 @@ public class Registries {
         }
     }
 
+    private static void discoverCapabilities(String modId) {
+        final ArrayList<Type> empty_targets = new ArrayList<>();
+        final Type vt = Type.getType(Void.class);
+        for (ModAnnotation a : ModAnnotation.iterModAnnotations(modId, RegisterCapability.class)) {
+            String name = name(a);
+            if (skip(a, RegisterCapability.class, name)) continue;
+            ArrayList<Type> t = a.getData("targets", empty_targets);
+            Class<?>[] targets = new Class<?>[t.size()];
+            for (int i = 0; i < t.size(); ++i) {
+                try {
+                    targets[i] = Class.forName(t.get(i).getClassName());
+                } catch (ClassNotFoundException e) {
+                    targets[i] = Void.class;
+                }
+            }
+            Type c = a.getData("cap", vt);
+            Class<?> clazz = a.getAnnotatedClass();
+            if (c != vt)
+                try {
+                    clazz = Class.forName(c.getClassName());
+                } catch (ClassNotFoundException ignore) {}
+            CapabilityRegister.create(modId, name, clazz, a.getAnnotatedFieldData(null), targets);
+        }
+    }
+
     private static ArrayList<Reab> ATTRIBUTES = new ArrayList<>();
 
     private static record Reab(String modId, String regKey, Class<? extends EntityType<? extends LivingEntity>> clazz, Supplier<AttributeSupplier.Builder> builder) {
@@ -175,14 +198,14 @@ public class Registries {
         ATTRIBUTES.add(new Reab(modId, regKey, entityTypeClass, builder));
     }
 
-    static String name(ModAnnotation a) {
+    public static String name(ModAnnotation a) {
         String name = a.getData("name", "");
         if (name.equals(""))
             name = a.getSnakeClassName();
         return name;
     }
 
-    static boolean skip(ModAnnotation a, Class<?> annotation, String name) {
+    public static boolean skip(ModAnnotation a, Class<?> annotation, String name) {
         String skip = a.getData("skip", "");
         if (skip.equals(""))
             return false;
@@ -220,6 +243,10 @@ public class Registries {
         discoverRegisterMenu(modId);
         Log.debug("Menu Registration Stage: static init");
         StaticInitializer.initialize(modId, Stage.MENU);
+        Log.debug("Capability Registration Stage: discovery");
+        discoverCapabilities(modId);
+        Log.debug("Capability Registration Stage: discovery");
+        StaticInitializer.initialize(modId, Stage.CAPABILITY);
     }
 
     protected static final HashMap<String, HashMap<Class<?>, DeferredRegister<?>>> REGISTRIES = new HashMap<>();

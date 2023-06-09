@@ -5,6 +5,8 @@ import com.limachi.lim_lib.maths.AnchorPoint;
 import com.limachi.lim_lib.maths.AnchoredBox;
 import com.limachi.lim_lib.maths.Box2d;
 import com.limachi.lim_lib.maths.IVec2i;
+import com.limachi.lim_lib.render.RenderUtils;
+import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
@@ -77,7 +79,7 @@ public class BaseButtonWidget<T extends BaseButtonWidget<T>> extends BaseWidget<
             backgroundCutout = IDLE_CUTOUT;
     }
 
-    protected void updatePressedState(boolean state, int button) {
+    protected void updatePressedState(boolean state, int button, boolean andUpdate) {
         if (state && !pressedState) {
             pressedState = true;
             backgroundCutout = isOvered ? PRESSED_HOVERED_CUTOUT : PRESSED_CUTOUT;

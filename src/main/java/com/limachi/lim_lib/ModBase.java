@@ -1,6 +1,6 @@
 package com.limachi.lim_lib;
 
-import com.limachi.lim_lib.integration.CuriosIntegration;
+import com.limachi.lim_lib.integration.Curios.CuriosIntegration;
 import com.limachi.lim_lib.network.NetworkManager;
 import com.limachi.lim_lib.registries.Stage;
 import com.limachi.lim_lib.registries.ClientRegistries;

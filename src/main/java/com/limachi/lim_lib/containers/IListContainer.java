@@ -1,6 +1,6 @@
 package com.limachi.lim_lib.containers;
 
-import com.limachi.lim_lib.NBT;
+import com.limachi.lim_lib.nbt.NBT;
 import com.limachi.lim_lib.StackUtils;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.nbt.CompoundTag;
@@ -23,7 +23,7 @@ import java.util.List;
  * and IFromTag will be generated. If self also implements IContainerListenerHandler, setChanged will propagate
  * changes to listeners automatically. `stacks()` is expected to be a direct return of a final non static field.
  */
-public interface IListContainer extends Container, IItemHandlerModifiable, StackedContentsCompatible, NBT.IAsTag, NBT.IFromTag {
+public interface IListContainer extends Container, IItemHandlerModifiable, StackedContentsCompatible {
     List<ItemStack> stacks();
 
     @Override
@@ -119,7 +119,6 @@ public interface IListContainer extends Container, IItemHandlerModifiable, Stack
             stacked.accountStack(getItem(i));
     }
 
-    @Override
     default Tag asTag() {
         ListTag out = new ListTag();
         for (int i = 0; i < getContainerSize(); ++i) {
@@ -132,7 +131,6 @@ public interface IListContainer extends Container, IItemHandlerModifiable, Stack
         return out;
     }
 
-    @Override
     default void fromTag(Tag tag) {
         if (tag instanceof ListTag list && list.getElementType() == Tag.TAG_COMPOUND) {
             clearContent();

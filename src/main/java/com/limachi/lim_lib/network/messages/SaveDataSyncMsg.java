@@ -6,7 +6,7 @@ import com.limachi.lim_lib.saveData.SaveDataManager;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.player.Player;
 
-@RegisterMsg(4)
+@RegisterMsg
 public record SaveDataSyncMsg(String name, String level, boolean isDiff, CompoundTag nbt) implements IRecordMsg {
     public void clientWork(Player player) { SaveDataManager.clientUpdate(name, level, nbt, isDiff); }
     public void serverWork(Player player) { SaveDataManager.serverUpdate(player, name, level, nbt, isDiff); }

@@ -9,6 +9,7 @@ public class WidgetOptions {
     private boolean catchMouseEvents = false; //should this widget react to mouse events (this includes overing callbacks), isOvered flag will still be updated though
     private boolean catchKeyboardEvents = false; //should this widget react to keyboard events
     private boolean scissorRender = false; //should this widget use GLFW scissor to prevent objects from rendering outside it's area (affects the children rendering).
+    private boolean active = true; //should this widget function at all (render/catch events/forward to children)
 
     public WidgetOptions canAnimate(boolean state) { canAnimate = state; return this; }
     public WidgetOptions canTakeFocus(boolean state) { canTakeFocus = state; return this; }
@@ -18,6 +19,7 @@ public class WidgetOptions {
     public WidgetOptions catchMouseEvents(boolean state) { catchMouseEvents = state; return this; }
     public WidgetOptions catchKeyboardEvents(boolean state) { catchKeyboardEvents = state; return this; }
     public WidgetOptions scissorRender(boolean state) { scissorRender = state; return this; }
+    public WidgetOptions active(boolean state) { active = state; return this; }
 
     public boolean canAnimate() { return canAnimate; }
     public boolean canTakeFocus() { return canTakeFocus; }
@@ -27,4 +29,5 @@ public class WidgetOptions {
     public boolean catchMouseEvents() { return catchMouseEvents; }
     public boolean catchKeyboardEvents() { return catchKeyboardEvents; }
     public boolean scissorRender() { return scissorRender; }
+    public boolean active() { return active; }
 }

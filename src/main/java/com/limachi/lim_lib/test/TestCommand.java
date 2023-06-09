@@ -1,6 +1,7 @@
 package com.limachi.lim_lib.test;
 
 import com.limachi.lim_lib.World;
+import com.limachi.lim_lib.capabilities.Cap;
 import com.limachi.lim_lib.commands.CommandManager;
 import com.limachi.lim_lib.commands.arguments.*;
 import com.limachi.lim_lib.registries.Stage;
@@ -32,6 +33,17 @@ public class TestCommand {
         CommandManager.registerCmd(TestCommand.class, "test_source", "/test_commands test_source");
         CommandManager.registerCmd(TestCommand.class, "test_empty", "/test_commands test_empty");
         CommandManager.registerCmd(TestCommand.class, "test_overlay", "/test_commands test_overlay <at>", new BlockPosArg());
+        CommandManager.registerCmd(TestCommand.class, "test_capability", "/test_capability <int?>", new IntArg());
+    }
+
+    public static int test_capability(CommandSourceStack src, Integer value) throws CommandSyntaxException {
+        Player player = src.getPlayerOrException();
+        if (value != null && value != 0)
+            Cap.run(player, ITestCapability.TOKEN, c->c.setCounter(value));
+        else {
+            player.sendSystemMessage(Component.literal("value: " + Cap.run(player, ITestCapability.TOKEN, ITestCapability::getCounter, 0)));
+        }
+        return 1;
     }
 
     public static int test_overlay(CommandSourceStack src, BlockPos pos) throws CommandSyntaxException {

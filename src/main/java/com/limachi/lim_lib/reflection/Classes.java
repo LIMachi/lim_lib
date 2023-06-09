@@ -81,7 +81,7 @@ public class Classes {
     }
 
     @SuppressWarnings("unchecked")
-    protected static <T> Constructor<T> getAssignableConstructor(Class<T> clazz, Class<?>[] parametersTypes) {
+    public static <T> Constructor<T> getAssignableConstructor(Class<T> clazz, Class<?> ... parametersTypes) {
         try {
             return clazz.getConstructor(parametersTypes);
         } catch (Exception ignored) {}

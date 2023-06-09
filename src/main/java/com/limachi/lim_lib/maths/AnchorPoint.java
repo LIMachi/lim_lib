@@ -1,5 +1,7 @@
 package com.limachi.lim_lib.maths;
 
+import java.util.Objects;
+
 public record AnchorPoint(double anchorX, boolean fromRight, double anchorY, boolean fromBottom, boolean isFactor) {
     public static AnchorPoint TOP_LEFT = new AnchorPoint(0, false, 0, false, true);
     public static AnchorPoint TOP_RIGHT = new AnchorPoint(0, true, 0, false, true);
@@ -18,5 +20,18 @@ public record AnchorPoint(double anchorX, boolean fromRight, double anchorY, boo
             y = fromBottom ? height - anchorY : anchorY;
         }
         return new IVec2i((int)x, (int)y);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        AnchorPoint that = (AnchorPoint)o;
+        return Double.compare(that.anchorX, anchorX) == 0 && fromRight == that.fromRight && Double.compare(that.anchorY, anchorY) == 0 && fromBottom == that.fromBottom && isFactor == that.isFactor;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(anchorX, fromRight, anchorY, fromBottom, isFactor);
     }
 }

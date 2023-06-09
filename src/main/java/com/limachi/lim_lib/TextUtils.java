@@ -43,19 +43,19 @@ public class TextUtils {
     private static Pair<Integer, MutableComponent> pdef(int depth, String v) { return new Pair<>(depth, def(v)); }
 
     @SuppressWarnings("unchecked")
-    private static ArrayList<Pair<Integer, MutableComponent>> prettyTagInternal(Tag nbt, int depth, boolean tryUuid) {
+    private static ArrayList<Pair<Integer, MutableComponent>> prettyTagInternal(Tag nbt, int depth/*, boolean tryUuid*/) {
         ArrayList<Pair<Integer, MutableComponent>> out = new ArrayList<>();
         int width = PRETTY_TAG_MAX_WIDTH - depth * PRETTY_TAG_MARGIN;
         if (width <= 0) return out;
         if (nbt instanceof CollectionTag) { //list style
             CollectionTag<Tag> l = (CollectionTag<Tag>)nbt;
-            boolean mightBeArrayOfUUID = l.size() > 0 && l.stream().allMatch(n -> n.getType() == IntArrayTag.TYPE && ((IntArrayTag) n).getAsIntArray().length == 4);
-            if (tryUuid && l.size() == 4 && nbt instanceof IntArrayTag)
+//            boolean mightBeArrayOfUUID = l.size() > 0 && l.stream().allMatch(n -> n.getType() == IntArrayTag.TYPE && ((IntArrayTag) n).getAsIntArray().length == 4);
+            if (/*tryUuid &&*/ l.size() == 4 && nbt instanceof IntArrayTag)
                 out.add(pstr(depth, NbtUtils.loadUUID(nbt).toString()));
             else if (l.size() == 0)
                 out.add(plst(depth, "[]"));
             else if (l.size() == 1) {
-                ArrayList<Pair<Integer, MutableComponent>> t = prettyTagInternal(l.get(0), depth + 1, mightBeArrayOfUUID);
+                ArrayList<Pair<Integer, MutableComponent>> t = prettyTagInternal(l.get(0), depth + 1/*, mightBeArrayOfUUID*/);
                 if (t.size() == 1)
                     out.add(new Pair<>(depth, lst("[ ").append(t.get(0).getSecond()).append(lst(" ]"))));
                 else {
@@ -67,7 +67,7 @@ public class TextUtils {
             } else {
                 out.add(plst(depth, "["));
                 for (int i = 0; i < l.size(); ++i) {
-                    ArrayList<Pair<Integer, MutableComponent>> t = prettyTagInternal(l.get(i), depth + 1, mightBeArrayOfUUID);
+                    ArrayList<Pair<Integer, MutableComponent>> t = prettyTagInternal(l.get(i), depth + 1/*, mightBeArrayOfUUID*/);
                     for (int j = 0; j < t.size() - 1; ++j)
                         out.add(t.get(j));
                     if (i < l.size() - 1)
@@ -82,7 +82,7 @@ public class TextUtils {
                 out.add(pobj(depth, "{}"));
             else if (c.getAllKeys().size() == 1) {
                 String k = (String)c.getAllKeys().toArray()[0];
-                ArrayList<Pair<Integer, MutableComponent>> t = prettyTagInternal(c.get(k), depth + 1, k.matches("[uU]{0,2}[iI][dD]|[Uu]nique[iI][dD]"));
+                ArrayList<Pair<Integer, MutableComponent>> t = prettyTagInternal(c.get(k), depth + 1/*, k.matches("[uU]{0,2}[iI][dD]|[Uu]nique[iI][dD]")*/);
                 if (t.size() == 1)
                     out.add(new Pair<>(depth, obj("{ ").append(key(k)).append(obj(" : ")).append(t.get(0).getSecond()).append(obj(" }"))));
                 else {
@@ -95,7 +95,7 @@ public class TextUtils {
                 out.add(pobj(depth, "{"));
                 String[] ks = c.getAllKeys().toArray(new String[]{});
                 for (int i = 0; i < ks.length; ++i) {
-                    ArrayList<Pair<Integer, MutableComponent>> t = prettyTagInternal(c.get(ks[i]), depth + 1, ks[i].matches("[uU]{0,2}[iI][dD]|[Uu]nique[iI][dD]"));
+                    ArrayList<Pair<Integer, MutableComponent>> t = prettyTagInternal(c.get(ks[i]), depth + 1/*, ks[i].matches("[uU]{0,2}[iI][dD]|[Uu]nique[iI][dD]")*/);
                     if (t.size() > 1) {
                         out.add(new Pair<>(depth + 1, key(ks[i]).append(obj(" : ")).append(t.get(0).getSecond())));
                         for (int j = 1; j < t.size() - 1; ++j)
@@ -127,7 +127,7 @@ public class TextUtils {
                     "                                                                ".substring(0, depth * PRETTY_TAG_MARGIN)); }
 
     public static List<Component> prettyTag(Tag nbt) {
-        ArrayList<Pair<Integer, MutableComponent>> in = prettyTagInternal(nbt, 0, false);
+        ArrayList<Pair<Integer, MutableComponent>> in = prettyTagInternal(nbt, 0/*, false*/);
         List<Component> out = new ArrayList<>();
         if (in.size() == 1)
             out.add(in.get(0).getSecond());

@@ -13,7 +13,6 @@ import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.phys.Vec2;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -60,13 +59,16 @@ public class RenderUtils {
         RenderSystem.defaultBlendFunc();
         RenderSystem.setShader(GameRenderer::getPositionColorShader);
         bufferbuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
-        bufferbuilder.vertex(matrix, (float)box.getX1(), (float)box.getY2(), depth).color(ec.x(), ec.y(), ec.z(), ec.w()).endVertex();
-        bufferbuilder.vertex(matrix, (float)box.getX2(), (float)box.getY2(), depth).color(ec.x(), ec.y(), ec.z(), ec.w()).endVertex();
-        bufferbuilder.vertex(matrix, (float)box.getX2(), (float)box.getY1(), depth).color(ec.x(), ec.y(), ec.z(), ec.w()).endVertex();
-        bufferbuilder.vertex(matrix, (float)box.getX1(), (float)box.getY1(), depth).color(ec.x(), ec.y(), ec.z(), ec.w()).endVertex();
+        float x1 = (float)Double.min(box.getX1(), box.getX2());
+        float x2 = (float)Double.max(box.getX1(), box.getX2());
+        float y1 = (float)Double.min(box.getY1(), box.getY2());
+        float y2 = (float)Double.max(box.getY1(), box.getY2());
+        bufferbuilder.vertex(matrix, x1, y2, depth).color(ec.x(), ec.y(), ec.z(), ec.w()).endVertex();
+        bufferbuilder.vertex(matrix, x2, y2, depth).color(ec.x(), ec.y(), ec.z(), ec.w()).endVertex();
+        bufferbuilder.vertex(matrix, x2, y1, depth).color(ec.x(), ec.y(), ec.z(), ec.w()).endVertex();
+        bufferbuilder.vertex(matrix, x1, y1, depth).color(ec.x(), ec.y(), ec.z(), ec.w()).endVertex();
 //        bufferbuilder.end(); // VERSION 1.18.2
 //        BufferUploader.end(bufferbuilder); // VERSION 1.18.2
-//        BufferUploader.drawWithShader(bufferbuilder.end()); // VERSION 1.19.2
         tesselator.end();
         RenderSystem.enableTexture();
         RenderSystem.disableBlend();
@@ -101,6 +103,32 @@ public class RenderUtils {
     public static void blitMiddleExp(@Nullable AbstractContainerScreen<?> screen, @Nonnull PoseStack stack) { blitMiddleExp(screen, stack, null, null, null, DEFAULT_FILE_WIDTH, DEFAULT_FILE_HEIGHT); }
     public static void blitMiddleExp(@Nullable AbstractContainerScreen<?> screen, @Nonnull PoseStack stack, @Nullable Box2d from) { blitMiddleExp(screen, stack, null, null, from, DEFAULT_FILE_WIDTH, DEFAULT_FILE_HEIGHT); }
     public static void blitMiddleExp(@Nullable AbstractContainerScreen<?> screen, @Nonnull PoseStack stack, @Nullable Integer depth, @Nullable Box2d to, @Nullable Box2d from) { blitMiddleExp(screen, stack, depth, to, from, DEFAULT_FILE_WIDTH, DEFAULT_FILE_HEIGHT); }
+
+    /**
+     * variant of blit that is safe to use with negative width/height boxes (inverted corners) without precision loss due to int cast in default blit
+     */
+    public static void safeBlit(@Nonnull PoseStack stack, @Nonnull Box2d to, @Nonnull Box2d from, int depth, int fileWidth, int fileHeight) {
+        float tx = (float)Double.min(to.getX1(), to.getX2());
+        float ty = (float)Double.min(to.getY1(), to.getY2());
+        float txh = (float)Double.max(to.getX1(), to.getX2());
+        float tyh = (float)Double.max(to.getY1(), to.getY2());
+        float u = (float)Double.min(from.getX1(), from.getX2());
+        float v = (float)Double.min(from.getY1(), from.getY2());
+        float u1 = u / (float)fileWidth;
+        float v1 = v / (float)fileHeight;
+        float u2 = (u + txh - tx) / (float)fileWidth;
+        float v2 = (v + tyh - ty) / (float)fileHeight;
+        Matrix4f mat = stack.last().pose();
+        RenderSystem.setShader(GameRenderer::getPositionTexShader);
+        BufferBuilder bufferbuilder = Tesselator.getInstance().getBuilder();
+        bufferbuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
+        bufferbuilder.vertex(mat, tx, tyh, (float)depth).uv(u1, v2).endVertex();
+        bufferbuilder.vertex(mat, txh, tyh, (float)depth).uv(u2, v2).endVertex();
+        bufferbuilder.vertex(mat, txh, ty, (float)depth).uv(u2, v1).endVertex();
+        bufferbuilder.vertex(mat, tx, ty, (float)depth).uv(u1, v1).endVertex();
+        BufferUploader.drawWithShader(bufferbuilder.end());
+    }
+
     public static void blitMiddleExp(@Nullable AbstractContainerScreen<?> screen, @Nonnull PoseStack stack, @Nullable Integer depth, @Nullable Box2d to, @Nullable Box2d from, int fileWidth, int fileHeight) {
         if (screen != null) {
             if (to != null)
@@ -127,8 +155,8 @@ public class RenderUtils {
     public static void blitUnscaled(@Nullable AbstractContainerScreen<?> screen, @Nonnull PoseStack stack) { blitUnscaled(screen, stack, null, null, null, DEFAULT_FILE_WIDTH, DEFAULT_FILE_HEIGHT); }
     public static void blitUnscaled(@Nullable AbstractContainerScreen<?> screen, @Nonnull PoseStack stack, @Nullable Box2d to) { blitUnscaled(screen, stack, null, to, null, DEFAULT_FILE_WIDTH, DEFAULT_FILE_HEIGHT); }
     public static void blitUnscaled(@Nullable AbstractContainerScreen<?> screen, @Nonnull PoseStack stack, @Nullable Integer depth, @Nullable Box2d to) { blitUnscaled(screen, stack, depth, to, null, DEFAULT_FILE_WIDTH, DEFAULT_FILE_HEIGHT); }
-    public static void blitUnscaled(@Nullable AbstractContainerScreen<?> screen, @Nonnull PoseStack stack, @Nullable Integer depth, @Nullable Box2d to, @Nullable Vec2 from) { blitUnscaled(screen, stack, depth, to, from, DEFAULT_FILE_WIDTH, DEFAULT_FILE_HEIGHT); }
-    public static void blitUnscaled(@Nullable AbstractContainerScreen<?> screen, @Nonnull PoseStack stack, @Nullable Integer depth, @Nullable Box2d to, @Nullable Vec2 from, int fileWidth, int fileHeight) {
+    public static void blitUnscaled(@Nullable AbstractContainerScreen<?> screen, @Nonnull PoseStack stack, @Nullable Integer depth, @Nullable Box2d to, @Nullable Box2d from) { blitUnscaled(screen, stack, depth, to, from, DEFAULT_FILE_WIDTH, DEFAULT_FILE_HEIGHT); }
+    public static void blitUnscaled(@Nullable AbstractContainerScreen<?> screen, @Nonnull PoseStack stack, @Nullable Integer depth, @Nullable Box2d to, @Nullable Box2d from, int fileWidth, int fileHeight) {
         if (screen != null) {
             if (to != null)
                 to = to.copy().move(screen.getGuiLeft(), screen.getGuiTop());
@@ -138,16 +166,16 @@ public class RenderUtils {
                 depth = screen.getBlitOffset();
         }
         if (to == null) return;
-        if (from == null) from = Vec2.ZERO;
+        if (from == null) from = new Box2d(to.getWidth(), to.getHeight());
         if (depth == null) depth = 0;
-        GuiComponent.blit(stack, (int)to.getX1(), (int)to.getY1(), depth, from.x, from.y, (int)to.getWidth(), (int)to.getHeight(), fileWidth, fileHeight);
+        safeBlit(stack, to, from, depth, fileWidth, fileHeight);
     }
 
     public static void playerSlots(@Nullable AbstractContainerScreen<?> screen, @Nonnull PoseStack stack, int x, int y, boolean with_belt) { playerSlots(screen, stack, null, x, y, with_belt); }
     public static void playerSlots(@Nullable AbstractContainerScreen<?> screen, @Nonnull PoseStack stack, @Nullable Integer depth, int x, int y, boolean with_belt) {
         RenderSystem.setShaderTexture(0, PLAYER_SLOTS_TEXTURE);
         Box2d tob = with_belt ? PLAYER_SLOTS_CUTOUT.copy() : PLAYER_SLOTS_WITHOUT_BELT_CUTOUT.copy();
-        blitUnscaled(screen, stack, depth, tob.setX1(x).setY1(y), Vec2.ZERO, 256, 256);
+        blitUnscaled(screen, stack, depth, tob.setX1(x).setY1(y), null, 256, 256);
     }
 
     public static void background(@Nullable AbstractContainerScreen<?> screen, @Nonnull PoseStack stack) {

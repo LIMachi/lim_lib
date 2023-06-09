@@ -53,7 +53,9 @@ public class Buffer {
                 //FIXME: add explicit error
                 return buffer;
             }
-            if (Boolean.class.isAssignableFrom(ft) || boolean.class.isAssignableFrom(ft))
+            if (Class.class.isAssignableFrom(ft))
+                buffer.writeUtf(((Class<?>)fv).getName());
+            else if (Boolean.class.isAssignableFrom(ft) || boolean.class.isAssignableFrom(ft))
                 buffer.writeBoolean((Boolean) fv);
             else if (Byte.class.isAssignableFrom(ft) || byte.class.isAssignableFrom(ft))
                 buffer.writeByte((Integer) fv);
@@ -120,7 +122,16 @@ public class Buffer {
         Class<?>[] paramTypes = constructor.getParameterTypes();
         Object[] params = new Object[paramTypes.length];
         for (int i = 0; i < paramTypes.length; ++i)
-            if (Boolean.class.isAssignableFrom(paramTypes[i]) || boolean.class.isAssignableFrom(paramTypes[i]))
+            if (Class.class.isAssignableFrom(paramTypes[i])) {
+                String name = buffer.readUtf();
+                try {
+                    params[i] = Class.forName(name);
+                } catch (Exception e) {
+                    Log.error("Could not derive class from " + name);
+                    params[i] = Void.class;
+                }
+            }
+            else if (Boolean.class.isAssignableFrom(paramTypes[i]) || boolean.class.isAssignableFrom(paramTypes[i]))
                 params[i] = buffer.readBoolean();
             else if (Byte.class.isAssignableFrom(paramTypes[i]) || byte.class.isAssignableFrom(paramTypes[i]))
                 params[i] = buffer.readByte();

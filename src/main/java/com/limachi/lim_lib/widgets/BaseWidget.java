@@ -44,12 +44,16 @@ public abstract class BaseWidget<T extends BaseWidget<T>> implements IAreaUser, 
     protected BaseWidget(@Nonnull Area areaHandler, @Nonnull WidgetOptions options) {
         this.areaHandler = areaHandler;
         widgetOptions = options;
+        updateArea();
     }
 
     protected BaseWidget(@Nonnull AnchoredBox box, @Nonnull WidgetOptions options) {
-        areaHandler = new Area(box, ()->node.safeParentCall(p->p.getContent().areaHandler, null));
+        areaHandler = new Area(box, this::parentAreaGetter);
         widgetOptions = options;
+        updateArea();
     }
+
+    protected Area parentAreaGetter() { return node.safeParentCall(p->p.getContent().areaHandler, null); }
 
     protected AbstractContainerScreen<?> screen() { return root != null ? root.screen : null; }
 
@@ -79,15 +83,17 @@ public abstract class BaseWidget<T extends BaseWidget<T>> implements IAreaUser, 
     }
 
     public boolean gatherScreenUsage(ArrayList<Rect2i> usage) {
-        boolean shouldAdd = true;
-        for (Rect2i u : usage)
-            if (currentArea().containedIn(u)) {
-                shouldAdd = false;
-                break;
-            }
-        if (shouldAdd)
-            usage.add(new Rect2i((int)currentArea().getX1(), (int)currentArea().getY1(), (int)currentArea().getWidth(), (int)currentArea().getHeight()));
-        node.propagateDown(n->n.getContent().gatherScreenUsage(usage), true, -1);
+        if (widgetOptions.active()) {
+            boolean shouldAdd = true;
+            for (Rect2i u : usage)
+                if (currentArea().containedIn(u)) {
+                    shouldAdd = false;
+                    break;
+                }
+            if (shouldAdd)
+                usage.add(new Rect2i((int) currentArea().getX1(), (int) currentArea().getY1(), (int) currentArea().getWidth(), (int) currentArea().getHeight()));
+            node.propagateDown(n -> n.getContent().gatherScreenUsage(usage), true, -1);
+        }
         return false;
     }
 
@@ -115,27 +121,33 @@ public abstract class BaseWidget<T extends BaseWidget<T>> implements IAreaUser, 
 
     @Override
     public void render(@Nonnull PoseStack stack, int mouseX, int mouseY, float partialTick) {
-        if (!root().frontRenderPass) {
-            partialTick(partialTick);
-            if (widgetOptions.shouldRender()) {
-                if (backgroundTexture != null) {
-                    RenderSystem.setShaderTexture(0, backgroundTexture);
-                    RenderUtils.blitMiddleExp(null, stack, 0, currentArea(), backgroundCutout);
+        if (widgetOptions.active()) {
+            if (!root().frontRenderPass) {
+                partialTick(partialTick);
+                if (widgetOptions.shouldRender()) {
+                    if (backgroundTexture != null) {
+                        RenderSystem.setShaderTexture(0, backgroundTexture);
+                        RenderUtils.blitMiddleExp(null, stack, 0, currentArea(), backgroundCutout);
+                    }
+                    backRender(stack, mouseX, mouseY, partialTick);
                 }
-                backRender(stack, mouseX, mouseY, partialTick);
             }
-        } else if (widgetOptions.scissorRender())
-            root().pushScissor(currentArea().asRect());
-        if (widgetOptions.shouldRenderChildren())
-            node.propagateDown(n->{n.getContent().render(stack, mouseX, mouseY, partialTick); return false;}, false, 1);
-        if (root().frontRenderPass && widgetOptions.shouldRender())
-            frontRender(stack, mouseX, mouseY, partialTick);
-        if (widgetOptions.scissorRender())
-            root().popScissor();
+            if (widgetOptions.scissorRender())
+                root().pushScissor(currentArea().asRect());
+            if (widgetOptions.shouldRenderChildren())
+                node.propagateDown(n -> {
+                    n.getContent().render(stack, mouseX, mouseY, partialTick);
+                    return false;
+                }, false, 1);
+            if (root().frontRenderPass && widgetOptions.shouldRender())
+                frontRender(stack, mouseX, mouseY, partialTick);
+            if (widgetOptions.scissorRender())
+                root().popScissor();
+        }
     }
 
     @Nullable
-    protected List<Component> getTooltip() { return isOvered ? defaultTooltip : null; }
+    protected List<Component> getTooltip() { return isOvered && widgetOptions.active() ? defaultTooltip : null; }
     protected ItemStack getTooltipStack() { return ItemStack.EMPTY; }
     @Nullable
     protected TooltipComponent getTooltipImage() { return null; }
@@ -160,28 +172,31 @@ public abstract class BaseWidget<T extends BaseWidget<T>> implements IAreaUser, 
 
     protected boolean onCharTyped(char codePoint, int modifiers) { return false; }
 
-    public boolean isFocused() { return root().getFocused() == this; }
+    public boolean isFocused() { return widgetOptions.active() && root().getFocused() == this; }
 
     public boolean isDragged() { return isFocused() && screen().isDragging(); }
 
-    public final boolean isOvered() { return isOvered; }
+    public final boolean isOvered() { return widgetOptions.active() && isOvered; }
 
     protected boolean changeFocus(boolean take) {
-        BaseWidget<?> t = root().getFocused();
-        if (take) {
-            if (t == this)
+        if (widgetOptions.active()) {
+            BaseWidget<?> t = root().getFocused();
+            if (take) {
+                if (t == this)
+                    return true;
+                if (t != null)
+                    previousFocus = t;
+                root().setFocused(this);
                 return true;
-            if (t != null)
-                previousFocus = t;
-            root().setFocused(this);
-            return true;
+            }
+            if (t == this)
+                root().setFocused(previousFocus);
         }
-        if (t == this)
-            root().setFocused(previousFocus);
         return false;
     }
 
     protected boolean isMouseOver(double mouseX, double mouseY) {
+        if (!widgetOptions.active()) return false;
         boolean out = currentArea().isIn(mouseX, mouseY);
         if (out && !isOvered) {
             isOvered = true;

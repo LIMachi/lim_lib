@@ -14,6 +14,7 @@ import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
+import javax.annotation.Nonnull;
 import java.util.HashMap;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -71,17 +72,15 @@ public class SaveDataManager {
         }
     }
 
-    public static <T extends AbstractSyncSaveData> T getInstance(String name) { return getInstance(name, null, false); }
-    public static <T extends AbstractSyncSaveData> T getInstance(String name, ResourceKey<Level> level) { return getInstance(name, level, false); }
+    public static <T extends AbstractSyncSaveData> T getInstance(@Nonnull String name) { return getInstance(name, Level.OVERWORLD, false); }
+    public static <T extends AbstractSyncSaveData> T getInstance(@Nonnull String name, @Nonnull ResourceKey<Level> level) { return getInstance(name, level, false); }
     @SuppressWarnings("unchecked")
-    public static <T extends AbstractSyncSaveData> T getInstance(String name, ResourceKey<Level> level, boolean getOnly) {
+    public static <T extends AbstractSyncSaveData> T getInstance(@Nonnull String name, @Nonnull ResourceKey<Level> level, boolean getOnly) {
         if (Sides.isLogicalClient()) return (T)CLIENT_INSTANCES.get(new Pair<>(name, level.location().toString()));
         String type = Strings.getFolder(':', name);
         if (type.equals("")) type = name;
         Class<T> clazz = (Class<T>)SAVE_DATAS.get(type);
         if (clazz != null) {
-            if (level == null)
-                level = Level.OVERWORLD;
             Level finalLevel = World.getLevel(level);
             if (finalLevel != null) {
                 Supplier<T> supp = () -> {

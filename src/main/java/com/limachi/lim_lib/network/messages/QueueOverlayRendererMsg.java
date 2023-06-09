@@ -6,7 +6,7 @@ import com.limachi.lim_lib.render.BlockRenderUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.player.Player;
 
-@RegisterMsg(6)
+@RegisterMsg
 public record QueueOverlayRendererMsg(String level, BlockPos pos, int color, int ticks) implements IRecordMsg {
     @Override
     public void clientWork(Player player) {

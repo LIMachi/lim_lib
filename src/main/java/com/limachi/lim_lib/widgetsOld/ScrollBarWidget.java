@@ -62,7 +62,7 @@ public class ScrollBarWidget extends BaseWidget<ScrollBarWidget> {
         Box2d cursor = new Box2d(SCROLL_BAR_CURSOR_VOLUME);
         cursor.setY1((((scroll - min) / (double)(max - min)) * (area.getHeight() - cursor.getHeight() - DOUBLE_BORDER)) + area.getY1() + BORDER);
         cursor.setX1(area.getX1() + BORDER);
-        RenderUtils.blitUnscaled(getScreen(), stack, getBlitOffset(), cursor, isDragged() || isMouseOverBox(mouseX, mouseY, cursor) ? SCROLL_BAR_CURSOR_PRESSED_POSITION : SCROLL_BAR_CURSOR_POSITION);
+//        RenderUtils.blitUnscaled(getScreen(), stack, getBlitOffset(), cursor, isDragged() || isMouseOverBox(mouseX, mouseY, cursor) ? SCROLL_BAR_CURSOR_PRESSED_POSITION : SCROLL_BAR_CURSOR_POSITION);
     }
 
     protected int scrollClick(double mouseY) {

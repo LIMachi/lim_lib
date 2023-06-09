@@ -1,7 +1,7 @@
 package com.limachi.lim_lib.menus;
 
-import net.minecraft.nbt.Tag;
+import net.minecraft.nbt.CompoundTag;
 
 public interface IAcceptUpStreamNBT {
-    void upstreamNBTMessage(int mid, Tag tag);
+    void upstreamNBTMessage(int mid, CompoundTag tag);
 }

@@ -3,6 +3,7 @@ package com.limachi.lim_lib.network;
 import com.limachi.lim_lib.Log;
 import com.limachi.lim_lib.ModAnnotation;
 import com.limachi.lim_lib.Sides;
+import com.limachi.lim_lib.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.common.util.FakePlayer;
@@ -13,17 +14,21 @@ import net.minecraftforge.network.NetworkRegistry;
 import net.minecraftforge.network.simple.SimpleChannel;
 import net.minecraftforge.server.ServerLifecycleHooks;
 
-import java.util.HashMap;
+import java.util.*;
 
 @SuppressWarnings("unused")
 public class NetworkManager {
     @SuppressWarnings("unchecked")
     private static <T extends Record & IRecordMsg> void discoverMsgRegistry(String modId) {
+        TreeMap<String, Class<T>> messages = new TreeMap<>(String::compareTo);
         for (ModAnnotation a : ModAnnotation.iterModAnnotations(modId, RegisterMsg.class))
             if (Record.class.isAssignableFrom(a.getAnnotatedClass())) {
-                if (IRecordMsg.class.isAssignableFrom(a.getAnnotatedClass()))
-                    registerMsg(a.getData("modId", modId), (Class<T>) a.getAnnotatedClass(), a.getData("value", -1));
-                else {
+                if (IRecordMsg.class.isAssignableFrom(a.getAnnotatedClass())) {
+                    String name = Registries.name(a);
+                    if (messages.put(name, (Class<T>) a.getAnnotatedClass()) != null)
+                        Log.error("@RegisterMsg duplicated name: " + name);
+//                    registerMsg(modId, (Class<T>)a.getAnnotatedClass(), a.getData("value", -1));
+                } else {
                     Log.error(a.getAnnotatedClass(), "@RegisterMsg on a record not implementing IRecordMsg!");
                     System.exit(-1);
                     return;
@@ -34,6 +39,9 @@ public class NetworkManager {
                 System.exit(-1);
                 return;
             }
+        int index = 0;
+        for (Map.Entry<String, Class<T>> e : messages.entrySet())
+            registerMsg(modId, e.getValue(), index++);
     }
 
     public static void register(String modId) {

@@ -16,7 +16,7 @@ license="All rights reserved"
 [[dependencies.lim_lib]]
     modId="forge"
     mandatory=true
-    versionRange="[43,)"
+    versionRange="[43.2,)"
     ordering="NONE"
     side="BOTH"
 

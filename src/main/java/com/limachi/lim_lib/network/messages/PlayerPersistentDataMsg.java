@@ -1,13 +1,13 @@
 package com.limachi.lim_lib.network.messages;
 
-import com.limachi.lim_lib.NBT;
+import com.limachi.lim_lib.nbt.NBT;
 import com.limachi.lim_lib.network.IRecordMsg;
 import com.limachi.lim_lib.network.RegisterMsg;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.player.Player;
 
 @SuppressWarnings("unused")
-@RegisterMsg(5)
+@RegisterMsg
 public record PlayerPersistentDataMsg(Actions action, CompoundTag nbt) implements IRecordMsg {
     public enum Actions {
         OVERRIDE,

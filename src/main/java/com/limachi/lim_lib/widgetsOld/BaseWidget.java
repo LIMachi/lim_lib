@@ -104,7 +104,7 @@ public abstract class BaseWidget<T extends BaseWidget<T>> extends AbstractContai
         if (screen != null) {
             RenderSystem.setShaderTexture(0, backgroundTexture);
             if (simpleBlit)
-                RenderUtils.blitUnscaled(screen, stack, getBlitOffset(), area, backgroundCutout.getOrigins());
+                RenderUtils.blitUnscaled(screen, stack, getBlitOffset(), area, backgroundCutout);
             else
                 RenderUtils.blitMiddleExp(screen, stack, getBlitOffset(), area, backgroundCutout);
             boolean isMouseOver = isMouseOver(mouseX, mouseY);

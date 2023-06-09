@@ -8,7 +8,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 
-@RegisterMsg(1)
+@RegisterMsg
 public record ScrolledBlockMsg(BlockPos pos, int delta) implements IRecordMsg {
     public void serverWork(Player player) {
         BlockEntity be = player.level.getBlockEntity(pos);
