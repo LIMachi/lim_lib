@@ -28,7 +28,7 @@ public class TestCommand {
 //    static {
         CommandManager.registerCmd(TestCommand.class, "enter_dim", s->s.hasPermission(2), "/test_commands enter <entities?> <dimension?>", new EntitiesArg(true), new DimensionArg());
 //        CommandManager.registerCmd(TestCommand.class, "enter_bag_self_cmd", "/test_commands enter <dimension>", new DimensionArg());
-        CommandManager.registerCmd(TestCommand.class, "test_literal", "/test_commands test <int>", new IntArg(0, 100), new SwizzleArg(), new BiomeArg(), new CompoundTagArg());
+//        CommandManager.registerCmd(TestCommand.class, "test_literal", "/test_commands test <int>", new IntArg(0, 100), new SwizzleArg(), new BiomeArg(), new CompoundTagArg());
         CommandManager.registerCmd(TestCommand.class, "test_literal", "/test_commands pred <literal>", new LiteralArg(false).requirePerm(2));
         CommandManager.registerCmd(TestCommand.class, "test_source", "/test_commands test_source");
         CommandManager.registerCmd(TestCommand.class, "test_empty", "/test_commands test_empty");
@@ -48,7 +48,7 @@ public class TestCommand {
 
     public static int test_overlay(CommandSourceStack src, BlockPos pos) throws CommandSyntaxException {
         Player player = src.getPlayerOrException();
-        BlockRenderUtils.queueOverlayRenderer(player.level, pos, null, BlockRenderUtils.DEFAULT_OVERLAY, 100);
+        BlockRenderUtils.queueOverlayRenderer(player.level(), pos, null, BlockRenderUtils.DEFAULT_OVERLAY, 100);
         return 1;
     }
 
@@ -59,10 +59,12 @@ public class TestCommand {
         BlockPos pos = new BlockPos(8, 128, 8);
         for (Entity e : entities)
             World.teleportEntity(e, level, pos);
+        Collection<? extends Entity> finalEntities = entities;
         ctx.getSource().sendSuccess(
 //                new TextComponent( //VERSION 1.18.2
-                Component.literal( //VERSION 1.19.2
-                        "Sent entities " + entities + " to the dim " + dim), true);
+                ()->
+                        Component.literal( //VERSION 1.19.2
+                        "Sent entities " + finalEntities + " to the dim " + dim), true);
         return entities.size();
     }
 
@@ -76,13 +78,13 @@ public class TestCommand {
     public static int test_literal(CommandContext<CommandSourceStack> ctx, String literal) {
         ctx.getSource().sendSuccess(
 //                new TextComponent( //VERSION 1.18.2
-                Component.literal( //VERSION 1.19.2
+                ()->Component.literal( //VERSION 1.19.2
                         "tested literal: " + literal), true);
         return 0;
     }
 
     public static int test_source(CommandSourceStack source) {
-        source.sendSuccess(Component.literal("good"), true);
+        source.sendSuccess(()->Component.literal("good"), true);
         return 0;
     }
 

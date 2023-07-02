@@ -10,11 +10,12 @@ import net.minecraft.network.chat.Component;
 //import net.minecraft.network.chat.TextComponent; //VERSION 1.18.2
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.material.Material;
-import net.minecraft.world.level.material.MaterialColor;
+//import net.minecraft.world.level.material.Material;
+//import net.minecraft.world.level.material.MaterialColor;
 import net.minecraftforge.registries.RegistryObject;
 
 public class TestChest {
@@ -25,7 +26,7 @@ public class TestChest {
         @RegisterBlockItem(skip = "com.limachi.lim_lib.LimLib:useTests")
         public static RegistryObject<Item> R_ITEM;
 
-        public TestChestBlock() { super(Properties.of(Material.WOOD, MaterialColor.DIRT).strength(2.0F, 6.0F), TestChestBlockEntity.R_TYPE); }
+        public TestChestBlock() { super(Properties.copy(Blocks.CHEST).strength(2.0F, 6.0F), TestChestBlockEntity.R_TYPE); }
     }
 
     public static class TestChestBlockEntity extends ListContainerBlockEntity {

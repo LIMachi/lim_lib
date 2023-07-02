@@ -10,6 +10,7 @@ import net.minecraft.world.level.material.Fluids;
 import net.minecraftforge.fluids.FluidStack;
 import org.jetbrains.annotations.NotNull;
 
+/*
 public class TestRenderWidget extends CornerResizeWidget<TestRenderWidget> {
 
     ItemStack stack = new ItemStack(Items.ACACIA_PLANKS, 42);
@@ -39,3 +40,4 @@ public class TestRenderWidget extends CornerResizeWidget<TestRenderWidget> {
             GUIRenderUtils.renderFluid(fluid, (int)currentArea().getX1() + 1, (int)currentArea().getY1() + 1, (int)currentArea().getWidth() - 2, (int)currentArea().getHeight() - 2, 0x88FFFFFF, true);
     }
 }
+*/

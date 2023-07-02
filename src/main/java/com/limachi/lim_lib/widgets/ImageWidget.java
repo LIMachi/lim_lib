@@ -5,6 +5,7 @@ import com.limachi.lim_lib.maths.Box2d;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
 
+/*
 public class ImageWidget extends BaseWidget<ImageWidget> {
 
     public ImageWidget(@NotNull AnchoredBox box, ResourceLocation texture) {
@@ -16,3 +17,4 @@ public class ImageWidget extends BaseWidget<ImageWidget> {
         setBackground(texture, cutout);
     }
 }
+*/

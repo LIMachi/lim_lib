@@ -16,20 +16,13 @@ license="All rights reserved"
 [[dependencies.lim_lib]]
     modId="forge"
     mandatory=true
-    versionRange="[43.2,)"
+    versionRange="[47.0,)"
     ordering="NONE"
     side="BOTH"
 
 [[dependencies.lim_lib]]
     modId="minecraft"
     mandatory=true
-    versionRange="[1.19.2,1.20)"
+    versionRange="[1.20.1,)"
     ordering="NONE"
-    side="BOTH"
-
-[[dependencies.lim_lib]]
-    modId="curios"
-    mandatory=false
-    versionRange="[1.19.2-5.1.1.0,)"
-    ordering="AFTER"
     side="BOTH"

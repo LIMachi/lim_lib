@@ -18,7 +18,7 @@ public class EntityUtils {
     public static BlockPos oldBlockPos(Entity entity) {
         Vec3 d = entity.getDeltaMovement();
         Vec3 p = entity.position();
-        return new BlockPos(p.x - d.x, p.y - d.y, p.z - d.z);
+        return new BlockPos((int)(p.x - d.x), (int)(p.y - d.y), (int)(p.z - d.z));
     }
 
     public static boolean entityChangedBlock(Entity entity) {
@@ -35,9 +35,9 @@ public class EntityUtils {
             for (int y = -radius; y <= radius; ++y)
                 for (int z = -radius; z <= radius; ++z) {
                     BlockPos pos = entity.blockPosition().offset(x, y, z);
-                    BlockState state = entity.level.getBlockState(pos);
+                    BlockState state = entity.level().getBlockState(pos);
                     if (pred == null || pred.test(pos, state))
-                        entity.level.markAndNotifyBlock(pos, entity.level.getChunkAt(pos), state, state, 3, 512);
+                        entity.level().markAndNotifyBlock(pos, entity.level().getChunkAt(pos), state, state, 3, 512);
                 }
     }
 

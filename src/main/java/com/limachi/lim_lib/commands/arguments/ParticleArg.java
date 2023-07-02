@@ -1,6 +1,7 @@
 package com.limachi.lim_lib.commands.arguments;
 
 import com.limachi.lim_lib.commands.AbstractCommandArgument;
+import com.limachi.lim_lib.commands.CommandManager;
 import com.mojang.brigadier.context.CommandContext;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.arguments.ParticleArgument;
@@ -9,7 +10,7 @@ import com.limachi.lim_lib.commands.FunctionThrowsCommandSyntaxException;
 
 @SuppressWarnings("unused")
 public class ParticleArg extends AbstractCommandArgument {
-    public ParticleArg() { type = ParticleArgument.particle(); }
+    public ParticleArg() { type = ParticleArgument.particle(CommandManager.builderContext); }
     @Override
     public Class<?>[] debugGetType() { return new Class[]{ParticleOptions.class}; }
     @Override

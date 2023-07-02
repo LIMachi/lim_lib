@@ -4,7 +4,6 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.platform.Lighting;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
-import com.mojang.math.Matrix4f;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
@@ -29,6 +28,7 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.extensions.common.IClientFluidTypeExtensions;
 import net.minecraftforge.fluids.FluidStack;
+import org.joml.Matrix4f;
 import org.lwjgl.glfw.GLFW;
 
 @OnlyIn(Dist.CLIENT)
@@ -48,6 +48,8 @@ public class GUIRenderUtils {
      * @param color color multiplier in ARGB order, set to 0XFFFFFFFF to use the default item color
      * @param decorate also render decorations (item count, damage bar, effects, etc...), note that a item count <= 0 will be rendered in red (as opposed to the vanilla that skips <= 0 counts)
      */
+
+    /*
     public static void renderItem(ItemStack stack, int x, int y, int w, int h, int color, boolean decorate) {
         if (w <= 0 || h <= 0) return;
         BakedModel model = ITEM_RENDERER.getModel(stack, null, null, 0);
@@ -112,11 +114,13 @@ public class GUIRenderUtils {
 
             net.minecraftforge.client.ItemDecoratorHandler.of(stack).render(MINECRAFT.font, stack, x, y, ITEM_RENDERER.blitOffset); //the scalling will probably fail here, we might be hable to hack something using the PoseStack
         }
-    }
+    }*/
 
     /**
      * similar to GUIRenderUtils#renderItem but for fluids
      */
+
+    /*
     public static void renderFluid(FluidStack stack, int x, int y, int w, int h, int color, boolean decorate) {
         Fluid fluid = stack.getFluid();
         if (w <= 0 || h <= 0 || fluid.isSame(Fluids.EMPTY)) return;
@@ -145,7 +149,7 @@ public class GUIRenderUtils {
             MINECRAFT.font.drawInBatch(s, (float)(x + w + 1 - MINECRAFT.font.width(s)), (float)(y + h - 5), stack.getAmount() <= 0 ? ChatFormatting.RED.getColor() : ChatFormatting.WHITE.getColor(), true, posestack.last().pose(), buff, false, 0, LightTexture.FULL_BRIGHT);
             buff.endBatch();
         }
-    }
+    }*/
 
     public static BufferBuilder tiledSquareUVVertex(Matrix4f mat, int x, int y, int w, int h, int sw, int sh, float u0, float v0, float u1, float v1, float zOffset) {
         BufferBuilder buff = Tesselator.getInstance().getBuilder();

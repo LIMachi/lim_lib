@@ -1,7 +1,8 @@
 package com.limachi.lim_lib.maths;
 
-import com.mojang.math.Matrix4f;
-import com.mojang.math.Vector4f;
+import com.mojang.math.MatrixUtil;
+import org.joml.Matrix4f;
+import org.joml.Vector4f;
 
 @SuppressWarnings({"unused", "UnusedReturnValue"})
 public class Box2i {
@@ -74,8 +75,8 @@ public class Box2i {
     public Box2i transform(Matrix4f matrix) {
         Vector4f v1 = new Vector4f((float)x, (float)y, 0, 1);
         Vector4f v2 = new Vector4f((float)getX2(), (float)getY2(), 0, 1);
-        v1.transform(matrix);
-        v2.transform(matrix);
+        matrix.transform(v1);
+        matrix.transform(v2);
         x = (int)v1.x();
         y = (int)v1.y();
         setX2((int)v2.x());

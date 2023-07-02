@@ -12,6 +12,7 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 
+/*
 public class TextWidget extends BaseWidget<TextWidget> {
 
     protected Component text;
@@ -70,3 +71,4 @@ public class TextWidget extends BaseWidget<TextWidget> {
             font.draw(stack, formattedcharsequence, x, y, color);
     }
 }
+*/

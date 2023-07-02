@@ -7,8 +7,8 @@ import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockBehaviour;
-import net.minecraft.world.level.material.Material;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.DistExecutor;
@@ -40,8 +40,8 @@ public class LimLib extends ModBase {
         blocks.save();
 
         for (String regKey : BLOCK_KEYS) {
-            RegistryObject<Block> rBlock = Registries.block(COMMON_ID, regKey, ()->new Block(BlockBehaviour.Properties.of(Material.AMETHYST)));
-            Registries.item(COMMON_ID, regKey, ()->new BlockItem(rBlock.get(), new Item.Properties().tab(CreativeModeTab.TAB_DECORATIONS)), null);
+            RegistryObject<Block> rBlock = Registries.block(COMMON_ID, regKey, ()->new Block(BlockBehaviour.Properties.copy(Blocks.AMETHYST_BLOCK)));
+            Registries.item(COMMON_ID, regKey, ()->new BlockItem(rBlock.get(), new Item.Properties()), null);
         }
     }
 

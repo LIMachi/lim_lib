@@ -10,8 +10,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.blaze3d.vertex.VertexFormat;
 import com.mojang.datafixers.util.Pair;
-import com.mojang.math.Matrix4f;
-import com.mojang.math.Vector3f;
+import com.mojang.math.Axis;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderStateShard;
@@ -26,6 +25,8 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.RenderLevelStageEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
+import org.joml.Matrix4f;
+import org.joml.Vector3f;
 
 import javax.annotation.Nullable;
 import java.util.HashMap;
@@ -140,7 +141,7 @@ public class BlockRenderUtils extends RenderType {
             pose.translate(pos.getX(), pos.getY(), pos.getZ());
             pose.translate(-0.005f, -0.005f, -0.005f);
             pose.scale(1.01f, 1.01f, 1.01f);
-            pose.mulPose(Vector3f.YP.rotationDegrees(-90.0F));
+            pose.mulPose(Axis.YP.rotationDegrees(-90.0F));
 
             renderOverlayAt(pose.last().pose(), builder, pos, ticksColor.getSecond());
             pose.popPose();

@@ -15,6 +15,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.function.Consumer;
 
+/*
 @SuppressWarnings({"unused", "UnusedReturnValue", "unchecked"})
 @OnlyIn(Dist.CLIENT)
 public abstract class BaseButtonWidget<T extends BaseButtonWidget<T>> extends BaseWidget<T> {
@@ -116,3 +117,4 @@ public abstract class BaseButtonWidget<T extends BaseButtonWidget<T>> extends Ba
 
     public boolean getPressedState() { return pressedState; }
 }
+*/

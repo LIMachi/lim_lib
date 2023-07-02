@@ -5,6 +5,7 @@ import com.limachi.lim_lib.maths.IVec2i;
 
 import javax.annotation.Nonnull;
 
+/*
 public class ViewPortWidget extends BaseWidget<ViewPortWidget> {
 
     protected static class InnerViewPortWidget extends BaseWidget<InnerViewPortWidget> {
@@ -40,3 +41,4 @@ public class ViewPortWidget extends BaseWidget<ViewPortWidget> {
         return inner.animateArea(target, frames, onFinishedAnimation);
     }
 }
+*/

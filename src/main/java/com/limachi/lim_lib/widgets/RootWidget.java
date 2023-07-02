@@ -6,8 +6,8 @@ import com.limachi.lim_lib.data.TreeNode;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.datafixers.util.Pair;
-import net.minecraft.client.gui.GuiComponent;
-import net.minecraft.client.gui.components.Widget;
+//import net.minecraft.client.gui.GuiComponent;
+//import net.minecraft.client.gui.components.Widget;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.Component;
@@ -23,7 +23,7 @@ import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
-
+/*
 public class RootWidget extends BaseWidget<RootWidget> implements Widget {
     @Nonnull
     public final AbstractContainerScreen<?> screen;
@@ -216,3 +216,4 @@ public class RootWidget extends BaseWidget<RootWidget> implements Widget {
 
     public boolean catchEsc() { return node.propagateDown(w->w.widgetOptions.active() && w.canCatchEsc(), -1, false); }
 }
+*/

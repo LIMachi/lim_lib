@@ -40,11 +40,11 @@ public class CuriosIntegration {
             }
     }
 
-    @SubscribeEvent
-    public static void atlasEvent(TextureStitchEvent.Pre event) {
-        for (ResourceLocation icon : icons)
-            event.addSprite(icon);
-    }
+//    @SubscribeEvent
+//    public static void atlasEvent(TextureStitchEvent.Pre event) {
+//        for (ResourceLocation icon : icons)
+//            event.addSprite(icon);
+//    }
 
     public static boolean equipOnFirstValidSlot(LivingEntity entity, String slot_category, ItemStack stack) {
         if (!isPresent) return false;

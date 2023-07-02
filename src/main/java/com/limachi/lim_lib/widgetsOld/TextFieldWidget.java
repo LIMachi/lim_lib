@@ -23,6 +23,7 @@ import java.util.function.Consumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/*
 @SuppressWarnings({"unused", "UnusedReturnValue"})
 @OnlyIn(Dist.CLIENT)
 public class TextFieldWidget extends BaseWidget<TextFieldWidget> {
@@ -61,40 +62,21 @@ public class TextFieldWidget extends BaseWidget<TextFieldWidget> {
         setText(initialText);
     }
 
-    /**
-     * set a predicate that will be called each time the text in the field tries to change
-     * @param textValidator the first parameter will be the new string (not set) and the second the current state of the field widget. if the validator is set to null or returns true, then the string will be stored as the new field text.
-     * @return self
-     */
     public TextFieldWidget setValidator(@Nullable BiPredicate<String, TextFieldWidget> textValidator) {
         validator = textValidator;
         return this;
     }
 
-    /**
-     * set a callback that will run when input finishes (enter key).
-     * @param onFinish the widget will pass itself as the sole parameter of the callback. if the callback is null, does nothing.
-     * @return self
-     */
     public TextFieldWidget setOnFinish(@Nullable Consumer<TextFieldWidget> onFinish) {
         this.onFinish = onFinish;
         return this;
     }
 
-    /**
-     * set the font to be used by the field, by default use the currently selected minecraft font (at the time of widget creation).
-     * @param font the new font to be used, make sure it is compatible with the widget size.
-     * @return self
-     */
     public TextFieldWidget setFont(@Nonnull Font font) {
         this.font = font;
         return this;
     }
 
-    /**
-     * set the palette of colors used for the widget. all parameters are self explain.
-     * @return self
-     */
     public TextFieldWidget setColors(int textColor, int cursorColor, int selectionColor) {
         this.textColor = textColor;
         this.cursorColor = cursorColor;
@@ -109,11 +91,6 @@ public class TextFieldWidget extends BaseWidget<TextFieldWidget> {
         focus(false);
     }
 
-    /**
-     * change the cursor position and if select is true, update the current selection. setting the cursor position outside rendering will scroll the text if possible.
-     * @param pos the new position of the cursor.
-     * @param select should the selection be updated (note: if false the current selection will be lost/reset).
-     */
     public TextFieldWidget setCursorPos(int pos, boolean select) {
         cursor = Mth.clamp(pos, 0, text.length());
         if (text.length() > 0) {
@@ -133,23 +110,12 @@ public class TextFieldWidget extends BaseWidget<TextFieldWidget> {
 
     protected boolean shouldSelect() { return Screen.hasShiftDown() || isDragged(); }
 
-    /**
-     * select an area of text, setting the current cursor position at the end of selection (start can be greater than end for a backward selection).
-     * @param start of selection
-     * @param end of selection, will also be the position of the cursor on return
-     * @return self
-     */
     public TextFieldWidget select(int start, int end) {
         setCursorPos(start, false);
         setCursorPos(end, true);
         return this;
     }
 
-    /**
-     * using the current cursor position, try to select a word (any sequence not including punctuation or blanks)
-     * @param left should the cursor be positioned to the left of the word (instead of right).
-     * @return self
-     */
     public TextFieldWidget selectWord(boolean left) {
         Matcher m = WORD_REGEX.matcher(text);
         while (m.find()) {
@@ -164,12 +130,6 @@ public class TextFieldWidget extends BaseWidget<TextFieldWidget> {
         return this;
     }
 
-    /**
-     * set the current text (and cursor pos at the end of the text).
-     * @param text new text to replace the current field with.
-     * @param select if true, also update the selection.
-     * @return self
-     */
     public TextFieldWidget setText(String text, boolean select) {
         if (validator == null || validator.test(text, this)) {
             this.text = text;
@@ -179,50 +139,25 @@ public class TextFieldWidget extends BaseWidget<TextFieldWidget> {
         return this;
     }
 
-    /**
-     * set the current text, without selection but will update the history.
-     * @return self
-     */
     public TextFieldWidget setText(String text) {
         setText(text, false);
         pushToHistory();
         return this;
     }
 
-    /**
-     * @return get the full text
-     */
     public String getText() { return text; }
 
-    /**
-     * @return get only the current selection or an empty string if nothing is selected
-     */
     public String getSelectedText() { return text.length() == 0 || selection == cursor ? "" : text.substring(Math.min(selection, cursor), Math.max(selection, cursor)); }
 
-    /**
-     * @return get the current selection or the full text if no selection is active
-     */
     public String getSelectedOrAll() { return selection == cursor ? text : text.substring(Math.min(selection, cursor), Math.max(selection, cursor)); }
 
-    /**
-     * @return get only the visible (rendered) part of the string
-     */
     public String getVisibleText() { return font.plainSubstrByWidth(text.substring(scroll), (int)area.getWidth() - 6); }
 
-    /**
-     * push the current text and cursor position to history, clearing pages if more than one undo was made
-     * @return self
-     */
     public TextFieldWidget pushToHistory() {
         history.write(new Pair<>(cursor, text));
         return this;
     }
 
-    /**
-     * load the state from a previous history point.
-     * @param depth (can be negative to jump forward if no push was done since the last load).
-     * @return self
-     */
     public TextFieldWidget loadFromHistory(int depth) {
         Pair<Integer, String> p = history.read(depth);
         setText(p.getSecond(), false);
@@ -230,10 +165,6 @@ public class TextFieldWidget extends BaseWidget<TextFieldWidget> {
         return this;
     }
 
-    /**
-     * write text at the cursor position (or in the selection if active). will also update the history.
-     * @return self
-     */
     public TextFieldWidget writeText(String add) {
         add = SharedConstants.filterText(add);
         String start = text.substring(0, Math.min(selection, cursor));
@@ -246,11 +177,6 @@ public class TextFieldWidget extends BaseWidget<TextFieldWidget> {
         return this;
     }
 
-    /**
-     * delete characters (or the current selection).
-     * @param amount negative to delete characters before the cursor (backspace), positive for after the cursor (del)
-     * @return self
-     */
     public TextFieldWidget delete(int amount) {
         if (selection != cursor)
             return writeText("");
@@ -409,3 +335,4 @@ public class TextFieldWidget extends BaseWidget<TextFieldWidget> {
         return !isFocused();
     }
 }
+*/

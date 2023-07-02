@@ -1,7 +1,7 @@
 package com.limachi.lim_lib.maths;
 
-import com.mojang.math.Matrix4f;
-import com.mojang.math.Vector4f;
+//import com.mojang.math.Matrix4f;
+//import com.mojang.math.Vector4f;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.world.phys.Vec2;
 
@@ -72,6 +72,7 @@ public class Box2d {
 
     public Box2d expandToContain(Box2d other, double xMargin, double yMargin) { return expandToContain(other.x, other.y, xMargin, yMargin).expandToContain(other.getX2(), other.getY2(), xMargin, yMargin); }
 
+    /*
     public Box2d transform(Matrix4f matrix) {
         Vector4f v1 = new Vector4f((float)x, (float)y, 0, 1);
         Vector4f v2 = new Vector4f((float)getX2(), (float)getY2(), 0, 1);
@@ -83,6 +84,7 @@ public class Box2d {
         setY2(v2.y());
         return this;
     }
+    */
 
     public boolean equals(Box2d cmp) { return x == cmp.x && y == cmp.y && w == cmp.w && h == cmp.h; }
 

@@ -2,7 +2,7 @@ package com.limachi.lim_lib.test;
 
 import com.limachi.lim_lib.maths.AnchoredBox;
 import com.limachi.lim_lib.registries.clientAnnotations.RegisterMenuScreen;
-import com.limachi.lim_lib.screens.WidgetContainerScreen;
+//import com.limachi.lim_lib.screens.WidgetContainerScreen;
 import com.limachi.lim_lib.widgets.*;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.Container;
@@ -15,6 +15,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Collections;
 import java.util.List;
 
+/*
 @RegisterMenuScreen(skip = "com.limachi.lim_lib.LimLib:useTests")
 public class TestScreen extends WidgetContainerScreen<TestMenu> {
 
@@ -56,3 +57,4 @@ public class TestScreen extends WidgetContainerScreen<TestMenu> {
         addWidget(new TestRenderWidget(100, 20));
     }
 }
+*/

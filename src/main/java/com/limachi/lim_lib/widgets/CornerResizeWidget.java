@@ -4,6 +4,7 @@ import com.limachi.lim_lib.maths.AnchorPoint;
 import com.limachi.lim_lib.maths.AnchoredBox;
 import org.jetbrains.annotations.NotNull;
 
+/*
 public class CornerResizeWidget<T extends CornerResizeWidget<T>> extends BaseWidget<T> {
 
     protected int dragIndex = -1;
@@ -95,3 +96,4 @@ public class CornerResizeWidget<T extends CornerResizeWidget<T>> extends BaseWid
         return false;
     }
 }
+*/

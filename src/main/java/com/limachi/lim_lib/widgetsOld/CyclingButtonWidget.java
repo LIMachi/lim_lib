@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+/*
 @SuppressWarnings({"unused", "UnusedReturnValue"})
 @OnlyIn(Dist.CLIENT)
 public class CyclingButtonWidget extends BaseButtonWidget<CyclingButtonWidget> {
@@ -45,3 +46,4 @@ public class CyclingButtonWidget extends BaseButtonWidget<CyclingButtonWidget> {
 
     public ArrayList<Component> getValues() { return values; }
 }
+*/

@@ -22,6 +22,8 @@ import java.util.List;
  * button on the right of entries to remove it
  * duplicate protection
  */
+
+/*
 public class EditableTextList extends BaseWidget<EditableTextList> {
     public static final ResourceLocation checkboxTexture = new ResourceLocation("minecraft", "textures/gui/container/beacon.png");
     public static final Box2d checkboxYesCutout = new Box2d(90, 222, 16, 16);
@@ -100,3 +102,4 @@ public class EditableTextList extends BaseWidget<EditableTextList> {
 
     public ArrayList<String> getStrings() { return strings; }
 }
+*/

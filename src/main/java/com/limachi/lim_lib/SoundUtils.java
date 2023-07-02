@@ -1,8 +1,10 @@
 package com.limachi.lim_lib;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.RecordItem;
@@ -30,7 +32,7 @@ public class SoundUtils {
     }
 
     public static void playNote(Level in, BlockPos at, NoteBlockInstrument instrument, int id) {
-        in.playSound(null, at, instrument.getSoundEvent(), SoundSource.RECORDS, 3.f, (float)Math.pow(2.f, (double)(id - 12) / 12.));
+        in.playSound((Entity)null, at, instrument.getSoundEvent().get(), SoundSource.RECORDS, 3.f, (float)Math.pow(2.f, (double)(id - 12) / 12.));
     }
 
     public static void playNoteWithEvent(Level in, BlockPos at, NoteBlockInstrument instrument, int id) {

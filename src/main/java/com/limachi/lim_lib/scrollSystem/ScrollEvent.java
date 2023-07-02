@@ -52,16 +52,16 @@ public class ScrollEvent {
                 HitResult target = Minecraft.getInstance().hitResult;
                 if (target != null && target.getType() == HitResult.Type.BLOCK) {
                     BlockPos pos = ((BlockHitResult) target).getBlockPos();
-                    BlockEntity be = player.level.getBlockEntity(pos);
-                    Block block = player.level.getBlockState(pos).getBlock();
+                    BlockEntity be = player.level().getBlockEntity(pos);
+                    Block block = player.level().getBlockState(pos).getBlock();
                     if ((block instanceof IScrollBlock sb && sb.canScroll(player, pos)) || (be instanceof IScrollBlock sbe && sbe.canScroll(player, pos))) {
                         POS = pos;
                         DELTA += event.getScrollDelta();
                         COUNTDOWN = COUNTDOWN_LENGTH_BLOCK;
                         if (block instanceof IScrollBlock sb)
-                            sb.scrollFeedBack(player.level, pos, DELTA, player);
+                            sb.scrollFeedBack(player.level(), pos, DELTA, player);
                         if (be instanceof IScrollBlock sbe)
-                            sbe.scrollFeedBack(player.level, pos, DELTA, player);
+                            sbe.scrollFeedBack(player.level(), pos, DELTA, player);
                         event.setCanceled(true);
                     }
                 }

@@ -59,7 +59,7 @@ public class TestMenu extends WidgetContainerMenu {
     public ItemStack quickMoveStack(Player p_38941_, int p_38942_) { return ItemStack.EMPTY; }
 
     public static <T extends TestMenu> void open(Class<T> menu, Player player, Container container) {
-        if (!player.level.isClientSide()) {
+        if (!player.level().isClientSide()) {
             NetworkHooks
 //                    .openGui( //VERSION 1.18.2
                     .openScreen( //VERSION 1.19.2

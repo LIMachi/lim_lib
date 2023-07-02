@@ -37,6 +37,7 @@ import java.util.function.Consumer;
  * left drag: move/resize                                       ok
  */
 
+/*
 @RegisterMenuScreen(skip = "com.limachi.lim_lib.LimLib:useTests")
 public class ScreenEditorScreen extends AbstractContainerScreen<ScreenEditorMenu> {
 
@@ -317,3 +318,4 @@ public class ScreenEditorScreen extends AbstractContainerScreen<ScreenEditorMenu
     @Override
     protected void renderLabels(PoseStack stack, int x, int y) {}
 }
+*/

@@ -6,6 +6,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.function.Consumer;
 
+/*
 public class ToggleButtonWidget extends BaseButtonWidget<ToggleButtonWidget> {
     public ToggleButtonWidget(@NotNull AnchoredBox box, Component title, Consumer<ToggleButtonWidget> onStateChange) {
         super(box, title, onStateChange);
@@ -23,3 +24,4 @@ public class ToggleButtonWidget extends BaseButtonWidget<ToggleButtonWidget> {
         return this;
     }
 }
+*/

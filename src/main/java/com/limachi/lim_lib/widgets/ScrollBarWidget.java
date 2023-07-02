@@ -13,6 +13,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
+/*
 public class ScrollBarWidget extends BaseWidget<ScrollBarWidget> {
 
     public static final int WIDTH = 16;
@@ -144,3 +145,4 @@ public class ScrollBarWidget extends BaseWidget<ScrollBarWidget> {
     public int getLastDelta() { return scroll - prev; }
     public int getScroll() { return scroll; }
 }
+*/

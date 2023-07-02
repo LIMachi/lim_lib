@@ -6,6 +6,7 @@ import net.minecraft.network.chat.Component;
 
 import javax.annotation.Nonnull;
 
+/*
 public class DropDownButton extends BaseButtonWidget<DropDownButton> {
 
     protected final BaseWidget<?> content;
@@ -47,3 +48,4 @@ public class DropDownButton extends BaseButtonWidget<DropDownButton> {
         return isOvered;
     }
 }
+*/

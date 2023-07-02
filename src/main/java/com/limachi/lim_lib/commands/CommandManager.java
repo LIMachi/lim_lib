@@ -17,6 +17,7 @@ import net.minecraft.commands.CommandSourceStack;
 //import net.minecraft.network.chat.TextComponent; //VERSION 1.18.2
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.network.chat.Component; //VERSION 1.19.2
+import net.minecraft.world.flag.FeatureFlagSet;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -45,7 +46,8 @@ public class CommandManager {
         return out.toString();
     }
 
-    public static CommandBuildContext builderContext = new CommandBuildContext(RegistryAccess.BUILTIN.get()); //VERSION 1.19.2
+//    public static CommandBuildContext builderContext = new CommandBuildContext(RegistryAccess.BUILTIN.get()); //VERSION 1.19.2
+    public static CommandBuildContext builderContext = CommandBuildContext.configurable(RegistryAccess.EMPTY, FeatureFlagSet.of()); //VERSION 1.20.1
 
     @SubscribeEvent
     public static void registerCommands(RegisterCommandsEvent event) {
@@ -158,6 +160,7 @@ public class CommandManager {
                 }
                 ctx.getSource().sendSuccess(
 //                        new TextComponent( //VERSION 1.18.2
+                        ()->//VERSION 1.20.1
                         Component.literal( //VERSION 1.19.2
                                 output.append(')').toString()), true);
                 return nonLiteral.size();

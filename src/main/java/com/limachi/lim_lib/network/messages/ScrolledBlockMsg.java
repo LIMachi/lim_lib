@@ -11,11 +11,11 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 @RegisterMsg
 public record ScrolledBlockMsg(BlockPos pos, int delta) implements IRecordMsg {
     public void serverWork(Player player) {
-        BlockEntity be = player.level.getBlockEntity(pos);
+        BlockEntity be = player.level().getBlockEntity(pos);
         if (be instanceof IScrollBlock)
-            ((IScrollBlock)be).scroll(player.level, pos, delta, player);
-        Block block = player.level.getBlockState(pos).getBlock();
+            ((IScrollBlock)be).scroll(player.level(), pos, delta, player);
+        Block block = player.level().getBlockState(pos).getBlock();
         if (block instanceof IScrollBlock)
-            ((IScrollBlock)block).scroll(player.level, pos, delta, player);
+            ((IScrollBlock)block).scroll(player.level(), pos, delta, player);
     }
 }

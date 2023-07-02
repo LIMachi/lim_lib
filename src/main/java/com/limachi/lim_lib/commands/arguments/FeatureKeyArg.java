@@ -9,6 +9,7 @@ import net.minecraft.core.Registry;
 import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
 import com.limachi.lim_lib.commands.FunctionThrowsCommandSyntaxException;
 
+/*
 @SuppressWarnings("unused")
 public class FeatureKeyArg extends AbstractCommandArgument {
     public FeatureKeyArg() { type = ResourceKeyArgument.key(Registry.CONFIGURED_FEATURE_REGISTRY); }
@@ -19,3 +20,4 @@ public class FeatureKeyArg extends AbstractCommandArgument {
         return ctx->ResourceKeyArgument.getConfiguredFeature(ctx, getLabel());
     }
 }
+*/

@@ -6,7 +6,7 @@ import com.limachi.lim_lib.render.RenderUtils;
 import com.limachi.lim_lib.screens.ILimLibScreen;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
-import net.minecraft.client.gui.components.Widget;
+//import net.minecraft.client.gui.components.Widget;
 import net.minecraft.client.gui.components.events.AbstractContainerEventHandler;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.narration.NarratableEntry;
@@ -24,6 +24,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
+/*
 @SuppressWarnings({"unused", "UnusedReturnValue", "unchecked"})
 @OnlyIn(Dist.CLIENT)
 public abstract class BaseWidget<T extends BaseWidget<T>> extends AbstractContainerEventHandler implements Widget, NarratableEntry {
@@ -117,9 +118,6 @@ public abstract class BaseWidget<T extends BaseWidget<T>> extends AbstractContai
         }
     }
 
-    /**
-     * called after background was rendered, the stack will be set so pixel(0,0) and mouse(0,0) are the top left corner of the widget
-     */
     public void renderRelative(PoseStack stack, int mouseX, int mouseY, float partialTick, boolean isMouseOver) {}
 
     @Override
@@ -167,3 +165,4 @@ public abstract class BaseWidget<T extends BaseWidget<T>> extends AbstractContai
 
     public boolean shouldCloseOnEsc() { return true; }
 }
+*/

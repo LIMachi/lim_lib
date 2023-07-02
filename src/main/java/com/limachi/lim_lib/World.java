@@ -3,6 +3,7 @@ package com.limachi.lim_lib;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Registry;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.network.protocol.game.ClientboundPlayerPositionPacket;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -39,20 +40,20 @@ public class World {
 
     public static Iterable<? extends Level> getAllLevels() {
         if (Sides.isLogicalClient())
-            return Collections.singletonList(Sides.getPlayer().level);
+            return Collections.singletonList(Sides.getPlayer().level());
         return Sides.getServer().getAllLevels();
     }
 
     public static Level getLevel(ResourceKey<Level> reg) {
         if (Sides.isLogicalClient()) {
-            Level t = Sides.getPlayer().level;
+            Level t = Sides.getPlayer().level();
             return t.dimension().equals(reg) ? t : null;
         }
         return Sides.getServer().getLevel(reg);
     }
 
     public static Level getLevel(String reg) {
-        return getLevel(ResourceKey.create(Registry.DIMENSION_REGISTRY, new ResourceLocation(reg)));
+        return getLevel(ResourceKey.create(Registries.DIMENSION, new ResourceLocation(reg)));
     }
 
     public static String asString(Level level) {
@@ -76,7 +77,7 @@ public class World {
     public static boolean replaceBlockAndGiveBack(@Nullable Level level, BlockPos pos, Block block, Player player) {
         ItemStack prev = player.getMainHandItem();
         player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(block, 64));
-        boolean ok = replaceBlockAndGiveBack(level == null ? player.level : level, pos, player, InteractionHand.MAIN_HAND, !player.isCreative(), p->true);
+        boolean ok = replaceBlockAndGiveBack(level == null ? player.level() : level, pos, player, InteractionHand.MAIN_HAND, !player.isCreative(), p->true);
         player.setItemInHand(InteractionHand.MAIN_HAND, prev);
         return ok;
     }
@@ -119,6 +120,7 @@ public class World {
         return out;
     }
 
+    /*
     private static Entity teleport(Entity entityIn, ServerLevel worldIn, double x, double y, double z, float yaw, float pitch) { //modified version of TeleportCommand.java: 123: TeleportCommand#teleport(CommandSource source, Entity entityIn, ServerWorld worldIn, double x, double y, double z, Set<SPlayerPositionLookPacket.Flags> relativeList, float yaw, float pitch, @Nullable TeleportCommand.Facing facing) throws CommandSyntaxException
         if (entityIn.isRemoved()) return entityIn;
         SyncUtils.XPSnapShot xp = entityIn instanceof ServerPlayer ? new SyncUtils.XPSnapShot((Player)entityIn) : SyncUtils.XPSnapShot.ZERO;
@@ -168,15 +170,15 @@ public class World {
         }
         return entityIn;
     }
-
+*/
     public static Entity teleportEntity(Entity entity, ResourceKey<Level> destType, double x, double y, double z, float xRot, float yRot) {
-        if (entity == null || entity.level.isClientSide()) return null;
+        if (entity == null || entity.level().isClientSide()) return null;
         ServerLevel world;
         if (destType != null && entity.getServer() != null)
             world = entity.getServer().getLevel(destType);
         else
-            world = (ServerLevel)entity.level;
-        return teleport(entity, world, x, y, z, yRot, xRot);
+            world = (ServerLevel)entity.level();
+        return world != null && entity.teleportTo(world, x, y, z, Set.of(), yRot, xRot) ? entity : null;
     }
 
     public static Entity teleportEntity(Entity entity, ResourceKey<Level> destType, BlockPos destPos, float xRot, float yRot) {

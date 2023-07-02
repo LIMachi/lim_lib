@@ -6,6 +6,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.function.Consumer;
 
+/*
 public class CycleStateButton extends BaseButtonWidget<CycleStateButton> {
     protected final BaseWidget<?>[] states;
     protected int index;
@@ -74,3 +75,4 @@ public class CycleStateButton extends BaseButtonWidget<CycleStateButton> {
         return t;
     }
 }
+*/

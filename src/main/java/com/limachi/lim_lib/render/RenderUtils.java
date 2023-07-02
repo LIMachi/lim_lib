@@ -4,15 +4,15 @@ import com.limachi.lim_lib.LimLib;
 import com.limachi.lim_lib.maths.Box2d;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
-import com.mojang.math.Matrix4f;
-import com.mojang.math.Vector4f;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiComponent;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
+import org.joml.Matrix4f;
+import org.joml.Vector4f;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -54,7 +54,7 @@ public class RenderUtils {
         Vector4f ec = expandColor(color, false);
         Tesselator tesselator = Tesselator.getInstance();
         BufferBuilder bufferbuilder = tesselator.getBuilder();
-        RenderSystem.disableTexture();
+//        RenderSystem.disableTexture();
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
         RenderSystem.setShader(GameRenderer::getPositionColorShader);
@@ -70,7 +70,7 @@ public class RenderUtils {
 //        bufferbuilder.end(); // VERSION 1.18.2
 //        BufferUploader.end(bufferbuilder); // VERSION 1.18.2
         tesselator.end();
-        RenderSystem.enableTexture();
+//        RenderSystem.enableTexture();
         RenderSystem.disableBlend();
     }
 
@@ -78,6 +78,7 @@ public class RenderUtils {
         return (int)(font.width(text) * Float.parseFloat(matrix.toString().substring(10).split(" ")[0]));
     }
 
+    /*
     public static void drawString(PoseStack matrixStack, Font font, String string, Box2d coords, int textColor, boolean withShadow, boolean withWrap) {
         if (withShadow)
             drawString(matrixStack, font, string, coords.copy().move(1, 1), compactColor(expandColor(textColor, true)), false, withWrap);
@@ -93,17 +94,20 @@ public class RenderUtils {
                 if (tmpStr.isEmpty())
                     tmpStr = string.substring(0, 1);
                 r += tmpStr.length();
-                font.draw(matrixStack, tmpStr, x, y + l * font.lineHeight, textColor);
+                GuiGraphics.
+                font.drawInBatch(tmpStr, x, y + l * font.lineHeight, textColor, true, matrixStack.last());
                 ++l;
             }
         else
             font.draw(matrixStack, string, x, y, textColor);
     }
+    */
 
+    /*
     public static void blitMiddleExp(@Nullable AbstractContainerScreen<?> screen, @Nonnull PoseStack stack) { blitMiddleExp(screen, stack, null, null, null, DEFAULT_FILE_WIDTH, DEFAULT_FILE_HEIGHT); }
     public static void blitMiddleExp(@Nullable AbstractContainerScreen<?> screen, @Nonnull PoseStack stack, @Nullable Box2d from) { blitMiddleExp(screen, stack, null, null, from, DEFAULT_FILE_WIDTH, DEFAULT_FILE_HEIGHT); }
     public static void blitMiddleExp(@Nullable AbstractContainerScreen<?> screen, @Nonnull PoseStack stack, @Nullable Integer depth, @Nullable Box2d to, @Nullable Box2d from) { blitMiddleExp(screen, stack, depth, to, from, DEFAULT_FILE_WIDTH, DEFAULT_FILE_HEIGHT); }
-
+*/
     /**
      * variant of blit that is safe to use with negative width/height boxes (inverted corners) without precision loss due to int cast in default blit
      */
@@ -129,6 +133,7 @@ public class RenderUtils {
         BufferUploader.drawWithShader(bufferbuilder.end());
     }
 
+    /*
     public static void blitMiddleExp(@Nullable AbstractContainerScreen<?> screen, @Nonnull PoseStack stack, @Nullable Integer depth, @Nullable Box2d to, @Nullable Box2d from, int fileWidth, int fileHeight) {
         if (screen != null) {
             if (to != null)
@@ -150,7 +155,7 @@ public class RenderUtils {
         GuiComponent.blit(stack, (int)quadrant.getX1(), (int)quadrant.getY1(), depth, (float)(from.getX2() - quadrant.getWidth()), (float)(from.getY2() - quadrant.getHeight()), (int)quadrant.getWidth(), (int)quadrant.getHeight(), fileWidth, fileHeight);
         quadrant.move(-quadrant.getWidth(), 0.);
         GuiComponent.blit(stack, (int)quadrant.getX1(), (int)quadrant.getY1(), depth, (float)from.getX1(), (float)(from.getY2() - quadrant.getHeight()), (int)quadrant.getWidth(), (int)quadrant.getHeight(), fileWidth, fileHeight);
-    }
+    }*/
 
     public static void blitUnscaled(@Nullable AbstractContainerScreen<?> screen, @Nonnull PoseStack stack) { blitUnscaled(screen, stack, null, null, null, DEFAULT_FILE_WIDTH, DEFAULT_FILE_HEIGHT); }
     public static void blitUnscaled(@Nullable AbstractContainerScreen<?> screen, @Nonnull PoseStack stack, @Nullable Box2d to) { blitUnscaled(screen, stack, null, to, null, DEFAULT_FILE_WIDTH, DEFAULT_FILE_HEIGHT); }
@@ -163,7 +168,7 @@ public class RenderUtils {
             else
                 to = new Box2d(screen.getGuiLeft(), screen.getGuiTop(), screen.getXSize(), screen.getYSize());
             if (depth == null)
-                depth = screen.getBlitOffset();
+                depth = 0;
         }
         if (to == null) return;
         if (from == null) from = new Box2d(to.getWidth(), to.getHeight());
@@ -180,7 +185,7 @@ public class RenderUtils {
 
     public static void background(@Nullable AbstractContainerScreen<?> screen, @Nonnull PoseStack stack) {
         RenderSystem.setShaderTexture(0, BACKGROUND_TEXTURE);
-        blitMiddleExp(screen, stack);
+//        blitMiddleExp(screen, stack);
     }
 
     public static void slots(@Nullable AbstractContainerScreen<?> screen, @Nonnull PoseStack stack, int x, int y, int rows, int columns, int active) { slots(screen, stack, null, x, y, rows, columns, active); }
@@ -206,13 +211,13 @@ public class RenderUtils {
     public static void entity(LivingEntity entity, int x, int y, int scale) { entity(entity, x, y, scale, x, y); }
     public static void entity(LivingEntity entity, int x, int y, float lookAtX, float lookAtY) { entity(entity, x, y, 30, lookAtX, lookAtY); }
     public static void entity(LivingEntity entity, int x, int y, int scale, float lookAtX, float lookAtY) {
-        InventoryScreen.renderEntityInInventory(x, y, scale, lookAtX, lookAtY, entity);
+//        InventoryScreen.renderEntityInInventory(x, y, scale, lookAtX, lookAtY, entity);
     }
 
     public static void entity(AbstractContainerScreen<?> screen, LivingEntity entity, int x, int y) { entity(screen, entity, x, y, 30, x, y); }
     public static void entity(AbstractContainerScreen<?> screen, LivingEntity entity, int x, int y, int scale) { entity(screen, entity, x, y, scale, x, y); }
     public static void entity(AbstractContainerScreen<?> screen, LivingEntity entity, int x, int y, float lookAtX, float lookAtY) { entity(screen, entity, x, y, 30, lookAtX, lookAtY); }
     public static void entity(AbstractContainerScreen<?> screen, LivingEntity entity, int x, int y, int scale, float lookAtX, float lookAtY) {
-        InventoryScreen.renderEntityInInventory(x + screen.getGuiLeft(), y + screen.getGuiTop(), scale, lookAtX + screen.getGuiLeft(), lookAtY + screen.getGuiTop(), entity);
+//        InventoryScreen.renderEntityInInventory(x + screen.getGuiLeft(), y + screen.getGuiTop(), scale, lookAtX + screen.getGuiLeft(), lookAtY + screen.getGuiTop(), entity);
     }
 }

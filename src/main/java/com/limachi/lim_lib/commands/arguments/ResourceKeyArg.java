@@ -9,6 +9,7 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import com.limachi.lim_lib.commands.FunctionThrowsCommandSyntaxException;
 
+/*
 @SuppressWarnings("unused")
 public class ResourceKeyArg<T> extends AbstractCommandArgument {
     public ResourceKeyArg(ResourceKey<? extends Registry<T>> registry) { type = ResourceKeyArgument.key(registry); }
@@ -19,3 +20,4 @@ public class ResourceKeyArg<T> extends AbstractCommandArgument {
         return ctx->ResourceKeyArgument.getAttribute(ctx, getLabel());
     }
 }
+*/

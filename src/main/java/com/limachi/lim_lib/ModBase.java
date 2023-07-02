@@ -26,11 +26,11 @@ public class ModBase {
     public static final String COMMON_ID = "lim_lib";
 
     public static final HashMap<String, ModBase> INSTANCES = new HashMap<>();
-    protected CreativeModeTab tab = CreativeModeTab.TAB_MISC;
+//    protected CreativeModeTab tab = CreativeModeTab.TAB_MISC;
 
     public ModBase(@Nonnull String modId, @Nonnull String name, @Nullable CreativeModeTab defaultTab) {
-        if (defaultTab != null)
-            tab = defaultTab;
+//        if (defaultTab != null)
+//            tab = defaultTab;
         INSTANCES.put(modId, this);
         Log.debug("First Registration Stage");
         StaticInitializer.initialize(modId, Stage.FIRST);
@@ -47,9 +47,10 @@ public class ModBase {
 //        ConstructorEnforcer.testAllClass(modId);
     }
 
-    public CreativeModeTab tab() { return tab; }
-    public Item.Properties defaultProps() { return new Item.Properties().tab(tab); }
+//    public CreativeModeTab tab() { return tab; }
+//    public Item.Properties defaultProps() { return new Item.Properties().tab(tab); }
 
+    /*
     public static <I extends Item, S extends Supplier<I>> CreativeModeTab createTab(String modId, Supplier<S> delayedRegistryItem) {
         return new CreativeModeTab("tab_" + modId) {
             @Override
@@ -57,4 +58,5 @@ public class ModBase {
             public ItemStack makeIcon() { return new ItemStack(delayedRegistryItem.get().get()); }
         };
     }
+    */
 }

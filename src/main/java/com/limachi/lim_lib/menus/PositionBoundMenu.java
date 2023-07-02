@@ -19,7 +19,7 @@ public abstract class PositionBoundMenu extends CommonItemHandlerMenu {
 
     protected PositionBoundMenu(MenuType<?> type, int id, Inventory playerInventory, @Nullable IItemHandlerModifiable container, BlockPos pos) {
         super(type, id, playerInventory);
-        accessor = ContainerLevelAccess.create(playerInventory.player.level, pos);
+        accessor = ContainerLevelAccess.create(playerInventory.player.level(), pos);
         handler = container != null ? container : clientContainer(playerInventory);
     }
 

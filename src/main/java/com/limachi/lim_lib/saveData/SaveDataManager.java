@@ -126,7 +126,7 @@ public class SaveDataManager {
         if (!event
 //                .getPlayer() //VERSION 1.18.2
                 .getEntity() // VERSION 1.19.2
-                .level.isClientSide()) {
+                .level().isClientSide()) {
             for (String k : SAVE_DATAS.keySet()) {
                 for (Level level : World.getAllLevels()) {
                     DimensionDataStorage storage = ((ServerLevel) level).getDataStorage();
@@ -153,7 +153,7 @@ public class SaveDataManager {
         if (event
 //                .getPlayer() // VERSION 1.18.2
                 .getEntity() // VERSION 1.19.2
-                .level.isClientSide())
+                .level().isClientSide())
             CLIENT_INSTANCES.clear();
     }
 }

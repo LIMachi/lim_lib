@@ -19,6 +19,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.function.Consumer;
 
+/*
 public class BaseButtonWidget<T extends BaseButtonWidget<T>> extends BaseWidget<T> {
 
     public static final ResourceLocation BACKGROUND = new ResourceLocation(LimLib.COMMON_ID, "textures/screen/button.png");
@@ -104,3 +105,4 @@ public class BaseButtonWidget<T extends BaseButtonWidget<T>> extends BaseWidget<
         titleFont.drawShadow(stack, formattedcharsequence, x, y, titleColor);
     }
 }
+*/

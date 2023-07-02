@@ -13,6 +13,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.function.Consumer;
 
+/*
 @SuppressWarnings({"unused", "UnusedReturnValue"})
 @OnlyIn(Dist.CLIENT)
 public class ScrollBarWidget extends BaseWidget<ScrollBarWidget> {
@@ -151,3 +152,4 @@ public class ScrollBarWidget extends BaseWidget<ScrollBarWidget> {
     public int getLastDelta() { return scroll - prev; }
     public int getScroll() { return scroll; }
 }
+*/

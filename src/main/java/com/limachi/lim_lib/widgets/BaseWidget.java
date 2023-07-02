@@ -6,7 +6,7 @@ import com.limachi.lim_lib.data.IAreaUser;
 import com.limachi.lim_lib.data.TreeNode;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
-import net.minecraft.client.gui.components.Widget;
+//import net.minecraft.client.gui.components.Widget;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.Component;
@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+/*
 public abstract class BaseWidget<T extends BaseWidget<T>> implements IAreaUser, Widget {
 
     @Nullable
@@ -107,16 +108,8 @@ public abstract class BaseWidget<T extends BaseWidget<T>> implements IAreaUser, 
         return (T)this;
     }
 
-    /**
-     * Will be called after the backgrounds (of the screen and self) have been rendered, before children render.
-     * Use it if the background render is not enough (animation, object render, etc...).
-     */
     public void backRender(@Nonnull PoseStack stack, double mouseX, double mouseY, float partialTick) {}
 
-    /**
-     * Will be called at the VERY END of the screen render (but before tooltip rendering), in inverse order (top widget last).
-     * Used for overlays/transparent textures.
-     */
     public void frontRender(@Nonnull PoseStack stack, double mouseX, double mouseY, float partialTick) {}
 
     @Override
@@ -223,3 +216,4 @@ public abstract class BaseWidget<T extends BaseWidget<T>> implements IAreaUser, 
 
     protected boolean canCatchEsc() { return false; }
 }
+*/

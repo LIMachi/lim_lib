@@ -7,6 +7,7 @@ import net.minecraft.network.chat.Component;
 import javax.annotation.Nonnull;
 import java.util.function.Consumer;
 
+/*
 public class ButtonWidget extends BaseButtonWidget<ButtonWidget> {
 
     public ButtonWidget(@Nonnull AnchoredBox box, Component title, Consumer<ButtonWidget> onStateChange) {
@@ -34,3 +35,4 @@ public class ButtonWidget extends BaseButtonWidget<ButtonWidget> {
         return t;
     }
 }
+*/
