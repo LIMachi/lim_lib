@@ -4,7 +4,6 @@ import com.electronwill.nightconfig.core.file.CommentedFileConfig;
 import com.limachi.lim_lib.registries.Registries;
 import com.limachi.lim_lib.registries.ClientRegistries;
 import net.minecraft.world.item.BlockItem;
-import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
@@ -41,7 +40,7 @@ public class LimLib extends ModBase {
 
         for (String regKey : BLOCK_KEYS) {
             RegistryObject<Block> rBlock = Registries.block(COMMON_ID, regKey, ()->new Block(BlockBehaviour.Properties.copy(Blocks.AMETHYST_BLOCK)));
-            Registries.item(COMMON_ID, regKey, ()->new BlockItem(rBlock.get(), new Item.Properties()), null);
+            Registries.item(COMMON_ID, regKey, ()->new BlockItem(rBlock.get(), new Item.Properties()), null, null);
         }
     }
 
@@ -50,7 +49,7 @@ public class LimLib extends ModBase {
     }
 
     public LimLib() {
-        super(ModBase.COMMON_ID, "LimLib", null);
+        super(ModBase.COMMON_ID, "LimLib", true, null);
         IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
         bus.register(Registries.class);
         DistExecutor.unsafeCallWhenOn(Dist.CLIENT, ()->()->{ bus.register(ClientRegistries.class); return true; });

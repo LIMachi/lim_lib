@@ -1,7 +1,6 @@
 package com.limachi.lim_lib;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.Entity;
@@ -10,6 +9,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.RecordItem;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.properties.NoteBlockInstrument;
+import net.minecraft.world.level.gameevent.GameEvent;
 
 public class SoundUtils {
     public static void startRecord(Level in, BlockPos at, int id) {
@@ -24,7 +24,8 @@ public class SoundUtils {
     }
 
     public static void stopRecord(Level in, BlockPos at) {
-        startRecord(in, at, 0);
+        in.gameEvent(GameEvent.JUKEBOX_STOP_PLAY, at, GameEvent.Context.of(in.getBlockState(at)));
+        in.levelEvent(1011, at, 0);
     }
 
     public static void playComparatorClick(Level in, BlockPos at, int pitchMultiplier) {

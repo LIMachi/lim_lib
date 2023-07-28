@@ -2,6 +2,8 @@ package com.limachi.lim_lib.constructorEnforcer;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.limachi.lim_lib.Log;
+import com.limachi.lim_lib.ModAnnotation;
+import com.limachi.lim_lib.Sides;
 import com.limachi.lim_lib.Strings;
 import com.limachi.lim_lib.constructorEnforcer.enforcers.Default;
 import com.limachi.lim_lib.reflection.Classes;
@@ -13,10 +15,13 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.level.block.entity.BaseContainerBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.forgespi.language.ModFileScanData;
 
 import java.lang.reflect.Modifier;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Map;
 
@@ -81,6 +86,7 @@ public class ConstructorEnforcer {
      * @param modId filter to only test classes declared by this mod
      */
     public static void testAllClass(String modId) {
+        if (!Sides.isPhysicalClient()) return; //only run this while testing on the physical client side (still test server classes in single player)
         for (ModFileScanData scan : ModList.get().getAllScanData())
             if (scan.getTargets().containsKey(modId))
                 for (ModFileScanData.ClassData cd : scan.getClasses()) {

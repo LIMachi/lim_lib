@@ -12,10 +12,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -54,6 +51,12 @@ public class ModAnnotation {
 
     /**
      * helper function to get data from the annotation (aka annotation parameters)
+     * variant that work with arrays
+     */
+    public <T> ArrayList<T> getData(String key, T[] def) { return (ArrayList<T>) annotation.annotationData().getOrDefault(key, new ArrayList<T>(Arrays.asList(def))); }
+
+    /**
+     * helper function to get data from the annotation (aka annotation parameters)
      */
     public <T> T getData(String key, T def) { return (T)annotation.annotationData().getOrDefault(key, def); }
 
@@ -66,6 +69,8 @@ public class ModAnnotation {
             classCache = Classes.classByName(annotation.clazz().getClassName(), null);
         return classCache;
     }
+
+    public String getTrueClassName() { return annotation.clazz().getClassName(); }
 
     /**
      * get the simplified name of the class

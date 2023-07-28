@@ -40,6 +40,8 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.material.Fluid;
 //import net.minecraftforge.client.event.ColorHandlerEvent; //VERSION 1.18.2
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.RegisterColorHandlersEvent; //VERSION 1.19.2
 import net.minecraftforge.client.event.EntityRenderersEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -55,6 +57,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Supplier;
 
+@OnlyIn(Dist.CLIENT)
 @SuppressWarnings({"unchecked", "unused", "UnusedReturnValue", "deprecation"})
 public class ClientRegistries {
     protected static final HashMap<RegistryObject<?>, RenderType> RENDER_LAYERS = new HashMap<>();

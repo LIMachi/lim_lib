@@ -4,7 +4,7 @@ import javax.annotation.Nullable;
 import java.util.regex.Pattern;
 
 public class Strings {
-    public static Pattern CAMEL_TO_SNAKE_REGEX = Pattern.compile("\\B([A-Z])");
+    public static Pattern CAMEL_TO_SNAKE_REGEX = Pattern.compile("\\B([A-Z][^A-Z]+?)");
     public static String camelToSnake(String str) {
         if (str == null || str.isEmpty()) return "";
         return CAMEL_TO_SNAKE_REGEX.matcher(str).replaceAll("_$1").toLowerCase();

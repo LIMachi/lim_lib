@@ -107,7 +107,8 @@ public class RenderUtils {
     public static void blitMiddleExp(@Nullable AbstractContainerScreen<?> screen, @Nonnull PoseStack stack) { blitMiddleExp(screen, stack, null, null, null, DEFAULT_FILE_WIDTH, DEFAULT_FILE_HEIGHT); }
     public static void blitMiddleExp(@Nullable AbstractContainerScreen<?> screen, @Nonnull PoseStack stack, @Nullable Box2d from) { blitMiddleExp(screen, stack, null, null, from, DEFAULT_FILE_WIDTH, DEFAULT_FILE_HEIGHT); }
     public static void blitMiddleExp(@Nullable AbstractContainerScreen<?> screen, @Nonnull PoseStack stack, @Nullable Integer depth, @Nullable Box2d to, @Nullable Box2d from) { blitMiddleExp(screen, stack, depth, to, from, DEFAULT_FILE_WIDTH, DEFAULT_FILE_HEIGHT); }
-*/
+    */
+
     /**
      * variant of blit that is safe to use with negative width/height boxes (inverted corners) without precision loss due to int cast in default blit
      */

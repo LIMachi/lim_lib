@@ -16,6 +16,7 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.PathfinderMob;
+import net.minecraft.world.entity.RelativeMovement;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
@@ -171,6 +172,27 @@ public class World {
         return entityIn;
     }
 */
+    public static Entity teleportTo(Entity entity, ServerLevel level, double x, double y, double z, Set<RelativeMovement> rel, float yHead, float xHead) {
+        if (level == entity.level() || entity instanceof Player) {
+            entity.teleportTo(level, x, y, z, rel, yHead, xHead);
+            return entity;
+        }
+
+        float f = Mth.clamp(xHead, -90.0F, 90.0F);
+
+        entity.unRide();
+        Entity newEntity = entity.getType().create(level);
+        if (newEntity == null)
+            return null;
+
+        newEntity.restoreFrom(entity);
+        newEntity.moveTo(x, y, z, yHead, f);
+        newEntity.setYHeadRot(yHead);
+        entity.setRemoved(Entity.RemovalReason.CHANGED_DIMENSION);
+        level.addDuringTeleport(newEntity);
+        return newEntity;
+    }
+
     public static Entity teleportEntity(Entity entity, ResourceKey<Level> destType, double x, double y, double z, float xRot, float yRot) {
         if (entity == null || entity.level().isClientSide()) return null;
         ServerLevel world;
@@ -178,7 +200,7 @@ public class World {
             world = entity.getServer().getLevel(destType);
         else
             world = (ServerLevel)entity.level();
-        return world != null && entity.teleportTo(world, x, y, z, Set.of(), yRot, xRot) ? entity : null;
+        return world != null ? teleportTo(entity, world, x, y, z, Set.of(), yRot, xRot) : null;
     }
 
     public static Entity teleportEntity(Entity entity, ResourceKey<Level> destType, BlockPos destPos, float xRot, float yRot) {

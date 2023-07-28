@@ -1,6 +1,5 @@
 package com.limachi.lim_lib.containers;
 
-import com.limachi.lim_lib.nbt.NBT;
 import com.limachi.lim_lib.StackUtils;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.nbt.CompoundTag;
@@ -8,6 +7,7 @@ import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.world.Container;
 import net.minecraft.world.ContainerListener;
+import net.minecraft.world.entity.SlotAccess;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.player.StackedContents;
 import net.minecraft.world.inventory.StackedContentsCompatible;
@@ -15,37 +15,42 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.items.IItemHandlerModifiable;
 
 import javax.annotation.Nonnull;
-import java.util.List;
+import java.util.function.BiFunction;
 
 /**
- * Thanks to this default interface, you can quickly create a list style container handler by only declaring a method
- * `stacks()`. By doing so, all methods of Container, IItemHandlerModifiable, StackedContentsCompatible, IAsTag
- * and IFromTag will be generated. If self also implements IContainerListenerHandler, setChanged will propagate
- * changes to listeners automatically. `stacks()` is expected to be a direct return of a final non static field.
+ * Thanks to this default interface, you can quickly create a container handler by only declaring as few methods as possible.
  */
-public interface IListContainer extends Container, IItemHandlerModifiable, StackedContentsCompatible {
-    List<ItemStack> stacks();
+public interface ISlotAccessContainer extends Container, IItemHandlerModifiable, StackedContentsCompatible {
+    SlotAccess getSlotAccess(int slot);
 
     @Override
-    default int getContainerSize() { return stacks().size(); }
+    default int getContainerSize() { return getSlots(); }
+
+    default <T> T runOnAllSlots(BiFunction<Integer, SlotAccess, T> run, T def, boolean stopOnFirstNonDef) {
+        for (int i = 0; i < getSlots(); ++i) {
+            T out = run.apply(i, getSlotAccess(i));
+            if (stopOnFirstNonDef && out != def)
+                return out;
+        }
+        return def;
+    }
+
     @Override
-    default boolean isEmpty() { return stacks().stream().allMatch(ItemStack::isEmpty); }
+    default boolean isEmpty() { return runOnAllSlots((i, a)->a.get().isEmpty(), true, true); }
+
     @Override
     @Nonnull
-    default ItemStack getItem(int slot) { return slot >= 0 && slot < stacks().size() ? stacks().get(slot) : ItemStack.EMPTY; }
+    default ItemStack getItem(int slot) { return getSlotAccess(slot).get(); }
 
     @Override
     @Nonnull
     default ItemStack removeItem(int slot, int qty) {
-        if (slot < 0 || slot >= stacks().size() || qty <= 0) return ItemStack.EMPTY;
-        ItemStack ss = stacks().get(slot);
-        qty = Integer.min(Integer.min(ss.getCount(), qty), ss.getItem()
-//                .getItemStackLimit( //VERSION 1.18.2
-                .getMaxStackSize( //VERSION 1.19.2
-                        ss));
+        SlotAccess sa = getSlotAccess(slot);
+        ItemStack ss = sa.get();
+        qty = Integer.min(Integer.min(ss.getCount(), qty), ss.getItem().getMaxStackSize(ss));
         if (qty <= 0) return ItemStack.EMPTY;
         ItemStack out = ss.split(qty);
-        stacks().set(slot, ss);
+        sa.set(ss);
         setChanged();
         return out;
     }
@@ -53,16 +58,15 @@ public interface IListContainer extends Container, IItemHandlerModifiable, Stack
     @Override
     @Nonnull
     default ItemStack removeItemNoUpdate(int slot) {
-        if (slot < 0 || slot >= stacks().size()) return ItemStack.EMPTY;
-        ItemStack out = stacks().get(slot);
-        stacks().set(slot, ItemStack.EMPTY);
+        SlotAccess sa = getSlotAccess(slot);
+        ItemStack out = sa.get();
+        sa.set(ItemStack.EMPTY);
         return out;
     }
 
     @Override
     default void setItem(int slot, @Nonnull ItemStack stack) {
-        if (slot < 0 || slot >= stacks().size() || stacks().get(slot).equals(stack, false)) return;
-        stacks().set(slot, stack);
+        getSlotAccess(slot).set(stack);
         setChanged();
     }
 
@@ -76,12 +80,13 @@ public interface IListContainer extends Container, IItemHandlerModifiable, Stack
 
     @Override
     default boolean stillValid(@Nonnull Player player) { return true; }
+
     @Override
-    default void clearContent() { stacks().replaceAll(s->ItemStack.EMPTY); }
+    default void clearContent() { runOnAllSlots((i, a)->a.set(ItemStack.EMPTY), true, false); }
+
     @Override
     default void setStackInSlot(int slot, @Nonnull ItemStack stack) { setItem(slot, stack); }
-    @Override
-    default int getSlots() { return getContainerSize(); }
+
     @Override
     @Nonnull
     default ItemStack getStackInSlot(int slot) { return getItem(slot); }
@@ -102,7 +107,7 @@ public interface IListContainer extends Container, IItemHandlerModifiable, Stack
     @Nonnull
     default ItemStack extractItem(int slot, int amount, boolean simulate) {
         if (amount <= 0 || slot < 0 || slot >= getContainerSize()) return ItemStack.EMPTY;
-        Pair<ItemStack, ItemStack> m = StackUtils.extract(stacks().get(slot), amount);
+        Pair<ItemStack, ItemStack> m = StackUtils.extract(getStackInSlot(slot), amount);
         if (!simulate)
             setItem(slot, m.getSecond());
         return m.getFirst();
@@ -110,6 +115,7 @@ public interface IListContainer extends Container, IItemHandlerModifiable, Stack
 
     @Override
     default int getSlotLimit(int slot) { return getMaxStackSize(); }
+
     @Override
     default boolean canPlaceItem(int slot, @Nonnull ItemStack stack) { return isItemValid(slot, stack); }
 

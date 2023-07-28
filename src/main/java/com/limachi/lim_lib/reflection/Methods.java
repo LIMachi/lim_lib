@@ -116,7 +116,7 @@ public class Methods {
         try {
             Method out = getAssignableMethod(object.getClass(), obName, name, parametersTypes);
             out.setAccessible(true);
-            return (T)out.invoke(null, parameters);
+            return (T)out.invoke(object, parameters);
         } catch (Exception e) {
             Log.error(name != null ? name : obName, 1, "invokeMethod -> Invalid method for object: " + object + (parameters.length > 0 ? " with parameters: " + Arrays.toString(parameters) : ""));
             e.printStackTrace();

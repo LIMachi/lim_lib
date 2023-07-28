@@ -61,7 +61,7 @@ public class StackUtils {
 
     public static Pair<ItemStack, ItemStack> extract(ItemStack stack, int count) {
         ItemStack out = stack.copy();
-        out.setCount(Integer.max(Integer.min(count, stack.getMaxStackSize()), stack.getCount()));
+        out.setCount(Integer.min(Integer.min(count, stack.getMaxStackSize()), stack.getCount()));
         if (out.getCount() == stack.getCount()) return new Pair<>(out, ItemStack.EMPTY);
         ItemStack rem = stack.copy();
         rem.setCount(stack.getCount() - out.getCount());

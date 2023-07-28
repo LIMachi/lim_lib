@@ -9,6 +9,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 //import net.minecraft.network.chat.TextComponent; //VERSION 1.18.2
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -17,6 +18,7 @@ import net.minecraft.world.level.block.state.BlockState;
 //import net.minecraft.world.level.material.Material;
 //import net.minecraft.world.level.material.MaterialColor;
 import net.minecraftforge.registries.RegistryObject;
+import org.jetbrains.annotations.NotNull;
 
 public class TestChest {
     public static class TestChestBlock extends BlockEntityBlock {
@@ -39,9 +41,9 @@ public class TestChest {
         protected int initialContainerSize() { return 60; }
 
         @Override
-        protected Component getDefaultName() { return
-//                new TextComponent( //VERSION 1.18.2
-                Component.literal( //VERSION 1.19.2
-                        "Test Chest"); }
+        protected Component getDefaultName() { return  Component.literal("Test Chest"); }
+
+        @Override
+        public boolean isItemValid(int slot, @NotNull ItemStack stack) { return true; }
     }
 }

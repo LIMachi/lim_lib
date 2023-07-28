@@ -7,7 +7,7 @@ import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 
-public class WidgetContainerMenu extends AbstractContainerMenu {
+abstract public class WidgetContainerMenu extends AbstractContainerMenu {
     protected WidgetContainerMenu(@Nullable MenuType<?> type, int id) {
         super(type, id);
     }

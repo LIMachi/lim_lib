@@ -101,7 +101,7 @@ public class DataSlots implements ContainerData {
 
     public int getTrueInt() {
         if (encoded.size() < 2) return 0;
-        return ((int)encoded.get(0)) << 16 | (int)encoded.get(1);
+        return ((int)encoded.get(0) & 0xFFFF) << 16 | ((int)encoded.get(1) & 0xFFFF);
     }
 
     public void setTrueInt(int value) {
@@ -147,7 +147,7 @@ public class DataSlots implements ContainerData {
 
     public long getLong() {
         if (encoded.size() < 4) return 0;
-        return (((long)encoded.get(0)) << 48) | (((long)encoded.get(1)) << 32) | (((long)encoded.get(2)) << 16) | (long)encoded.get(3);
+        return (((long)encoded.get(0) & 0xFFFF) << 48) | (((long)encoded.get(1) & 0xFFFF) << 32) | (((long)encoded.get(2) & 0xFFFF) << 16) | ((long)encoded.get(3) & 0xFFFF);
     }
 
     public void setLong(long value) {
@@ -160,8 +160,8 @@ public class DataSlots implements ContainerData {
 
     public UUID getUUID() {
         if (encoded.size() < 8) return new UUID(0, 0);
-        long high = (((long)encoded.get(0)) << 48) | (((long)encoded.get(1)) << 32) | (((long)encoded.get(2)) << 16) | (long)encoded.get(3);
-        long low = (((long)encoded.get(4)) << 48) | (((long)encoded.get(5)) << 32) | (((long)encoded.get(6)) << 16) | (long)encoded.get(7);
+        long high = (((long)encoded.get(0) & 0xFFFF) << 48) | (((long)encoded.get(1) & 0xFFFF) << 32) | (((long)encoded.get(2) & 0xFFFF) << 16) | ((long)encoded.get(3) & 0xFFFF);
+        long low = (((long)encoded.get(4) & 0xFFFF) << 48) | (((long)encoded.get(5) & 0xFFFF) << 32) | (((long)encoded.get(6) & 0xFFFF) << 16) | ((long)encoded.get(7) & 0xFFFF);
         return new UUID(high, low);
     }
 
