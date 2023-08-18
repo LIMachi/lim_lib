@@ -14,7 +14,9 @@ import net.minecraftforge.network.NetworkRegistry;
 import net.minecraftforge.network.simple.SimpleChannel;
 import net.minecraftforge.server.ServerLifecycleHooks;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.TreeMap;
 
 @SuppressWarnings("unused")
 public class NetworkManager {
@@ -67,10 +69,10 @@ public class NetworkManager {
                         return;
                     }
                     NetworkEvent.Context ctx = ictx.get();
-                    NetworkManager.Target t = NetworkManager.target(ctx);
-                    if (t == NetworkManager.Target.CLIENT)
+                    Target t = NetworkManager.target(ctx);
+                    if (t == Target.CLIENT)
                         ctx.enqueueWork(()->(msg).clientWork(Sides.getPlayer()));
-                    if (t == NetworkManager.Target.SERVER)
+                    if (t == Target.SERVER)
                         ctx.enqueueWork(()->(msg).serverWork(ctx.getSender()));
                     ctx.setPacketHandled(true);
                 });

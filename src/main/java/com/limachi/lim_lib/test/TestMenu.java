@@ -2,13 +2,12 @@ package com.limachi.lim_lib.test;
 
 import com.limachi.lim_lib.LimLib;
 import com.limachi.lim_lib.Strings;
+import com.limachi.lim_lib.menus.WidgetContainerMenu;
 import com.limachi.lim_lib.reflection.Classes;
 import com.limachi.lim_lib.registries.Registries;
 import com.limachi.lim_lib.registries.annotations.RegisterMenu;
-import com.limachi.lim_lib.menus.WidgetContainerMenu;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
-//import net.minecraft.network.chat.TextComponent; //VERSION 1.18.2
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Container;
 import net.minecraft.world.MenuProvider;

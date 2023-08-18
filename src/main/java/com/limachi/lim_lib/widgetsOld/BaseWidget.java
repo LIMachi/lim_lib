@@ -1,29 +1,5 @@
 package com.limachi.lim_lib.widgetsOld;
 
-import com.limachi.lim_lib.Log;
-import com.limachi.lim_lib.maths.Box2d;
-import com.limachi.lim_lib.render.RenderUtils;
-import com.limachi.lim_lib.screens.ILimLibScreen;
-import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
-//import net.minecraft.client.gui.components.Widget;
-import net.minecraft.client.gui.components.events.AbstractContainerEventHandler;
-import net.minecraft.client.gui.components.events.GuiEventListener;
-import net.minecraft.client.gui.narration.NarratableEntry;
-import net.minecraft.client.gui.narration.NarrationElementOutput;
-import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
-import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.phys.Vec2;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-
-import javax.annotation.Nonnull;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-
 /*
 @SuppressWarnings({"unused", "UnusedReturnValue", "unchecked"})
 @OnlyIn(Dist.CLIENT)

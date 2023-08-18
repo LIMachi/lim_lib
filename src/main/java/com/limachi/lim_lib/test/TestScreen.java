@@ -2,9 +2,7 @@ package com.limachi.lim_lib.test;
 
 import com.limachi.lim_lib.maths.AnchoredBox;
 import com.limachi.lim_lib.registries.clientAnnotations.RegisterMenuScreen;
-//import com.limachi.lim_lib.screens.WidgetContainerScreen;
 import com.limachi.lim_lib.render.GuiUtils;
-import com.limachi.lim_lib.widgets.*;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.navigation.ScreenPosition;
@@ -18,10 +16,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import org.jetbrains.annotations.Nullable;
-
-import java.util.Collections;
-import java.util.List;
 
 @OnlyIn(Dist.CLIENT)
 @RegisterMenuScreen(skip = "com.limachi.lim_lib.LimLib:useTests")

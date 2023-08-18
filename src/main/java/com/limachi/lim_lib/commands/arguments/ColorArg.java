@@ -1,11 +1,11 @@
 package com.limachi.lim_lib.commands.arguments;
 
 import com.limachi.lim_lib.commands.AbstractCommandArgument;
+import com.limachi.lim_lib.commands.FunctionThrowsCommandSyntaxException;
 import com.mojang.brigadier.context.CommandContext;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.arguments.ColorArgument;
-import com.limachi.lim_lib.commands.FunctionThrowsCommandSyntaxException;
 
 @SuppressWarnings("unused")
 public class ColorArg extends AbstractCommandArgument {

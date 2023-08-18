@@ -1,11 +1,11 @@
 package com.limachi.lim_lib;
 
 import com.limachi.lim_lib.constructorEnforcer.ConstructorEnforcer;
-import com.limachi.lim_lib.integration.Curios.CuriosIntegration;
+//import com.limachi.lim_lib.integration.Curios.CuriosIntegration;
 import com.limachi.lim_lib.network.NetworkManager;
-import com.limachi.lim_lib.registries.Stage;
 import com.limachi.lim_lib.registries.ClientRegistries;
 import com.limachi.lim_lib.registries.Registries;
+import com.limachi.lim_lib.registries.Stage;
 import com.limachi.lim_lib.registries.StaticInitializer;
 import com.limachi.lim_lib.saveData.SaveDataManager;
 import net.minecraft.network.chat.Component;
@@ -49,7 +49,7 @@ public class ModBase {
         Configs.register(modId, name.replace(" ", "_"));
         NetworkManager.register(modId);
         SaveDataManager.annotations(modId);
-        FMLJavaModLoadingContext.get().getModEventBus().addListener(CuriosIntegration::enqueueIMC);
+//        FMLJavaModLoadingContext.get().getModEventBus().addListener(CuriosIntegration::enqueueIMC);
         Log.debug("Last Registration Stage");
         StaticInitializer.initialize(modId, Stage.LAST);
         if (useConstructorEnforcer)

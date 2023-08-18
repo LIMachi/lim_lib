@@ -13,7 +13,7 @@ import net.minecraftforge.fml.common.Mod;
 
 import java.util.List;
 
-@Mod.EventBusSubscriber
+@Mod.EventBusSubscriber(modid = ModBase.COMMON_ID)
 public class Events {
     public static int tick = 0;
     private static final ArrayListMultimap<Integer, Runnable> pendingTasks = ArrayListMultimap.create();

@@ -1,11 +1,5 @@
 package com.limachi.lim_lib.widgets;
 
-import com.limachi.lim_lib.maths.AnchoredBox;
-import net.minecraft.network.chat.Component;
-import org.jetbrains.annotations.NotNull;
-
-import java.util.function.Consumer;
-
 /*
 public class CycleStateButton extends BaseButtonWidget<CycleStateButton> {
     protected final BaseWidget<?>[] states;

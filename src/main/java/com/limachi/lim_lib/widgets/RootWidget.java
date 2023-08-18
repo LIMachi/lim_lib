@@ -1,28 +1,5 @@
 package com.limachi.lim_lib.widgets;
 
-import com.limachi.lim_lib.maths.AnchoredBox;
-import com.limachi.lim_lib.data.IAreaUser;
-import com.limachi.lim_lib.data.TreeNode;
-import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.datafixers.util.Pair;
-//import net.minecraft.client.gui.GuiComponent;
-//import net.minecraft.client.gui.components.Widget;
-import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
-import net.minecraft.client.renderer.Rect2i;
-import net.minecraft.network.chat.Component;
-import net.minecraft.world.inventory.tooltip.TooltipComponent;
-import net.minecraft.world.item.ItemStack;
-import org.jetbrains.annotations.Nullable;
-import org.lwjgl.glfw.GLFW;
-
-import javax.annotation.Nonnull;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Optional;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.Predicate;
 /*
 public class RootWidget extends BaseWidget<RootWidget> implements Widget {
     @Nonnull

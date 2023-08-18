@@ -1,6 +1,7 @@
 package com.limachi.lim_lib.registries;
 
 import com.google.common.collect.ArrayListMultimap;
+import com.limachi.lim_lib.ModBase;
 import com.limachi.lim_lib.capabilities.ICopyCapOnDeath;
 import com.limachi.lim_lib.reflection.Classes;
 import net.minecraft.core.Direction;
@@ -22,9 +23,12 @@ import net.minecraftforge.fml.common.Mod;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
-@Mod.EventBusSubscriber
+@Mod.EventBusSubscriber(modid = ModBase.COMMON_ID)
 public class CapabilityRegister {
     public record CapRegister<Cap, Provider extends InternalProvider>(ResourceLocation key, Class<Cap> cap, Provider provider, boolean canKeepOnDeath) {}
 
@@ -48,7 +52,7 @@ public class CapabilityRegister {
     }
 
     public static <Cap> Capability<Cap> create(String modId, String name, Class<Cap> clazz, CapabilityToken<Cap> token, Class<?> ... filters) {
-        final Capability<Cap> out = net.minecraftforge.common.capabilities.CapabilityManager.get(token);
+        final Capability<Cap> out = CapabilityManager.get(token);
         final ResourceLocation key = new ResourceLocation(modId, name);
         boolean mayCopy = false;
 
@@ -214,7 +218,7 @@ public class CapabilityRegister {
         }
     }
 
-    @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD)
+    @Mod.EventBusSubscriber(modid = ModBase.COMMON_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
     public static class RegCap {
 
         private static boolean once = true;

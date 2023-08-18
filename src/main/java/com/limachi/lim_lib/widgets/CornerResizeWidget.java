@@ -1,9 +1,5 @@
 package com.limachi.lim_lib.widgets;
 
-import com.limachi.lim_lib.maths.AnchorPoint;
-import com.limachi.lim_lib.maths.AnchoredBox;
-import org.jetbrains.annotations.NotNull;
-
 /*
 public class CornerResizeWidget<T extends CornerResizeWidget<T>> extends BaseWidget<T> {
 

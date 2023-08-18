@@ -2,8 +2,7 @@ package com.limachi.lim_lib.scrollSystem;
 
 import com.limachi.lim_lib.Maths;
 import net.minecraft.core.BlockPos;
-//import net.minecraft.network.chat.TextComponent; //VERSION 1.18.2
-import net.minecraft.network.chat.Component; //VERSION 1.18.2
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;

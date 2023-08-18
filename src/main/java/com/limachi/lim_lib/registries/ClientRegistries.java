@@ -1,9 +1,7 @@
 package com.limachi.lim_lib.registries;
 
 import com.limachi.lim_lib.ModAnnotation;
-import com.limachi.lim_lib.Strings;
 import com.limachi.lim_lib.reflection.Classes;
-import com.limachi.lim_lib.registries.annotations.EntityAttributeBuilder;
 import com.limachi.lim_lib.registries.clientAnnotations.RegisterItemModelProperty;
 import com.limachi.lim_lib.registries.clientAnnotations.RegisterMenuScreen;
 import com.limachi.lim_lib.registries.clientAnnotations.RegisterSkin;
@@ -39,17 +37,15 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.material.Fluid;
-//import net.minecraftforge.client.event.ColorHandlerEvent; //VERSION 1.18.2
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.client.event.RegisterColorHandlersEvent; //VERSION 1.19.2
 import net.minecraftforge.client.event.EntityRenderersEvent;
+import net.minecraftforge.client.event.RegisterColorHandlersEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.registries.RegistryObject;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;

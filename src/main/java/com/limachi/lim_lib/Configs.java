@@ -6,20 +6,18 @@ import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.config.ModConfig;
-
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-import java.util.*;
-
 import net.minecraftforge.fml.event.config.ModConfigEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.forgespi.language.ModFileScanData;
 import org.objectweb.asm.Type;
 
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
+import java.util.*;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
@@ -89,12 +87,12 @@ public class Configs {
     @Retention(RetentionPolicy.RUNTIME)
     @Target(ElementType.FIELD)
     public @interface Config {
-        java.lang.String min() default "";
-        java.lang.String max() default "";
-        java.lang.String[] valid() default {};
-        java.lang.String cmt() default "";
-        java.lang.String path() default "";
-        java.lang.String name() default "";
+        String min() default "";
+        String max() default "";
+        String[] valid() default {};
+        String cmt() default "";
+        String path() default "";
+        String name() default "";
         ModConfig.Type side() default ModConfig.Type.COMMON;
         boolean reload() default false;
     }

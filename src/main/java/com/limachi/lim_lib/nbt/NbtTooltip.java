@@ -1,11 +1,11 @@
 package com.limachi.lim_lib.nbt;
 
 import com.limachi.lim_lib.Configs;
+import com.limachi.lim_lib.ModBase;
 import com.limachi.lim_lib.TextUtils;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
-//import net.minecraft.network.chat.TranslatableComponent; //VERSION 1.18.2
 import net.minecraft.util.Mth;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.ScreenEvent;
@@ -15,7 +15,7 @@ import net.minecraftforge.fml.common.Mod;
 
 import java.util.List;
 
-@Mod.EventBusSubscriber(value = Dist.CLIENT)
+@Mod.EventBusSubscriber(modid = ModBase.COMMON_ID, value = Dist.CLIENT)
 public class NbtTooltip {
 
     @Configs.Config(cmt = "Add a tooltip to view NBT on items when in extra info mode (F3 + H)")

@@ -1,8 +1,8 @@
 package com.limachi.lim_lib;
 
 import com.electronwill.nightconfig.core.file.CommentedFileConfig;
-import com.limachi.lim_lib.registries.Registries;
 import com.limachi.lim_lib.registries.ClientRegistries;
+import com.limachi.lim_lib.registries.Registries;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;

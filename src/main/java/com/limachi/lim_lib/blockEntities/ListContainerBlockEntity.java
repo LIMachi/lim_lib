@@ -1,7 +1,6 @@
 package com.limachi.lim_lib.blockEntities;
 
 import com.limachi.lim_lib.containers.IListContainer;
-//import com.limachi.lim_lib.menus.AutoScaleMenu;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.Containers;

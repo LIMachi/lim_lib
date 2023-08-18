@@ -2,46 +2,39 @@ package com.limachi.lim_lib.registries;
 
 import com.limachi.lim_lib.*;
 import com.limachi.lim_lib.integration.JEIPlugin.JEIInfo;
-import com.limachi.lim_lib.registries.annotations.HasRedstoneTint;
 import com.limachi.lim_lib.reflection.Classes;
 import com.limachi.lim_lib.reflection.MethodHolder;
 import com.limachi.lim_lib.registries.annotations.*;
+import net.minecraft.core.particles.ParticleType;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.MobCategory;
-import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
-import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.world.flag.FeatureFlagSet;
-import net.minecraft.world.item.CreativeModeTab;
-import net.minecraft.world.level.Level;
-import net.minecraftforge.event.BuildCreativeModeTabContentsEvent;
-import net.minecraftforge.event.entity.EntityAttributeCreationEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import net.minecraft.core.particles.ParticleType;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.stats.StatType;
 import net.minecraft.world.effect.MobEffect;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.entity.ai.attributes.Attribute;
+import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
 import net.minecraft.world.entity.ai.sensing.SensorType;
 import net.minecraft.world.entity.ai.village.poi.PoiType;
-//import net.minecraft.world.entity.decoration.Motive; //VERSION 1.18.2
-import net.minecraft.world.entity.decoration.PaintingVariant; //VERSION 1.19.2
+import net.minecraft.world.entity.decoration.PaintingVariant;
 import net.minecraft.world.entity.npc.VillagerProfession;
+import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.schedule.Activity;
 import net.minecraft.world.entity.schedule.Schedule;
+import net.minecraft.world.flag.FeatureFlagSet;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.alchemy.Potion;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -49,20 +42,27 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.chunk.ChunkStatus;
 import net.minecraft.world.level.levelgen.carver.WorldCarver;
 import net.minecraft.world.level.levelgen.feature.Feature;
-//import net.minecraft.world.level.levelgen.feature.StructureFeature; //VERSION 1.18.2
 import net.minecraft.world.level.levelgen.feature.foliageplacers.FoliagePlacerType;
 import net.minecraft.world.level.levelgen.feature.stateproviders.BlockStateProviderType;
 import net.minecraft.world.level.levelgen.feature.treedecorators.TreeDecoratorType;
 import net.minecraft.world.level.material.Fluid;
+import net.minecraftforge.event.BuildCreativeModeTabContentsEvent;
+import net.minecraftforge.event.entity.EntityAttributeCreationEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.network.IContainerFactory;
-import net.minecraftforge.registries.*;
+import net.minecraftforge.registries.DeferredRegister;
+import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraftforge.registries.IForgeRegistry;
+import net.minecraftforge.registries.RegistryObject;
 import org.objectweb.asm.Type;
 
 import javax.annotation.Nullable;
+import java.lang.reflect.Field;
 import java.util.*;
 import java.util.function.Supplier;
-import java.lang.reflect.Field;
 import java.util.stream.Collectors;
 
 @SuppressWarnings({"unchecked", "unused", "UnusedReturnValue"})
@@ -453,7 +453,7 @@ public class Registries {
         for (Reab e : ATTRIBUTES) e.register(event);
     }
 
-    @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD, modid = ModBase.COMMON_ID)
+    @Mod.EventBusSubscriber(modid = ModBase.COMMON_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
     public static class Init {
         @SubscribeEvent
         public static void addCreative(BuildCreativeModeTabContentsEvent event) {

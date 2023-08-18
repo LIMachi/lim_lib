@@ -2,6 +2,7 @@ package com.limachi.lim_lib.render;
 
 import com.limachi.lim_lib.ClientEvents;
 import com.limachi.lim_lib.LimLib;
+import com.limachi.lim_lib.ModBase;
 import com.limachi.lim_lib.network.NetworkManager;
 import com.limachi.lim_lib.network.messages.QueueOverlayRendererMsg;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -13,7 +14,6 @@ import com.mojang.datafixers.util.Pair;
 import com.mojang.math.Axis;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderStateShard;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
@@ -26,7 +26,6 @@ import net.minecraftforge.client.event.RenderLevelStageEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import org.joml.Matrix4f;
-import org.joml.Vector3f;
 
 import javax.annotation.Nullable;
 import java.util.HashMap;
@@ -38,8 +37,8 @@ public class BlockRenderUtils extends RenderType {
     //Use in 1.19.2
     public static final RenderType BLOCK_OVERLAY_RENDER_TYPE = create("BlockOverlay",
             DefaultVertexFormat.POSITION_COLOR, VertexFormat.Mode.QUADS, 256, false, false,
-            RenderType.CompositeState.builder()
-                    .setShaderState(RenderStateShard.ShaderStateShard.POSITION_COLOR_SHADER)
+            CompositeState.builder()
+                    .setShaderState(ShaderStateShard.POSITION_COLOR_SHADER)
                     .setLayeringState(VIEW_OFFSET_Z_LAYERING)
                     .setTransparencyState(TRANSLUCENT_TRANSPARENCY)
                     .setTextureState(NO_TEXTURE)
@@ -153,7 +152,7 @@ public class BlockRenderUtils extends RenderType {
         buffer.endBatch(BLOCK_OVERLAY_RENDER_TYPE);
     }
 
-    @Mod.EventBusSubscriber(value = Dist.CLIENT)
+    @Mod.EventBusSubscriber(modid = ModBase.COMMON_ID, value = Dist.CLIENT)
     public static class BlockRenderEvents {
 
         @SubscribeEvent

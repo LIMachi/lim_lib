@@ -1,15 +1,5 @@
 package com.limachi.lim_lib.commands.arguments;
 
-import com.limachi.lim_lib.commands.AbstractCommandArgument;
-import com.mojang.brigadier.context.CommandContext;
-import com.mojang.brigadier.exceptions.DynamicCommandExceptionType; //VERSION 1.19.2
-import net.minecraft.commands.CommandSourceStack;
-//import net.minecraft.commands.arguments.ResourceOrTagLocationArgument;
-import net.minecraft.core.Registry;
-import net.minecraft.network.chat.Component; //VERSION 1.19.2
-import net.minecraft.world.level.biome.Biome;
-import com.limachi.lim_lib.commands.FunctionThrowsCommandSyntaxException;
-
 /*
 @SuppressWarnings("unused")
 public class BiomeArg extends AbstractCommandArgument {

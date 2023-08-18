@@ -1,16 +1,5 @@
 package com.limachi.lim_lib.integration.JEIPlugin;
 
-import com.limachi.lim_lib.maths.Box2d;
-//import com.limachi.lim_lib.widgets.BaseWidget;
-import mezz.jei.api.gui.handlers.IGlobalGuiHandler;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.renderer.Rect2i;
-
-import javax.annotation.Nonnull;
-import java.util.ArrayList;
-import java.util.Collection;
-
 /*
 @SuppressWarnings("rawtypes")
 public class JEIShouldNotRenderOverWidgets implements IGlobalGuiHandler {

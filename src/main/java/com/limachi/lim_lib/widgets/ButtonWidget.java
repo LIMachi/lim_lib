@@ -1,12 +1,5 @@
 package com.limachi.lim_lib.widgets;
 
-import com.limachi.lim_lib.maths.AnchoredBox;
-import net.minecraft.network.chat.Component;
-
-
-import javax.annotation.Nonnull;
-import java.util.function.Consumer;
-
 /*
 public class ButtonWidget extends BaseButtonWidget<ButtonWidget> {
 

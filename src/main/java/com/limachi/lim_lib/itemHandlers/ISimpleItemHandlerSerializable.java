@@ -1,7 +1,7 @@
 package com.limachi.lim_lib.itemHandlers;
 
-import com.limachi.lim_lib.network.IBufferSerializable;
 import com.limachi.lim_lib.containers.ISlotProvider;
+import com.limachi.lim_lib.network.IBufferSerializable;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.inventory.Slot;
 import net.minecraftforge.common.util.INBTSerializable;

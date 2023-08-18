@@ -1,12 +1,13 @@
 package com.limachi.lim_lib.commands.arguments;
 
 import com.limachi.lim_lib.commands.AbstractCommandArgument;
-import com.limachi.lim_lib.commands.CommandManager; // VERSION 1.19.2
+import com.limachi.lim_lib.commands.CommandManager;
+import com.limachi.lim_lib.commands.FunctionThrowsCommandSyntaxException;
 import com.mojang.brigadier.context.CommandContext;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.arguments.item.ItemPredicateArgument;
 import net.minecraft.world.item.ItemStack;
-import com.limachi.lim_lib.commands.FunctionThrowsCommandSyntaxException;
+
 import java.util.function.Predicate;
 
 @SuppressWarnings("unused")

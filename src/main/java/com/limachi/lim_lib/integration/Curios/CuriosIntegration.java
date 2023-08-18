@@ -1,5 +1,6 @@
 package com.limachi.lim_lib.integration.Curios;
 
+import com.limachi.lim_lib.ModBase;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.Container;
@@ -11,20 +12,18 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.event.TextureStitchEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.InterModComms;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.InterModEnqueueEvent;
 import net.minecraftforge.items.IItemHandlerModifiable;
-import top.theillusivec4.curios.api.SlotTypeMessage;
+//import top.theillusivec4.curios.api.SlotTypeMessage;
 
 import java.util.*;
 import java.util.function.Predicate;
 
 @SuppressWarnings({"unused", "ConstantConditions"})
-@Mod.EventBusSubscriber(value = Dist.CLIENT)
+@Mod.EventBusSubscriber(modid = ModBase.COMMON_ID, value = Dist.CLIENT)
 public class CuriosIntegration {
     public static final boolean isPresent = ModList.get().isLoaded("curios");
     protected static final HashSet<ResourceLocation> icons = new HashSet<>();
@@ -34,10 +33,10 @@ public class CuriosIntegration {
     public static void registerSlot(String slot, ResourceLocation icon, int size) { slots.put(slot, new Pair<>(icon, size)); }
 
     public static void enqueueIMC(final InterModEnqueueEvent event) {
-        if (isPresent)
-            for (Map.Entry<String, Pair<ResourceLocation, Integer>> s : slots.entrySet()) {
-                InterModComms.sendTo("curios", SlotTypeMessage.REGISTER_TYPE, ()->new SlotTypeMessage.Builder(s.getKey()).priority(-10).icon(s.getValue().getFirst()).size(s.getValue().getSecond()).build());
-            }
+//        if (isPresent)
+//            for (Map.Entry<String, Pair<ResourceLocation, Integer>> s : slots.entrySet()) {
+//                InterModComms.sendTo("curios", SlotTypeMessage.REGISTER_TYPE, ()->new SlotTypeMessage.Builder(s.getKey()).priority(-10).icon(s.getValue().getFirst()).size(s.getValue().getSecond()).build());
+//            }
     }
 
 //    @SubscribeEvent
@@ -47,6 +46,8 @@ public class CuriosIntegration {
 //    }
 
     public static boolean equipOnFirstValidSlot(LivingEntity entity, String slot_category, ItemStack stack) {
+        return false;
+        /*
         if (!isPresent) return false;
         Optional<Boolean> ok = CuriosInterface.getCurioCategory(entity, slot_category).map(h->{
             for (int i = 0; i < h.getSlots(); ++i)
@@ -57,11 +58,13 @@ public class CuriosIntegration {
             return false;
         });
         return ok.isPresent() && ok.get();
+         */
     }
 
     public static Optional<IItemHandlerModifiable> getCurioCategory(LivingEntity entity, String category) {
-        if (!isPresent) return Optional.empty();
-        return CuriosInterface.getCurioCategory(entity, category);
+//        if (!isPresent) return Optional.empty();
+//        return CuriosInterface.getCurioCategory(entity, category);
+        return Optional.empty();
     }
 
     public static SlotAccess searchItem(Entity entity, Class<? extends Item> clazz, Predicate<? super ItemStack> predicate) {
@@ -96,8 +99,8 @@ public class CuriosIntegration {
                 for (int i = Inventory.SLOT_OFFHAND; i < inv.getContainerSize(); ++i)
                     if (addMatch(out, i, inv, clazz, predicate) && !continueAfterOne)
                         break;
-            if (isPresent && (continueAfterOne || out.isEmpty()))
-                out.addAll(CuriosInterface.searchItemInCurio(player, clazz, predicate, continueAfterOne));
+//            if (isPresent && (continueAfterOne || out.isEmpty()))
+//                out.addAll(CuriosInterface.searchItemInCurio(player, clazz, predicate, continueAfterOne));
             if (continueAfterOne || out.isEmpty())
                 for (int i = Inventory.SLOT_OFFHAND - inv.armor.size(); i < Inventory.SLOT_OFFHAND; ++i)
                     if (addMatch(out, i, inv, clazz, predicate) && !continueAfterOne)
@@ -110,8 +113,8 @@ public class CuriosIntegration {
                         break;
                 }
         } else {
-            if (isPresent && entity instanceof LivingEntity living)
-                out.addAll(CuriosInterface.searchItemInCurio(living, clazz, predicate, continueAfterOne));
+//            if (isPresent && entity instanceof LivingEntity living)
+//                out.addAll(CuriosInterface.searchItemInCurio(living, clazz, predicate, continueAfterOne));
             if (continueAfterOne || out.isEmpty())
                 if (continueAfterOne || out.isEmpty()) {
                     for (int i = 0; i < 500; ++i) {

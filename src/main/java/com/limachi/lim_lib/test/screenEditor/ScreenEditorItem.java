@@ -22,7 +22,7 @@ public class ScreenEditorItem extends Item {
     public static RegistryObject<Item> R_ITEM;
 
     public ScreenEditorItem() {
-        super(new Item.Properties());
+        super(new Properties());
     }
 
     @Override

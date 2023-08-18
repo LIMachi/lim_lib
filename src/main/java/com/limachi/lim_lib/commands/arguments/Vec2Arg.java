@@ -1,11 +1,11 @@
 package com.limachi.lim_lib.commands.arguments;
 
 import com.limachi.lim_lib.commands.AbstractCommandArgument;
+import com.limachi.lim_lib.commands.FunctionThrowsCommandSyntaxException;
 import com.mojang.brigadier.context.CommandContext;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.arguments.coordinates.Vec2Argument;
 import net.minecraft.world.phys.Vec2;
-import com.limachi.lim_lib.commands.FunctionThrowsCommandSyntaxException;
 
 @SuppressWarnings("unused")
 public class Vec2Arg extends AbstractCommandArgument {

@@ -1,10 +1,5 @@
 package com.limachi.lim_lib.widgets;
 
-import com.limachi.lim_lib.maths.AnchoredBox;
-import com.limachi.lim_lib.maths.IVec2i;
-
-import javax.annotation.Nonnull;
-
 /*
 public class ViewPortWidget extends BaseWidget<ViewPortWidget> {
 

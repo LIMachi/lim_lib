@@ -8,7 +8,7 @@ import net.minecraftforge.fml.common.Mod;
 
 import java.util.List;
 
-@Mod.EventBusSubscriber(value = Dist.CLIENT)
+@Mod.EventBusSubscriber(modid = ModBase.COMMON_ID, value = Dist.CLIENT)
 public class ClientEvents {
     public static int tick = 0;
     private static final ArrayListMultimap<Integer, Runnable> pendingTasks = ArrayListMultimap.create();

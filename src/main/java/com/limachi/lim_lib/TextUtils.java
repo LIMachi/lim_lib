@@ -5,7 +5,6 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.*;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-//import net.minecraft.network.chat.TextComponent; //VERSION 1.18.2
 
 import java.util.ArrayList;
 import java.util.List;

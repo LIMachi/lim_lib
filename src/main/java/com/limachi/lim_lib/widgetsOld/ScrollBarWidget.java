@@ -1,18 +1,5 @@
 package com.limachi.lim_lib.widgetsOld;
 
-import com.limachi.lim_lib.LimLib;
-import com.limachi.lim_lib.maths.Box2d;
-import com.limachi.lim_lib.render.RenderUtils;
-import com.mojang.blaze3d.vertex.PoseStack;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.Mth;
-import net.minecraft.world.phys.Vec2;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import org.jetbrains.annotations.NotNull;
-
-import java.util.function.Consumer;
-
 /*
 @SuppressWarnings({"unused", "UnusedReturnValue"})
 @OnlyIn(Dist.CLIENT)

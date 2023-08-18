@@ -1,22 +1,5 @@
 package com.limachi.lim_lib.test.screenEditor;
 
-import com.limachi.lim_lib.maths.Box2d;
-import com.limachi.lim_lib.registries.clientAnnotations.RegisterMenuScreen;
-import com.limachi.lim_lib.render.RenderUtils;
-import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.components.EditBox;
-import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
-import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.entity.player.Inventory;
-import org.jetbrains.annotations.NotNull;
-import org.lwjgl.glfw.GLFW;
-
-import java.util.ArrayList;
-import java.util.function.Consumer;
-
 /**
  * key base actions:
  * ins -> new widget (auto selected)        ok

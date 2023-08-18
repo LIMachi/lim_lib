@@ -20,7 +20,7 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
 @OnlyIn(Dist.CLIENT)
-@Mod.EventBusSubscriber(value = Dist.CLIENT)
+@Mod.EventBusSubscriber(modid = ModBase.COMMON_ID, value = Dist.CLIENT)
 public class ScrollEvent {
 
     public static int COUNTDOWN_LENGTH_BLOCK = 20;

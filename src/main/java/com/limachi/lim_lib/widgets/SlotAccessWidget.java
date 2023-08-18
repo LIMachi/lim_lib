@@ -1,17 +1,5 @@
 package com.limachi.lim_lib.widgets;
 
-import com.limachi.lim_lib.maths.AnchorPoint;
-import com.limachi.lim_lib.maths.AnchoredBox;
-import com.limachi.lim_lib.maths.Box2d;
-import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.Container;
-import net.minecraft.world.SimpleContainer;
-import net.minecraft.world.entity.SlotAccess;
-import net.minecraft.world.inventory.Slot;
-import net.minecraft.world.item.ItemStack;
-
-import javax.annotation.Nonnull;
 /*
 public class SlotAccessWidget extends BaseWidget<SlotAccessWidget> {
 

@@ -1,25 +1,5 @@
 package com.limachi.lim_lib.widgets;
 
-import com.limachi.lim_lib.maths.*;
-import com.limachi.lim_lib.render.RenderUtils;
-import com.limachi.lim_lib.data.IAreaUser;
-import com.limachi.lim_lib.data.TreeNode;
-import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
-//import net.minecraft.client.gui.components.Widget;
-import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
-import net.minecraft.client.renderer.Rect2i;
-import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.inventory.tooltip.TooltipComponent;
-import net.minecraft.world.item.ItemStack;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
 /*
 public abstract class BaseWidget<T extends BaseWidget<T>> implements IAreaUser, Widget {
 

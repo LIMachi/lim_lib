@@ -21,7 +21,7 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 @SuppressWarnings("unused")
-@Mod.EventBusSubscriber
+@Mod.EventBusSubscriber(modid = ModBase.COMMON_ID)
 public class SaveDataManager {
     protected static HashMap<String, Class<? extends AbstractSyncSaveData>> SAVE_DATAS = new HashMap<>();
     protected static final HashMap<Pair<String, String>, AbstractSyncSaveData> CLIENT_INSTANCES = new HashMap<>();

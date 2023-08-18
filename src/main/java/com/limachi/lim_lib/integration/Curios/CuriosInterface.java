@@ -1,5 +1,5 @@
 package com.limachi.lim_lib.integration.Curios;
-
+/*
 import com.limachi.lim_lib.StackUtils;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.SlotAccess;
@@ -48,3 +48,4 @@ public abstract class CuriosInterface {
         return out;
     }
 }
+*/

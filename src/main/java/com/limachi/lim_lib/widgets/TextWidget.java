@@ -1,17 +1,5 @@
 package com.limachi.lim_lib.widgets;
 
-import com.limachi.lim_lib.maths.AnchorPoint;
-import com.limachi.lim_lib.maths.AnchoredBox;
-import com.limachi.lim_lib.maths.IVec2i;
-import com.mojang.blaze3d.vertex.PoseStack;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Font;
-import net.minecraft.network.chat.Component;
-import net.minecraft.util.FormattedCharSequence;
-import org.jetbrains.annotations.NotNull;
-
-import javax.annotation.Nonnull;
-
 /*
 public class TextWidget extends BaseWidget<TextWidget> {
 

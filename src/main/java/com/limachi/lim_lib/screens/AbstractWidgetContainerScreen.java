@@ -1,24 +1,5 @@
 package com.limachi.lim_lib.screens;
 
-import com.limachi.lim_lib.render.RenderUtils;
-//import com.limachi.lim_lib.widgetsOld.BaseWidget;
-import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
-//import net.minecraft.client.gui.components.Widget;
-import net.minecraft.client.gui.components.events.GuiEventListener;
-import net.minecraft.client.gui.narration.NarratableEntry;
-import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
-import net.minecraft.client.renderer.GameRenderer;
-import net.minecraft.network.chat.Component;
-import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.minecraft.world.item.ItemStack;
-import org.jetbrains.annotations.Nullable;
-
-import javax.annotation.Nonnull;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
 /*
 public class AbstractWidgetContainerScreen<M extends AbstractContainerMenu> extends AbstractContainerScreen<M> implements ILimLibScreen {
 

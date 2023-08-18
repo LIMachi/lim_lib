@@ -1,9 +1,5 @@
 package com.limachi.lim_lib.widgetsOld;
 
-import net.minecraft.network.chat.Component;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-
 /*
 @SuppressWarnings("unused")
 @OnlyIn(Dist.CLIENT)

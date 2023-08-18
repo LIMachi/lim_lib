@@ -16,7 +16,7 @@ public class TestItem extends Item implements IScrollItem {
     @RegisterItem(skip = "com.limachi.lim_lib.LimLib:useTests")
     public static RegistryObject<Item> R_ITEM;
 
-    public TestItem() { super(new Item.Properties()); }
+    public TestItem() { super(new Properties()); }
 
     /**
      * test if the scroll works as intended server side, also set the SaveData test to hold the cumulative scroll as an int

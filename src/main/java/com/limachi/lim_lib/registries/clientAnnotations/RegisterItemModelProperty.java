@@ -8,6 +8,6 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface RegisterItemModelProperty {
-    java.lang.String name() default ""; //by default will use the resource location: mod_id:method_name for the item this method is declared on
+    String name() default ""; //by default will use the resource location: mod_id:method_name for the item this method is declared on
 //    java.lang.String item() default "";
 }

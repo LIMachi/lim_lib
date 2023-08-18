@@ -1,7 +1,7 @@
 package com.limachi.lim_lib;
 
-import com.limachi.lim_lib.network.messages.KeyStateMsg;
 import com.limachi.lim_lib.network.NetworkManager;
+import com.limachi.lim_lib.network.messages.KeyStateMsg;
 import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
@@ -9,9 +9,8 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-//import net.minecraftforge.client.ClientRegistry; VERSION 1.18.2
-import net.minecraftforge.client.event.RegisterKeyMappingsEvent; //VERSION 1.19.2
 import net.minecraftforge.client.event.InputEvent;
+import net.minecraftforge.client.event.RegisterKeyMappingsEvent;
 import net.minecraftforge.client.settings.IKeyConflictContext;
 import net.minecraftforge.client.settings.KeyConflictContext;
 import net.minecraftforge.client.settings.KeyModifier;
@@ -30,7 +29,7 @@ import java.util.concurrent.Callable;
 import java.util.function.Supplier;
 
 @SuppressWarnings("unused")
-@Mod.EventBusSubscriber(value = Dist.CLIENT)
+@Mod.EventBusSubscriber(modid = ModBase.COMMON_ID, value = Dist.CLIENT)
 public class KeyMapController {
 
     public static final ArrayList<GlobalKeyBinding> KEY_BINDINGS = new ArrayList<>();

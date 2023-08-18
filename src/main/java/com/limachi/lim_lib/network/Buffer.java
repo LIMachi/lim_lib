@@ -12,12 +12,10 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.phys.BlockHitResult;
-
 import net.minecraftforge.fluids.FluidStack;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
-
 import java.util.BitSet;
 import java.util.Date;
 import java.util.UUID;

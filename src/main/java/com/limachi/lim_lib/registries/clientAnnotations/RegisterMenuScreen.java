@@ -8,7 +8,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 public @interface RegisterMenuScreen {
-    java.lang.String name() default ""; //registry name of the object
-    java.lang.String skip() default ""; //use this method path to make this registry optional (method should be static, of the format `boolean method(Class<?> annotation, String name)`, returning true if the object should be skipped, aka not registered)
-    java.lang.String menu() default ""; //registry name of the menu used to generate this screen, if not set will use the snake class name, swapping `_screen` for `_menu`)
+    String name() default ""; //registry name of the object
+    String skip() default ""; //use this method path to make this registry optional (method should be static, of the format `boolean method(Class<?> annotation, String name)`, returning true if the object should be skipped, aka not registered)
+    String menu() default ""; //registry name of the menu used to generate this screen, if not set will use the snake class name, swapping `_screen` for `_menu`)
 }

@@ -4,15 +4,13 @@ import com.limachi.lim_lib.World;
 import com.limachi.lim_lib.capabilities.Cap;
 import com.limachi.lim_lib.commands.CommandManager;
 import com.limachi.lim_lib.commands.arguments.*;
-import com.limachi.lim_lib.registries.Stage;
 import com.limachi.lim_lib.registries.StaticInit;
 import com.limachi.lim_lib.render.BlockRenderUtils;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.core.BlockPos;
-//import net.minecraft.network.chat.TextComponent; //VERSION 1.18.2
-import net.minecraft.network.chat.Component; //VERSION 1.19.2
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;

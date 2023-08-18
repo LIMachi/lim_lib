@@ -3,8 +3,8 @@ package com.limachi.lim_lib;
 import com.limachi.lim_lib.constructorEnforcer.ConstructorEnforcer;
 import com.limachi.lim_lib.reflection.Classes;
 import net.minecraftforge.fml.ModList;
-import net.minecraftforge.forgespi.language.ModFileScanData;
 import net.minecraftforge.fml.loading.moddiscovery.ModAnnotation.EnumHolder;
+import net.minecraftforge.forgespi.language.ModFileScanData;
 import org.objectweb.asm.Type;
 
 import javax.annotation.Nullable;
@@ -12,7 +12,10 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**

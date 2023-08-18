@@ -2,11 +2,12 @@ package com.limachi.lim_lib.commands.arguments;
 
 import com.limachi.lim_lib.commands.AbstractCommandArgument;
 import com.limachi.lim_lib.commands.CommandManager;
+import com.limachi.lim_lib.commands.FunctionThrowsCommandSyntaxException;
 import com.mojang.brigadier.context.CommandContext;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.arguments.blocks.BlockPredicateArgument;
 import net.minecraft.world.level.block.state.pattern.BlockInWorld;
-import com.limachi.lim_lib.commands.FunctionThrowsCommandSyntaxException;
+
 import java.util.function.Predicate;
 
 @SuppressWarnings("unused")

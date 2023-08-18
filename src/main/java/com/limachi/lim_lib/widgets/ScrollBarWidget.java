@@ -1,18 +1,5 @@
 package com.limachi.lim_lib.widgets;
 
-import com.limachi.lim_lib.LimLib;
-import com.limachi.lim_lib.maths.AnchoredBox;
-import com.limachi.lim_lib.maths.Box2d;
-import com.limachi.lim_lib.render.RenderUtils;
-import com.mojang.blaze3d.vertex.PoseStack;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.Mth;
-import net.minecraft.world.phys.Vec2;
-import org.jetbrains.annotations.NotNull;
-
-import java.util.function.Consumer;
-import java.util.function.Function;
-
 /*
 public class ScrollBarWidget extends BaseWidget<ScrollBarWidget> {
 

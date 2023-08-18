@@ -1,6 +1,7 @@
 package com.limachi.lim_lib.commands;
 
 import com.limachi.lim_lib.Log;
+import com.limachi.lim_lib.ModBase;
 import com.limachi.lim_lib.commands.arguments.LiteralArg;
 import com.limachi.lim_lib.reflection.MethodHolder;
 import com.limachi.lim_lib.reflection.Types;
@@ -14,9 +15,8 @@ import com.mojang.brigadier.tree.LiteralCommandNode;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
-//import net.minecraft.network.chat.TextComponent; //VERSION 1.18.2
 import net.minecraft.core.RegistryAccess;
-import net.minecraft.network.chat.Component; //VERSION 1.19.2
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.flag.FeatureFlagSet;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -27,7 +27,7 @@ import java.util.Collection;
 import java.util.function.Predicate;
 
 @SuppressWarnings({"unused", "rawtypes"})
-@Mod.EventBusSubscriber
+@Mod.EventBusSubscriber(modid = ModBase.COMMON_ID)
 public class CommandManager {
     private static final ArrayList<Pair<Integer, LiteralArgumentBuilder<CommandSourceStack>>> CMDS = new ArrayList<>();
 

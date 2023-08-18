@@ -1,28 +1,5 @@
 package com.limachi.lim_lib.widgetsOld;
 
-import com.limachi.lim_lib.data.History;
-import com.limachi.lim_lib.LimLib;
-import com.limachi.lim_lib.maths.Box2d;
-import com.limachi.lim_lib.render.RenderUtils;
-import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.datafixers.util.Pair;
-import net.minecraft.SharedConstants;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.Mth;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import org.lwjgl.glfw.GLFW;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.util.function.BiPredicate;
-import java.util.function.Consumer;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 /*
 @SuppressWarnings({"unused", "UnusedReturnValue"})
 @OnlyIn(Dist.CLIENT)

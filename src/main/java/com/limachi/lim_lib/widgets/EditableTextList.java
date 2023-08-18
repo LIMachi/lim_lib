@@ -1,19 +1,5 @@
 package com.limachi.lim_lib.widgets;
 
-import com.limachi.lim_lib.maths.AnchoredBox;
-import com.limachi.lim_lib.maths.Box2d;
-import com.limachi.lim_lib.maths.IVec2i;
-import com.mojang.datafixers.util.Pair;
-import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
-import org.jetbrains.annotations.NotNull;
-import org.lwjgl.glfw.GLFW;
-
-import javax.annotation.Nonnull;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-
 /**
  * multi widget
  * text input on the top + validation button

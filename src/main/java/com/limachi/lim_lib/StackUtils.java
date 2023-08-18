@@ -1,7 +1,6 @@
 package com.limachi.lim_lib;
 
 import com.mojang.datafixers.util.Pair;
-import net.minecraft.world.Container;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.SlotAccess;
 import net.minecraft.world.entity.item.ItemEntity;
