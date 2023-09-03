@@ -1,6 +1,8 @@
-package com.limachi.lim_lib.widgetsOld;
+package com.limachi.lim_lib.widgetsOldOld;
 
 /*
+@SuppressWarnings({"unused", "UnusedReturnValue"})
+@OnlyIn(Dist.CLIENT)
 public class TextFieldWidget extends BaseWidget<TextFieldWidget> {
 
     public static final Pattern WORD_REGEX = Pattern.compile("[a-zA-Z0-9_]+");
@@ -27,10 +29,14 @@ public class TextFieldWidget extends BaseWidget<TextFieldWidget> {
     protected double doubleClickTimer = 0; //count down from set value (when click happen), if another click is received before reaching 0, count it as double-click.
     protected double blinkTimer = 0; //count up to 20 then resets, cursor is visible while the count is <= 10. count is also reset when the cursor moves.
 
-    public TextFieldWidget(AnchoredBox box) {
-        super(box, new WidgetOptions().canTakeFocus(true).catchMouseEvents(true).catchKeyboardEvents(true));
-        setBackground(BACKGROUND, CUTOUT);
+    public TextFieldWidget(int x, int y, int w) {
+        super(x, y, w, 14, BACKGROUND, CUTOUT, false);
         history = new History<>(new Pair<>(0, ""));
+    }
+
+    public TextFieldWidget(int x, int y, int w, String initialText) {
+        this(x, y, w);
+        setText(initialText);
     }
 
     public TextFieldWidget setValidator(@Nullable BiPredicate<String, TextFieldWidget> textValidator) {
@@ -59,7 +65,7 @@ public class TextFieldWidget extends BaseWidget<TextFieldWidget> {
         if (callback && onFinish != null)
             onFinish.accept(this);
         selection = cursor;
-        changeFocus(false);
+        focus(false);
     }
 
     public TextFieldWidget setCursorPos(int pos, boolean select) {
@@ -69,7 +75,7 @@ public class TextFieldWidget extends BaseWidget<TextFieldWidget> {
                 scroll = Mth.clamp(cursor - scrollPadding, 0, text.length() - 1);
             else {
                 String visible = getVisibleText();
-                if (cursor + scrollPadding > scroll + visible.length() && font.width(visible) + font.width("|_|_") >= currentArea().getWidth())
+                if (cursor + scrollPadding > scroll + visible.length() && font.width(visible) + font.width("|_|_") >= area.getWidth())
                     scroll = Mth.clamp(cursor - visible.length() + scrollPadding, 0, text.length() - 1);
             }
         }
@@ -101,20 +107,6 @@ public class TextFieldWidget extends BaseWidget<TextFieldWidget> {
         return this;
     }
 
-    public TextFieldWidget setCursorPosAtWordBoundary(boolean left, boolean shouldSelect) {
-        Matcher m = WORD_REGEX.matcher(text);
-        while (m.find()) {
-            if (m.start() <= cursor && m.end() >= cursor) {
-                if (left)
-                    setCursorPos(m.end(), shouldSelect);
-                else
-                    setCursorPos(m.start(), shouldSelect);
-                return this;
-            }
-        }
-        return this;
-    }
-
     public TextFieldWidget setText(String text, boolean select) {
         if (validator == null || validator.test(text, this)) {
             this.text = text;
@@ -136,7 +128,7 @@ public class TextFieldWidget extends BaseWidget<TextFieldWidget> {
 
     public String getSelectedOrAll() { return selection == cursor ? text : text.substring(Math.min(selection, cursor), Math.max(selection, cursor)); }
 
-    public String getVisibleText() { return font.plainSubstrByWidth(text.substring(scroll), (int)currentArea().getWidth() - 6); }
+    public String getVisibleText() { return font.plainSubstrByWidth(text.substring(scroll), (int)area.getWidth() - 6); }
 
     public TextFieldWidget pushToHistory() {
         history.write(new Pair<>(cursor, text));
@@ -175,7 +167,7 @@ public class TextFieldWidget extends BaseWidget<TextFieldWidget> {
     }
 
     @Override
-    public boolean onKeyPressed(int keyCode, int scanCode, int modifiers) {
+    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
         if (!isFocused()) return false;
         if (Screen.isSelectAll(keyCode)) {
             cursor = text.length();
@@ -212,16 +204,10 @@ public class TextFieldWidget extends BaseWidget<TextFieldWidget> {
                 delete(1);
                 return true;
             case GLFW.GLFW_KEY_RIGHT:
-                if (Screen.hasControlDown())
-                    setCursorPosAtWordBoundary(false, shouldSelect());
-                else
-                    setCursorPos(cursor + 1, shouldSelect());
+                setCursorPos(cursor + 1, shouldSelect());
                 return true;
             case GLFW.GLFW_KEY_LEFT:
-                if (Screen.hasControlDown())
-                    setCursorPosAtWordBoundary(true, shouldSelect());
-                else
-                    setCursorPos(cursor - 1, shouldSelect());
+                setCursorPos(cursor - 1, shouldSelect());
                 return true;
             case GLFW.GLFW_KEY_HOME:
                 setCursorPos(0, shouldSelect());
@@ -250,7 +236,7 @@ public class TextFieldWidget extends BaseWidget<TextFieldWidget> {
     }
 
     @Override
-    public boolean onCharTyped(char codePoint, int modifiers) {
+    public boolean charTyped(char codePoint, int modifiers) {
         if (!isFocused()) return false;
         if (SharedConstants.isAllowedChatCharacter(codePoint)) {
             writeText(Character.toString(codePoint));
@@ -262,16 +248,16 @@ public class TextFieldWidget extends BaseWidget<TextFieldWidget> {
     protected void moveCursorToMouse(double mouseX, double mouseY) {
         String s = getVisibleText();
         int i = 1;
-        int x = (int)relativeMouseX();
+        int x = relativeMouseOverX(mouseX);
         while (i <= s.length() && font.width(s.substring(0, i)) < x)
             ++i;
         setCursorPos(i - 1 + scroll, shouldSelect());
     }
 
     @Override
-    public boolean onMouseClicked(double mouseX, double mouseY, int button) {
-        if (isOvered) {
-            changeFocus(true);
+    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        if (super.mouseClicked(mouseX, mouseY, button)) return true;
+        if (isMouseOver(mouseX, mouseY)) {
             moveCursorToMouse(mouseX, mouseY);
             if (doubleClickTimer > 0)
                 selectWord(true);
@@ -283,52 +269,47 @@ public class TextFieldWidget extends BaseWidget<TextFieldWidget> {
     }
 
     @Override
-    public boolean onMouseDragged(double mouseX, double mouseY, int button, double originX, double originY) {
-        if (!isFocused() || !isOvered || button != 0) return false;
+    public boolean mouseDragged(double mouseX, double mouseY, int button, double originX, double originY) {
+        if (!isFocused() || !isMouseOver(mouseX, mouseY) || button != 0) return super.mouseDragged(mouseX, mouseY, button, originX, originY);
         moveCursorToMouse(mouseX, mouseY);
         return true;
     }
 
     @Override
-    public boolean onMouseScrolled(double mouseX, double mouseY, double scrollAmount) {
-        if (!isOvered || scrollAmount == 0 || text.length() < scrollPadding) return false;
+    public boolean mouseScrolled(double mouseX, double mouseY, double scrollAmount) {
+        if (!isMouseOver(mouseX, mouseY) || scrollAmount == 0 || text.length() < scrollPadding) return super.mouseScrolled(mouseX, mouseY, scrollAmount);
         scroll = Mth.clamp(scroll + (scrollAmount < 0 ? scrollPadding : -scrollPadding), 0, text.length() - 1);
         return true;
     }
 
     @Override
-    public void backRender(@NotNull PoseStack stack, double mouseX, double mouseY, float partialTick) {
-        int y = (int) (currentArea().getHeight() - font.lineHeight) / 2;
+    public void renderRelative(PoseStack stack, int mouseX, int mouseY, float partialTick, boolean isMouseOver) {
+        int y = (int) (area.getHeight() - font.lineHeight) / 2;
         int cursorPos = scroll < cursor ? font.width((text + " ").substring(scroll, cursor)) : 0;
-        stack.pushPose();
-        stack.translate(currentArea().getX1(), currentArea().getY1(), 0);
         if (selection != cursor) {
             int selectionPos = 0;
             if (selection >= scroll)
                 selectionPos = font.width(text.substring(scroll, selection));
             int start = Math.min(selectionPos, cursorPos);
             int end = Math.max(selectionPos, cursorPos);
-            Box2d b = new Box2d(1 + start, 1, end - start + 3, currentArea().getHeight() - 2);
-            if (b.getX2() > currentArea().getWidth() - 1)
-                b.setX2(currentArea().getWidth() - 1);
+            Box2d b = new Box2d(1 + start, y - 1, end - start + 3, area.getHeight() - y * 2 + 2);
+            if (b.getX2() > area.getWidth() - 1)
+                b.setX2(area.getWidth() - 1);
             RenderUtils.drawBox(stack, b, selectionColor, 0);
         }
-        RenderUtils.drawString(stack, font, getVisibleText(), new Box2d(3, y + 1, currentArea().getWidth() - 6, currentArea().getHeight() - y * 2 - 1), textColor, true, false);
-        if (isFocused() && blinkTimer <= 10 && scroll <= cursor && cursorPos < currentArea().getWidth() - 6)
-            RenderUtils.drawString(stack, font, insertMode && cursor != text.length() ? "|" : "_", new Box2d(cursorPos + 2, y + 1, currentArea().getWidth() - 6 - cursorPos, currentArea().getHeight() - y * 2 - 1), cursorColor, true, false);
-        stack.popPose();
-    }
-
-    @Override
-    public void tick() {
+        RenderUtils.drawString(stack, font, getVisibleText(), new Box2d(3, y + 1, area.getWidth() - 6, area.getHeight() - y * 2 - 1), textColor, true, false);
+        if (isFocused() && blinkTimer <= 10 && scroll <= cursor && cursorPos < area.getWidth() - 6)
+            RenderUtils.drawString(stack, font, insertMode && cursor != text.length() ? "|" : "_", new Box2d(cursorPos + 2, y + 1, area.getWidth() - 6 - cursorPos, area.getHeight() - y * 2 - 1), cursorColor, true, false);
         if (doubleClickTimer > 0)
-            --doubleClickTimer;
-        ++blinkTimer;
+            doubleClickTimer -= partialTick;
+        blinkTimer += partialTick;
         if (blinkTimer > 20)
             blinkTimer = 0;
     }
 
     @Override
-    public boolean canCatchEsc() { return isFocused(); }
+    public boolean shouldCloseOnEsc() {
+        return !isFocused();
+    }
 }
 */

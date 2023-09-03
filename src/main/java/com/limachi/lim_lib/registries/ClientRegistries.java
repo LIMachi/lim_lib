@@ -101,6 +101,7 @@ public class ClientRegistries {
 
 //    public static void setRenderLayer(RegistryObject<Block> rb, RenderType type) { RENDER_LAYERS.put(rb, type); } FIXME: see ItemBlockRenderTypes.setRenderLayer in 1.19.2
     public static void setColor(RegistryObject<Block> rb, BlockColor color) { BLOCK_COLORS.put(rb, color); }
+    public static void setColor(RegistryObject<Item> ri, ItemColor color) { ITEM_COLORS.put(ri, color); }
 //    public static void setTranslucent(RegistryObject<Block> rb) { setRenderLayer(rb, RenderType.translucent()); } FIXME: see ItemBlockRenderTypes.setRenderLayer in 1.19.2
 //    public static void setCutout(RegistryObject<Block> rb) { setRenderLayer(rb, RenderType.cutout()); } FIXME: see ItemBlockRenderTypes.setRenderLayer in 1.19.2
     public static void setLayerDefinition(ModelLayerLocation location, Supplier<LayerDefinition> layerDef) { LAYER_DEFINITIONS.put(location, layerDef); }
@@ -126,15 +127,15 @@ public class ClientRegistries {
     @SubscribeEvent
 //    static void registerBlockColor(ColorHandlerEvent.Block event) { //VERSION 1.18.2
     static void registerBlockColor(RegisterColorHandlersEvent.Block event) { //VERSION 1.19.2
-        BlockColors blockcolors = event.getBlockColors();
-        for (Map.Entry<RegistryObject<Block>, BlockColor> entry : BLOCK_COLORS.entrySet()) blockcolors.register(entry.getValue(), entry.getKey().get());
+        BlockColors blockColors = event.getBlockColors();
+        for (Map.Entry<RegistryObject<Block>, BlockColor> entry : BLOCK_COLORS.entrySet()) blockColors.register(entry.getValue(), entry.getKey().get());
     }
 
     @SubscribeEvent
-//    static void registerBlockColor(ColorHandlerEvent.Item event) { //VERSION 1.18.2
-    static void registerBlockColor(RegisterColorHandlersEvent.Item event) { //VERSION 1.19.2
-        ItemColors blockcolors = event.getItemColors();
-        for (Map.Entry<RegistryObject<Item>, ItemColor> entry : ITEM_COLORS.entrySet()) blockcolors.register(entry.getValue(), entry.getKey().get());
+//    static void registerItemColor(ColorHandlerEvent.Item event) { //VERSION 1.18.2
+    static void registerItemColor(RegisterColorHandlersEvent.Item event) { //VERSION 1.19.2
+        ItemColors itemColors = event.getItemColors();
+        for (Map.Entry<RegistryObject<Item>, ItemColor> entry : ITEM_COLORS.entrySet()) itemColors.register(entry.getValue(), entry.getKey().get());
     }
 
     private static final ArrayList<Constructor<?>> SKINS = new ArrayList<>();

@@ -99,6 +99,12 @@ public class Buffer {
                 ((IBufferSerializable) fv).writeToBuff(buffer);
             else if (Record.class.isAssignableFrom(ft))
                 recordToBuffer((Record) fv, buffer);
+            else if (byte[].class.isAssignableFrom(ft))
+                buffer.writeByteArray((byte[])fv);
+            else if (int[].class.isAssignableFrom(ft))
+                buffer.writeVarIntArray((int[])fv);
+            else if (long[].class.isAssignableFrom(ft))
+                buffer.writeLongArray((long[])fv);
             else
                 Log.error(ft, "buffer conversion is not implemented for this object");
         }
@@ -177,6 +183,12 @@ public class Buffer {
             }
             else if (Record.class.isAssignableFrom(paramTypes[i]))
                 params[i] = recordFromBuffer((Class<Record>)paramTypes[i], buffer);
+            else if (byte[].class.isAssignableFrom(paramTypes[i]))
+                params[i] = buffer.readByteArray();
+            else if (int[].class.isAssignableFrom(paramTypes[i]))
+                params[i] = buffer.readVarIntArray();
+            else if (long[].class.isAssignableFrom(paramTypes[i]))
+                params[i] = buffer.readLongArray();
             else {
                 Log.error(paramTypes[i], "buffer conversion is not implemented for this object");
                 return null;

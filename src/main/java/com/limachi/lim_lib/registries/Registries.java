@@ -362,6 +362,8 @@ public class Registries {
         return (RegistryObject<T>)REGISTRIES.get(modId).get(MenuType.class).getEntries().stream().filter(r->r.getId().equals(rl)).collect(Collectors.toList()).get(0);
     }
 
+    public static <R, T extends R> RegistryObject<T> manualRegister(String modId, String regKey, Class<R> clazz, Supplier<T> object) { return getRegistry(modId, clazz).register(regKey, object); }
+
     public static <T extends Block> RegistryObject<T> block(String modId, String regKey, Supplier<T> blockNew) { return getRegistry(modId, Block.class).register(regKey, blockNew); }
 
     public static RegistryObject<CreativeModeTab> tab(String modId, String regKey, Supplier<CreativeModeTab> tabNew) { return getRegistry(modId, CreativeModeTab.class).register(regKey, tabNew); }

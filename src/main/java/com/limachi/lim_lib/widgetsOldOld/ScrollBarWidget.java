@@ -1,6 +1,8 @@
-package com.limachi.lim_lib.widgetsOld;
+package com.limachi.lim_lib.widgetsOldOld;
 
 /*
+@SuppressWarnings({"unused", "UnusedReturnValue"})
+@OnlyIn(Dist.CLIENT)
 public class ScrollBarWidget extends BaseWidget<ScrollBarWidget> {
 
     public static final int WIDTH = 16;
@@ -13,44 +15,46 @@ public class ScrollBarWidget extends BaseWidget<ScrollBarWidget> {
 
     public static final ResourceLocation SCROLL_BAR_TEXTURE = new ResourceLocation(LimLib.COMMON_ID, "textures/screen/widgets.png");
     public static final Box2d SCROLL_BAR_CUTOUT = new Box2d(WIDTH, RenderUtils.DEFAULT_FILE_HEIGHT);
-    public static final Box2d SCROLL_BAR_CURSOR_POSITION = new Box2d(WIDTH, 0, CURSOR_WIDTH, CURSOR_HEIGHT);
-    public static final Box2d SCROLL_BAR_CURSOR_PRESSED_POSITION = new Box2d(WIDTH, CURSOR_HEIGHT, CURSOR_WIDTH, CURSOR_HEIGHT);
+    public static final Vec2 SCROLL_BAR_CURSOR_VOLUME = new Vec2(CURSOR_WIDTH, CURSOR_HEIGHT);
+    public static final Vec2 SCROLL_BAR_CURSOR_POSITION = new Vec2(WIDTH, 0);
+    public static final Vec2 SCROLL_BAR_CURSOR_PRESSED_POSITION = new Vec2(WIDTH, CURSOR_HEIGHT);
 
     protected int min;
     protected int max;
     protected int step;
     protected int scroll;
     protected int prev;
+    protected Consumer<ScrollBarWidget> onScrollCHange;
 
-    protected Consumer<ScrollBarWidget> onScrollChange;
+    public ScrollBarWidget(int x, int y, int height, int min, int max, int scroll, Consumer<ScrollBarWidget> onScrollCHange) {
+        this(x, y, height, min, max, min <= max ? 1 : -1, scroll, onScrollCHange);
+    }
 
-    public ScrollBarWidget(@NotNull AnchoredBox box, int min, int max, int step, int scroll, Consumer<ScrollBarWidget> onScrollChange) {
-        super(box, new WidgetOptions().catchMouseEvents(true).canTakeFocus(true).catchKeyboardEvents(true));
-        setBackground(SCROLL_BAR_TEXTURE, SCROLL_BAR_CUTOUT);
+    public ScrollBarWidget(int x, int y, int height, int min, int max, Consumer<ScrollBarWidget> onScrollCHange) {
+        this(x, y, height, min, max, min <= max ? 1 : -1, min, onScrollCHange);
+    }
+
+    public ScrollBarWidget(int x, int y, int height, int min, int max, int step, int scroll, Consumer<ScrollBarWidget> onScrollCHange) {
+        super(x, y, WIDTH, height, SCROLL_BAR_TEXTURE, SCROLL_BAR_CUTOUT, false);
         this.min = min;
         this.max = max;
         this.step = step;
         this.scroll = scroll;
         this.prev = scroll;
-        this.onScrollChange = onScrollChange;
+        this.onScrollCHange = onScrollCHange;
     }
 
-    public int getMin() { return min; }
-
-    public int getMax() { return max; }
-
-    public int getStep() { return step; }
-
     @Override
-    public void backRender(@NotNull PoseStack stack, double mouseX, double mouseY, float partialTick) {
-        Box2d cursor = new Box2d(CURSOR_WIDTH, CURSOR_HEIGHT);
-        cursor.setY1((((scroll - min) / (double)(max - min)) * (currentArea().getHeight() - cursor.getHeight() - DOUBLE_BORDER)) + currentArea().getY1() + BORDER);
-        cursor.setX1(currentArea().getX1() + BORDER);
-        RenderUtils.blitUnscaled(null, stack, 0, cursor, isDragged() || isOvered ? SCROLL_BAR_CURSOR_PRESSED_POSITION : SCROLL_BAR_CURSOR_POSITION);
+    public void render(@NotNull PoseStack stack, int mouseX, int mouseY, float partialTick) {
+        super.render(stack, mouseX, mouseY, partialTick);
+        Box2d cursor = new Box2d(SCROLL_BAR_CURSOR_VOLUME);
+        cursor.setY1((((scroll - min) / (double)(max - min)) * (area.getHeight() - cursor.getHeight() - DOUBLE_BORDER)) + area.getY1() + BORDER);
+        cursor.setX1(area.getX1() + BORDER);
+//        RenderUtils.blitUnscaled(getScreen(), stack, getBlitOffset(), cursor, isDragged() || isMouseOverBox(mouseX, mouseY, cursor) ? SCROLL_BAR_CURSOR_PRESSED_POSITION : SCROLL_BAR_CURSOR_POSITION);
     }
 
     protected int scrollClick(double mouseY) {
-        double t = min + (max - min) * Mth.clamp((float)(relativeMouseY() - HALF_CURSOR_AND_BORDER) / (currentArea().getHeight() - HEIGHT_CLICK_OFFSET), 0f, 1f);
+        double t = min + (max - min) * Mth.clamp((float)(relativeMouseOverY(mouseY) - HALF_CURSOR_AND_BORDER) / (area.getHeight() - HEIGHT_CLICK_OFFSET), 0f, 1f);
         if ((t - min) % step != 0) {
             int s = (int)Math.round((t - min) % step);
             int l = (int)Math.floor(((t - min) / step) * step + min);
@@ -101,13 +105,14 @@ public class ScrollBarWidget extends BaseWidget<ScrollBarWidget> {
         }
         prev = scroll;
         scroll = value;
-        if (runCallbackIfChanged && prev != scroll && onScrollChange != null)
-            onScrollChange.accept(this);
+        if (runCallbackIfChanged && prev != scroll && onScrollCHange != null)
+            onScrollCHange.accept(this);
     }
 
     @Override
-    protected boolean onMouseClicked(double mouseX, double mouseY, int button) {
-        if (isOvered) {
+    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        if (super.mouseClicked(mouseX, mouseY, button)) return true;
+        if (isMouseOver(mouseX, mouseY)) {
             setScroll(scrollClick(mouseY), false, true);
             return true;
         }
@@ -115,7 +120,8 @@ public class ScrollBarWidget extends BaseWidget<ScrollBarWidget> {
     }
 
     @Override
-    protected boolean onMouseDragged(double mouseX, double mouseY, int button, double fromX, double fromY) {
+    public boolean mouseDragged(double mouseX, double mouseY, int button, double prevX, double prevY) {
+        if (super.mouseDragged(mouseX, mouseY, button, prevX, prevY)) return true;
         if (isDragged()) {
             setScroll(scrollClick(mouseY), false, true);
             return true;
@@ -124,8 +130,9 @@ public class ScrollBarWidget extends BaseWidget<ScrollBarWidget> {
     }
 
     @Override
-    protected boolean onMouseScrolled(double mouseX, double mouseY, double amount) {
-        setScroll(Mth.clamp(scroll + (amount < 0 ? step : -step), min, max), false, true);
+    public boolean mouseScrolled(double mouseX, double mouseY, double delta) {
+        if (!super.mouseScrolled(mouseX, mouseY, delta))
+            setScroll(Mth.clamp(scroll + (delta < 0 ? step : -step), min, max), false, true);
         return true;
     }
 

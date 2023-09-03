@@ -30,5 +30,6 @@ public class JEIImpl implements IModPlugin {
     @Override
     public void registerGuiHandlers(IGuiHandlerRegistration registration) {
 //        registration.addGlobalGuiHandler(new JEIShouldNotRenderOverWidgets());
+        registration.addGlobalGuiHandler(new CommonJEIGuiHandler());
     }
 }

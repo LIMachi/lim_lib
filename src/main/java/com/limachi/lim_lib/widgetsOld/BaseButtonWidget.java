@@ -1,9 +1,7 @@
 package com.limachi.lim_lib.widgetsOld;
 
 /*
-@SuppressWarnings({"unused", "UnusedReturnValue", "unchecked"})
-@OnlyIn(Dist.CLIENT)
-public abstract class BaseButtonWidget<T extends BaseButtonWidget<T>> extends BaseWidget<T> {
+public class BaseButtonWidget<T extends BaseButtonWidget<T>> extends BaseWidget<T> {
 
     public static final ResourceLocation BACKGROUND = new ResourceLocation(LimLib.COMMON_ID, "textures/screen/button.png");
     public static final Box2d IDLE_CUTOUT = new Box2d(128, 128);
@@ -16,14 +14,15 @@ public abstract class BaseButtonWidget<T extends BaseButtonWidget<T>> extends Ba
     protected int titleColor = 0xFFFFFFFF;
     protected Font titleFont = Minecraft.getInstance().font;
 
-    protected boolean hoverState = false;
     protected boolean pressedState = false;
 
-    protected Consumer<T> onStateChange = null;
+    protected Consumer<T> onStateChange;
 
-    public BaseButtonWidget(int x, int y, int w, int h, Component title) {
-        super(x, y, w, h, BACKGROUND, IDLE_CUTOUT, false);
+    protected BaseButtonWidget(@NotNull AnchoredBox box, Component title, Consumer<T> onStateChange) {
+        super(box, new WidgetOptions().catchMouseEvents(true));
         this.title = title;
+        this.onStateChange = onStateChange;
+        setBackground(BACKGROUND, IDLE_CUTOUT);
     }
 
     public T setOnStateChange(@Nullable Consumer<T> onStateChange) {
@@ -46,60 +45,45 @@ public abstract class BaseButtonWidget<T extends BaseButtonWidget<T>> extends Ba
         return (T)this;
     }
 
-    protected void updateHoverState(boolean state) {
-        if (state && !hoverState) {
-            hoverState = true;
-            backgroundCutout = pressedState ? PRESSED_HOVERED_CUTOUT : HOVERED_CUTOUT;
-        } else if (!state && hoverState) {
-            hoverState = false;
-            backgroundCutout = pressedState ? PRESSED_CUTOUT : IDLE_CUTOUT;
-        }
+    @Override
+    protected void onMouseStartOver(double mouseX, double mouseY) {
+        if (pressedState)
+            backgroundCutout = PRESSED_HOVERED_CUTOUT;
+        else
+            backgroundCutout = HOVERED_CUTOUT;
     }
 
-    protected void updatePressedState(boolean state, int button) {
+    @Override
+    protected void onMouseStopOver(double mouseX, double mouseY) {
+        if (pressedState)
+            backgroundCutout = PRESSED_CUTOUT;
+        else
+            backgroundCutout = IDLE_CUTOUT;
+    }
+
+    protected void updatePressedState(boolean state, int button, boolean andUpdate) {
         if (state && !pressedState) {
             pressedState = true;
-            backgroundCutout = hoverState ? PRESSED_HOVERED_CUTOUT : PRESSED_CUTOUT;
+            backgroundCutout = isOvered ? PRESSED_HOVERED_CUTOUT : PRESSED_CUTOUT;
             if (onStateChange != null)
                 onStateChange.accept((T)this);
         } else if (!state && pressedState) {
             pressedState = false;
-            backgroundCutout = hoverState ? HOVERED_CUTOUT : IDLE_CUTOUT;
+            backgroundCutout = isOvered ? HOVERED_CUTOUT : IDLE_CUTOUT;
             if (onStateChange != null)
                 onStateChange.accept((T)this);
         }
     }
 
-    @Override
-    public void mouseMoved(double mouseX, double mouseY) {
-        boolean t = isMouseOver(mouseX, mouseY);
-        updateHoverState(t);
-        if (!t && pressedState)
-            updatePressedState(false, 0);
-    }
-
-    @Override
-    public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        if (super.mouseClicked(mouseX, mouseY, button)) return true;
-        boolean t = isMouseOver(mouseX, mouseY);
-        updatePressedState(t, button);
-        return t;
-    }
-
-    @Override
-    public boolean mouseReleased(double mouseX, double mouseY, int button) {
-        if (super.mouseClicked(mouseX, mouseY, button)) return true;
-        boolean t = pressedState;
-        updatePressedState(false, button);
-        return t;
-    }
-
-    @Override
-    public void renderRelative(PoseStack stack, int mouseX, int mouseY, float partialTick, boolean isMouseOver) {
-        double y = (area.getHeight() - titleFont.lineHeight) / 2.;
-        RenderUtils.drawString(stack, titleFont, title.getString(), area.copy().setX1(2).setY1(y), titleColor, true, false);
-    }
-
     public boolean getPressedState() { return pressedState; }
+
+    @Override
+    public void backRender(@NotNull PoseStack stack, double mouseX, double mouseY, float partialTick) {
+        IVec2i v = AnchorPoint.CENTER.anchor((int)currentArea().getWidth(), (int)currentArea().getHeight());
+        FormattedCharSequence formattedcharsequence = title.getVisualOrderText();
+        float x = (float)(v.x() - titleFont.width(formattedcharsequence) / 2 + currentArea().getX1());
+        float y = (float)(v.y() - titleFont.lineHeight / 2 + currentArea().getY1());
+        titleFont.drawShadow(stack, formattedcharsequence, x, y, titleColor);
+    }
 }
 */

@@ -1,12 +1,13 @@
 {
   "homepage": "https://www.curseforge.com/minecraft/mc-mods/limlib",
   "promos": {
-    "1.20.1-latest": "1.20.1-B1.3",
-    "1.20.1-recommended": "1.20.1-B1.3",
+    "1.20.1-latest": "1.20.1-0.3.0",
+    "1.20.1-recommended": "1.20.1-0.3.0",
     "1.19.2-latest": "1.19.2-B1.1",
     "1.19.2-recommended": "1.19.2-B1.1"
   },
   "1.20.1": {
+    "1.20.1-0.3.0": "Transferred slot/widget/utils code from DimBag, added array support to newtork messages, added item color registry access, added manual registry access.",
     "1.20.1-0.2.0": "Port to NeoForge, fixed many bugs, changed version convention.",
     "1.20.1-B1.3": "Port to 1.20.1, new creative tab system (see item registration), some commands arg are lost (need to redo), and most gui has to be rebuild (will do later)"
   },
