@@ -5,6 +5,7 @@ import com.limachi.lim_lib.integration.JEIPlugin.JEIInfo;
 import com.limachi.lim_lib.reflection.Classes;
 import com.limachi.lim_lib.reflection.MethodHolder;
 import com.limachi.lim_lib.registries.annotations.*;
+import com.limachi.lim_lib.utils.RedstoneUtils;
 import net.minecraft.core.particles.ParticleType;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
@@ -376,8 +377,7 @@ public class Registries {
             JEIInfo.registerInfo(out, infoKey);
         if (tab != null && out != null)
             for (String t : tab)
-                if (t != null && !t.isBlank())
-                {
+                if (t != null && !t.isBlank()) {
                     if (t.equals("automatic"))
                         t = LimLib.INSTANCES.get(modId).tab().getKey().location().toString();
                     CREATIVE_TABS.compute(t, (k, v) -> {

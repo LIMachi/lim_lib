@@ -18,6 +18,7 @@ idea {
 
 mixin {
     add sourceSets.main, "${mod_id}.refmap.json"
+    config "${mod_id}.mixin.json"
 }
 
 version = mod_version

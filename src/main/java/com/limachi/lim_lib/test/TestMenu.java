@@ -3,6 +3,9 @@ package com.limachi.lim_lib.test;
 import com.limachi.lim_lib.LimLib;
 import com.limachi.lim_lib.Strings;
 import com.limachi.lim_lib.menus.WidgetContainerMenu;
+import com.limachi.lim_lib.menus.slots.BigSlotSA;
+import com.limachi.lim_lib.menus.slots.TankSlot;
+import com.limachi.lim_lib.network.NetworkManager;
 import com.limachi.lim_lib.reflection.Classes;
 import com.limachi.lim_lib.registries.Registries;
 import com.limachi.lim_lib.registries.annotations.RegisterMenu;
@@ -12,12 +15,18 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Container;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.SimpleContainer;
+import net.minecraft.world.entity.SlotAccess;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.level.material.Fluids;
+import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fluids.capability.IFluidHandler;
+import net.minecraftforge.fluids.capability.templates.FluidTank;
 import net.minecraftforge.network.NetworkHooks;
 import net.minecraftforge.registries.RegistryObject;
 import org.jetbrains.annotations.Nullable;
@@ -27,9 +36,27 @@ public class TestMenu extends WidgetContainerMenu {
     @RegisterMenu(skip = "com.limachi.lim_lib.LimLib:useTests")
     public static RegistryObject<MenuType<TestMenu>> R_MENU;
 
+    protected ItemStack testStack = new ItemStack(Items.REDSTONE, 69);
+
     protected TestMenu(int menuId, Inventory playerInventory, Container container) {
         super((MenuType<TestMenu>)Registries.getRegistryObject(LimLib.COMMON_ID, MenuType.class, Strings.camelToSnake(Classes.getSimpleClassName())).get(), menuId);
+        NetworkManager.syncBigStackSize(this, playerInventory);
         playerSlots(this, playerInventory, 84);
+        addSlot(new BigSlotSA(new SlotAccess() {
+            @Override
+            public ItemStack get() {
+                return testStack;
+            }
+
+            @Override
+            public boolean set(ItemStack p_147306_) {
+                testStack = p_147306_;
+                return true;
+            }
+        }, ()->16, 50, 50));
+        FluidTank tank = new FluidTank(1000);
+        tank.fill(new FluidStack(Fluids.WATER, 1000), IFluidHandler.FluidAction.EXECUTE);
+        addSlot(new TankSlot(()->tank, 50, 70, s->true));
         build();
     }
 

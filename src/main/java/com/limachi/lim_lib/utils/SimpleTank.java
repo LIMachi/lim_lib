@@ -16,10 +16,10 @@ public class SimpleTank implements IFluidTank, IFluidHandler {
 
     public SimpleTank(int capacity) { this.capacity = capacity; }
 
-    public SimpleTank(int capacity, FluidStack stack) {
+    public SimpleTank(int capacity, FluidStack stack, boolean clampAmount) {
         this.capacity = capacity;
         content = stack.copy();
-        if (content.getAmount() > capacity)
+        if (content.getAmount() > capacity && clampAmount)
             content.setAmount(capacity);
     }
 
@@ -38,7 +38,7 @@ public class SimpleTank implements IFluidTank, IFluidHandler {
     @Override
     public int fill(FluidStack resource, FluidAction action) {
         if (!isFluidValid(resource)) return 0;
-        int amount = Math.min(resource.getAmount(), Math.max(capacity - content.getAmount(), 0));
+        int amount = Math.min(resource.getAmount(), Math.max(getCapacity() - content.getAmount(), 0));
         if (amount != 0 && action.execute()) {
             if (content.isEmpty()) {
                 content = resource.copy();
@@ -85,7 +85,7 @@ public class SimpleTank implements IFluidTank, IFluidHandler {
     public FluidStack getFluidInTank(int tank) { return content; }
 
     @Override
-    public int getTankCapacity(int tank) { return capacity; }
+    public int getTankCapacity(int tank) { return getCapacity(); }
 
     @Override
     public boolean isFluidValid(int tank, @Nonnull FluidStack stack) { return isFluidValid(stack); }

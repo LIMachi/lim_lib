@@ -1,7 +1,7 @@
 package com.limachi.lim_lib.menus;
 
 import com.limachi.lim_lib.Log;
-import com.limachi.lim_lib.StackUtils;
+import com.limachi.lim_lib.utils.StackUtils;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.core.NonNullList;
 import net.minecraft.world.Container;

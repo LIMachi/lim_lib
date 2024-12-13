@@ -1,4 +1,4 @@
-package com.limachi.lim_lib;
+package com.limachi.lim_lib.utils;
 
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;

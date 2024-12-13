@@ -3,5 +3,10 @@
   "extended_tooltip.nbt_tooltip.scroll_suggestion": "[Scroll up/down]: Show more NBT",
   "gui.fluid.milli-bucket": "mB",
   "gui.fluid.bucket": "B",
-  "gui.fluid.kilo-bucket": "kB"
+  "gui.fluid.kilo-bucket": "kB",
+  "gui.item_count.thousands": "%sk%s",
+  "gui.item_count.millions": "%sM%s",
+  "gui.item_count.billions": "%sG%s",
+  "gui.item_count.trillions": "%sT%s",
+  "gui.item_count.quadrillions": "%sP%s"
 }

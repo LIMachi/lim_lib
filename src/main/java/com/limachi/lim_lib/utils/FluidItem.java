@@ -16,7 +16,7 @@ import javax.annotation.Nonnull;
 
 public class FluidItem extends ItemFluidContainer {
 
-    @RegisterItem(tab = "minecraft:op_blocks")
+    @RegisterItem(tab = "")
     public static RegistryObject<Item> R_ITEM;
 
     public FluidItem() { super(new Properties().stacksTo(0), Integer.MAX_VALUE); }

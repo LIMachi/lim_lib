@@ -2,7 +2,7 @@ package com.limachi.lim_lib.nbt;
 
 import com.limachi.lim_lib.Configs;
 import com.limachi.lim_lib.ModBase;
-import com.limachi.lim_lib.TextUtils;
+import com.limachi.lim_lib.utils.TextUtils;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;

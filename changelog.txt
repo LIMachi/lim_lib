@@ -1,3 +1,15 @@
+---- 1.20.1-0.5.0 ---
+hidden fluid item
+tank slots no longer require hacks in renderslot to work (lim lib now uses a mixin instead)
+new slot kind that allow stacks size > 64 (up to an int max aka 2^31-1)
+new helper function to auto-sync menu slots that are bigger than 127
+
+---- 1.20.1-0.3.0/0.4.0 ---
+new improved network messages system (use pseudo compilation using lambdas instead of ginormous if statement, allow modular declaration of new lambdas)
+moved some widget code from DimBag to LimLib (so it can be used in the other projects, like ARSS)
+added color tint registry for items (currently was only implemented for blocks)
+added manual registry access (to quickly patch other mods if a feature is currently missing in LimLib)
+
 ---- 1.20.1-0.2.0 ---
 port to neoforge
 fixed many bugs

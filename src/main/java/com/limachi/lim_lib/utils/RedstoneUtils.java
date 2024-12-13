@@ -1,4 +1,4 @@
-package com.limachi.lim_lib;
+package com.limachi.lim_lib.utils;
 
 import com.limachi.lim_lib.registries.ClientRegistries;
 import net.minecraft.core.BlockPos;

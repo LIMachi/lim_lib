@@ -1,8 +1,10 @@
 package com.limachi.lim_lib.network;
 
 import com.limachi.lim_lib.Log;
+import com.limachi.lim_lib.World;
 import com.limachi.lim_lib.reflection.Classes;
 import com.limachi.lim_lib.reflection.Enums;
+import com.limachi.lim_lib.registries.StaticInit;
 import io.netty.buffer.Unpooled;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -11,14 +13,17 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ChunkPos;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.fluids.FluidStack;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
-import java.util.BitSet;
-import java.util.Date;
-import java.util.UUID;
+import java.lang.reflect.RecordComponent;
+import java.util.*;
+import java.util.function.BiConsumer;
+import java.util.function.Function;
 
 /**
  * helper class to manipulate FriendlyByteBuf (the buffers provided by forge)
@@ -105,6 +110,14 @@ public class Buffer {
                 buffer.writeVarIntArray((int[])fv);
             else if (long[].class.isAssignableFrom(ft))
                 buffer.writeLongArray((long[])fv);
+            else if (Level.class.isAssignableFrom(ft))
+                buffer.writeUtf(World.asString((Level)fv));
+            else if (Vec3.class.isAssignableFrom(ft)) {
+                Vec3 v = (Vec3)fv;
+                buffer.writeDouble(v.x);
+                buffer.writeDouble(v.y);
+                buffer.writeDouble(v.z);
+            }
             else
                 Log.error(ft, "buffer conversion is not implemented for this object");
         }
@@ -189,6 +202,10 @@ public class Buffer {
                 params[i] = buffer.readVarIntArray();
             else if (long[].class.isAssignableFrom(paramTypes[i]))
                 params[i] = buffer.readLongArray();
+            else if (Level.class.isAssignableFrom(paramTypes[i]))
+                params[i] = World.getLevel(buffer.readUtf());
+            else if (Vec3.class.isAssignableFrom(paramTypes[i]))
+                params[i] = new Vec3(buffer.readDouble(), buffer.readDouble(), buffer.readDouble());
             else {
                 Log.error(paramTypes[i], "buffer conversion is not implemented for this object");
                 return null;

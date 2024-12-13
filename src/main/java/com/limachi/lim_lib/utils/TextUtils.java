@@ -1,4 +1,4 @@
-package com.limachi.lim_lib;
+package com.limachi.lim_lib.utils;
 
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.ChatFormatting;

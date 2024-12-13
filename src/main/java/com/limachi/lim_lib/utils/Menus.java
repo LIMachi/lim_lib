@@ -1,6 +1,8 @@
 package com.limachi.lim_lib.utils;
 
+import com.limachi.lim_lib.Log;
 import com.limachi.lim_lib.menus.slots.TankSlot;
+import com.mojang.datafixers.util.Pair;
 import net.minecraft.core.NonNullList;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -13,10 +15,7 @@ import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.SlotItemHandler;
 import net.minecraftforge.items.wrapper.InvWrapper;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Optional;
+import java.util.*;
 
 public class Menus {
     public record SlotSection(int from, int toInclusive, boolean inverseInsertion, boolean searchUp){}
@@ -31,31 +30,34 @@ public class Menus {
     }
 
     public static boolean moveItemStackTo(Player player, int index, SlotSection section, NonNullList<Slot> slots) {
-        boolean didMove = false;
+        boolean moved = false;
         int i = section.inverseInsertion ? section.toInclusive : section.from;
         ItemStack stack = slots.get(index).getItem();
+        int targetTransfer = Integer.min(stack.getMaxStackSize(), stack.getCount());
 
         if (stack.isEmpty()) return false;
 
         //first, try to insert in a slot that contains the same item (if stackable)
         if (stack.isStackable()) {
-            while (!stack.isEmpty() && (section.inverseInsertion ? i >= section.from : i <= section.toInclusive)) {
+            while (targetTransfer > 0 && !stack.isEmpty() && (section.inverseInsertion ? i >= section.from : i <= section.toInclusive)) {
 
                 Slot slot = slots.get(i);
                 ItemStack itemstack = slot.getItem();
                 if (!itemstack.isEmpty() && ItemStack.isSameItemSameTags(stack, itemstack)) {
                     int j = itemstack.getCount() + stack.getCount();
-                    int maxSize = Math.min(slot.getMaxStackSize(), stack.getMaxStackSize());
+                    int maxSize = slot.getMaxStackSize();
                     if (j <= maxSize) {
                         stack.setCount(0);
                         itemstack.setCount(j);
                         slot.setChanged();
-                        didMove = true;
+                        targetTransfer = 0;
+                        moved = true;
                     } else if (itemstack.getCount() < maxSize) {
                         stack.shrink(maxSize - itemstack.getCount());
                         itemstack.setCount(maxSize);
                         slot.setChanged();
-                        didMove = true;
+                        targetTransfer -= maxSize;
+                        moved = true;
                     }
                 }
 
@@ -67,7 +69,7 @@ public class Menus {
         }
 
         //if the first operation failed, try to interact with fluid slots (derived from FluidUtil#interactWithFluidHandler)
-        if (!didMove && stack.getCapability(ForgeCapabilities.FLUID_HANDLER_ITEM).isPresent()) {
+        if (!moved && stack.getCapability(ForgeCapabilities.FLUID_HANDLER_ITEM).isPresent()) {
             IItemHandler dropBackInventory = slots.get(index) instanceof SlotItemHandler sih ? sih.getItemHandler() : new InvWrapper(slots.get(index).container);
             i = section.inverseInsertion ? section.toInclusive : section.from;
 
@@ -87,18 +89,23 @@ public class Menus {
         if (!stack.isEmpty()) {
             i = section.inverseInsertion ? section.toInclusive : section.from;
 
-            while (section.inverseInsertion ? i >= section.from : i <= section.toInclusive) {
+            while (targetTransfer > 0 && (section.inverseInsertion ? i >= section.from : i <= section.toInclusive)) {
 
                 Slot slot1 = slots.get(i);
                 ItemStack itemstack1 = slot1.getItem();
                 if (itemstack1.isEmpty() && slot1.mayPlace(stack)) {
-                    if (stack.getCount() > slot1.getMaxStackSize())
-                        slot1.setByPlayer(stack.split(slot1.getMaxStackSize()));
-                    else
+                    int maxSize = slot1.getMaxStackSize();
+                    if (stack.getCount() > maxSize) {
+                        slot1.setByPlayer(stack.split(maxSize));
+                        targetTransfer -= maxSize;
+                    }
+                    else {
                         slot1.setByPlayer(stack.split(stack.getCount()));
+                        targetTransfer = 0;
+                    }
 
                     slot1.setChanged();
-                    didMove = true;
+                    moved = true;
                     break;
                 }
 
@@ -109,9 +116,9 @@ public class Menus {
             }
         }
 
-        if (didMove)
+        if (moved)
             slots.get(index).set(stack);
-        return didMove;
+        return moved && targetTransfer != 0;
     }
 
     public static boolean similarContainer(Slot s1, Slot s2) {
@@ -132,10 +139,10 @@ public class Menus {
      * compatible with fluid slots (shift clicking a stack that can contain fluid will first try to stack it with existing item, then try to fill it/empty it, and only then try to find an empty slot to store it)
      */
 
-    public static ItemStack quickMoveStack(AbstractContainerMenu menu, Player player, int slot, Collection<SlotSection> sections) {
+    public static ItemStack quickMoveStack(AbstractContainerMenu menu, Player player, int slot, List<SlotSection> sections) {
         if (menu == null || menu.slots.isEmpty() || slot < 0 || slot >= menu.slots.size() || menu.slots.get(slot) instanceof TankSlot || !menu.slots.get(slot).hasItem()) return ItemStack.EMPTY; //for now, shift clicking a tank slot does nothing
-        ArrayList<SlotSection> ls = new ArrayList<>(sections);
-        if (ls.isEmpty()) {
+        if (sections.isEmpty()) {
+            sections = new ArrayList<>();
             int from = 0;
             while (from < menu.slots.size()) {
                 Slot t = menu.slots.get(from);
@@ -143,30 +150,47 @@ public class Menus {
                 for (; i < menu.slots.size(); ++i)
                     if (!similarContainer(t, menu.slots.get(i)))
                         break;
-                ls.add(new SlotSection(from, i - 1, false, true));
+                sections.add(new SlotSection(from, i - 1, false, true));
                 from = i;
             }
         }
-        for (int i = 0; i < ls.size(); ++i) {
-            SlotSection section = ls.get(i);
+        for (int i = 0; i < sections.size(); ++i) {
+            SlotSection section = sections.get(i);
             if (slot >= section.from && slot <= section.toInclusive) {
                 if (section.searchUp) {
-                    int j = i == 0 ? ls.size() - 1 : i - 1;
-                    for (; j != i; j = j == 0 ? ls.size() - 1 : j - 1)
-                        if (moveItemStackTo(player, slot, ls.get(j), menu.slots))
-                            return ItemStack.EMPTY;
+                    int j = i == 0 ? sections.size() - 1 : i - 1;
+                    for (; j != i; j = j == 0 ? sections.size() - 1 : j - 1)
+                        if (moveItemStackTo(player, slot, sections.get(j), menu.slots))
+                            return menu.slots.get(slot).getItem();
                 } else {
-                    int j = i == ls.size() - 1 ? 0 : i + 1;
-                    for (; j != i; j = j == ls.size() - 1 ? 0 : j + 1)
-                        if (moveItemStackTo(player, slot, ls.get(j), menu.slots))
-                            return ItemStack.EMPTY;
+                    int j = i == sections.size() - 1 ? 0 : i + 1;
+                    for (; j != i; j = j == sections.size() - 1 ? 0 : j + 1)
+                        if (moveItemStackTo(player, slot, sections.get(j), menu.slots))
+                            return menu.slots.get(slot).getItem();
                 }
                 break;
             }
         }
-        return menu.slots.get(slot).getItem();
+        return ItemStack.EMPTY;
     }
     public static ItemStack quickMoveStack(AbstractContainerMenu menu, Player player, int slot, SlotSection ... sections) {
         return quickMoveStack(menu, player, slot, Arrays.asList(sections));
+    }
+
+    public static void newSection(List<SlotSection> sections, NonNullList<Slot> slots, boolean inverseInsertion, boolean searchUp) {
+        int from = 0;
+        if (!sections.isEmpty())
+            from = sections.get(sections.size() - 1).toInclusive + 1;
+        int to = 0;
+        if (!slots.isEmpty())
+            to = slots.size() - 1;
+        if (from <= to)
+            sections.add(new SlotSection(from, to, inverseInsertion, searchUp));
+        else
+            Log.error(new Pair<>(from, to), "invalid section range");
+    }
+
+    public static void newSection(List<SlotSection> sections, NonNullList<Slot> slots, boolean inverseInsertion) {
+        newSection(sections, slots, inverseInsertion, !inverseInsertion);
     }
 }

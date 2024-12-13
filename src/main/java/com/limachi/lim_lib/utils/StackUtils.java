@@ -1,14 +1,17 @@
-package com.limachi.lim_lib;
+package com.limachi.lim_lib.utils;
 
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.SlotAccess;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
+import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.IItemHandlerModifiable;
 
+import javax.annotation.Nonnull;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 public class StackUtils {
     /**
@@ -43,7 +46,7 @@ public class StackUtils {
      * @return a pair where the first stack is the merge, and the second is the remainder or empty
      */
     public static Pair<ItemStack, ItemStack> merge(ItemStack s1, ItemStack s2, int max) {
-        max = Integer.min(max == -1 ? Integer.MAX_VALUE : max, s1.getMaxStackSize());
+        max = max == -1 ? Integer.MAX_VALUE : max;
         int total = s1.getCount() + s2.getCount();
         ItemStack out = s1.isEmpty() ? s2.copy() : s1.copy();
         ItemStack rem;
@@ -70,10 +73,11 @@ public class StackUtils {
     public static SlotAccess slotAccessForItemHandler(final IItemHandler inv, final int slot, final Predicate<ItemStack> pred) {
         return new SlotAccess() {
             @Override
+            @Nonnull
             public ItemStack get() { return inv.getStackInSlot(slot); }
 
             @Override
-            public boolean set(ItemStack stack) {
+            public boolean set(@Nonnull ItemStack stack) {
                 if (!pred.test(stack) || !inv.isItemValid(slot, stack))
                     return false;
                 if (inv instanceof IItemHandlerModifiable mod)
@@ -87,6 +91,34 @@ public class StackUtils {
         };
     }
 
+    public static SlotAccess slotAccessForLazyItemHandler(final LazyOptional<IItemHandler> inv, final Supplier<Integer> slot, final Predicate<ItemStack> pred) {
+        return new SlotAccess() {
+            @Override
+            @Nonnull
+            public ItemStack get() { return inv.lazyMap(h->h.getStackInSlot(slot.get())).orElse(ItemStack.EMPTY); }
+
+            @Override
+            public boolean set(@Nonnull ItemStack stack) {
+                return inv.lazyMap(h->{
+                    int rs = slot.get();
+                    if (!pred.test(stack) || !h.isItemValid(rs, stack))
+                        return false;
+                    if (h instanceof IItemHandlerModifiable mod)
+                        mod.setStackInSlot(rs, stack);
+                    else {
+                        h.extractItem(rs, h.getStackInSlot(rs).getCount(), false);
+                        h.insertItem(rs, stack, false);
+                    }
+                    return true;
+                }).orElse(false);
+            }
+        };
+    }
+
+    public static SlotAccess slotAccessForLazyItemHandler(final LazyOptional<IItemHandler> inv, final Supplier<Integer> slot) {
+        return slotAccessForLazyItemHandler(inv, slot, s->true);
+    }
+
     public static SlotAccess slotAccessForItemHandler(final IItemHandler inv, final int slot) {
         return slotAccessForItemHandler(inv, slot, s->true);
     }
@@ -94,10 +126,11 @@ public class StackUtils {
     public static SlotAccess slotAccessForItemEntity(final ItemEntity entity, final Predicate<ItemStack> pred) {
         return new SlotAccess() {
             @Override
+            @Nonnull
             public ItemStack get() { return entity.getItem(); }
 
             @Override
-            public boolean set(ItemStack stack) {
+            public boolean set(@Nonnull ItemStack stack) {
                 if (pred.test(stack)) {
                     if (stack.isEmpty()) {
                         entity.getItem().setCount(0);
@@ -119,10 +152,11 @@ public class StackUtils {
     public static SlotAccess slotAccessForStack(final ItemStack stack, final Predicate<ItemStack> pred) {
         return new SlotAccess() {
             @Override
+            @Nonnull
             public ItemStack get() { return stack; }
 
             @Override
-            public boolean set(ItemStack in) {
+            public boolean set(@Nonnull ItemStack in) {
                 if (pred.test(in)) {
                     if (in.isEmpty()) {
                         stack.setCount(0);

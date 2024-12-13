@@ -1,4 +1,4 @@
-package com.limachi.lim_lib;
+package com.limachi.lim_lib.utils;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.Entity;

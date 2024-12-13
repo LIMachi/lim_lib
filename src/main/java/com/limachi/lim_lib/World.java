@@ -1,5 +1,6 @@
 package com.limachi.lim_lib;
 
+import com.limachi.lim_lib.utils.PlayerUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.registries.Registries;
@@ -26,6 +27,7 @@ import net.minecraft.world.level.storage.LevelData;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.common.world.ForgeChunkManager;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -225,5 +227,13 @@ public class World {
 
     public static void temporaryChunkLoad(Level level, BlockPos pos) {
         temporaryChunkLoad(level, pos, 3);
+    }
+
+    public static void loadAround(Entity entity, ChunkPos cp, boolean add, boolean tick) {
+        if (entity.level() instanceof ServerLevel serverlevel) {
+            for (int x = -1; x <= 1; ++x)
+                for (int z = -1; z <= 1; ++z)
+                    ForgeChunkManager.forceChunk(serverlevel, LimLib.COMMON_ID, entity, cp.x + x, cp.z + z, add, tick);
+        }
     }
 }

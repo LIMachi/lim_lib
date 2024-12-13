@@ -1,6 +1,6 @@
 package com.limachi.lim_lib.containers;
 
-import com.limachi.lim_lib.StackUtils;
+import com.limachi.lim_lib.utils.StackUtils;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
