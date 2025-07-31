@@ -370,13 +370,15 @@ public class ReflectUtils {
     /**
      * generate a list of access wideners for the class and all it's fields and methods
      */
-    public static String fullClassWidener(Class<?> clazz) {
+    public static String fullClassWidener(Class<?> clazz, AccessWidening widener) {
         StringBuilder out = new StringBuilder();
-        accessWidener(out, clazz, AccessWidening.READ_WRITE, true);
+        accessWidener(out, clazz, widener, true);
         for (Field field : clazz.getDeclaredFields())
-            accessWidener(out, field, AccessWidening.READ_WRITE, true);
+            accessWidener(out, field, widener, true);
         for (Method method : clazz.getDeclaredMethods())
-            accessWidener(out, method, AccessWidening.READ_WRITE, true);
+            accessWidener(out, method, widener, true);
         return out.toString();
     }
+
+    public static String fullClassWidener(Class<?> clazz) { return fullClassWidener(clazz, AccessWidening.READ_WRITE); }
 }

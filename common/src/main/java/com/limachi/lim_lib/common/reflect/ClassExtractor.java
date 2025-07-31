@@ -1,9 +1,11 @@
 package com.limachi.lim_lib.common.reflect;
 
 import com.limachi.lim_lib.common.utils.StackTrace;
+
 import org.objectweb.asm.ClassReader;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
@@ -165,9 +167,10 @@ public class ClassExtractor {
                 var p = topFolder.relativize(file.toPath());
                 String name = p.toString();
                 if (pattern.matcher(name).find()) {
+
                     String pn = name.replace("/", ".").replace("\\", ".").replace(".class", "");
                     try {
-                        if (skip != null && skip.test(new ClassReader(pn))) {
+                        if (skip != null && skip.test(new ClassReader(new FileInputStream(file)))) {
                             System.out.println("skipped: " + pn);
                             continue;
                         }

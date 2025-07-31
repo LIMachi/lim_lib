@@ -4,6 +4,7 @@ import com.limachi.lim_lib.InstancedMod;
 import com.limachi.lim_lib.common.annotations.CmdArg;
 import com.limachi.lim_lib.common.annotations.RegisterCommand;
 import com.limachi.lim_lib.common.reflect.MethodAccess;
+import com.limachi.lim_lib.common.utils.Defaults;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.arguments.*;
 import com.mojang.brigadier.builder.ArgumentBuilder;
@@ -220,17 +221,19 @@ public class CommandManager {
         return Optional.of(cmd(command, ctx -> {
             Object[] args = new Object[parameters.length];
             args[0] = ctx;
-            for (int i = 0; i < at.length; ++i)
+            for (int i = 0; i < at.length; ++i) {
+                Class<?> clazz = parameters[i + 1].getType();
                 try {
-                    Class<?> clazz = parameters[i + 1].getType();
                     if (GETTER_OVERRIDE.containsKey(clazz))
                         args[i + 1] = GETTER_OVERRIDE.get(clazz).apply(ctx, labels[i]);
                     else
                         args[i + 1] = ctx.getArgument(labels[i], clazz);
                 } catch (IllegalArgumentException ignored) {
+                    args[i + 1] = Defaults.defaultOf(clazz);
                 } catch (Exception e) {
                     mod.logger.warn("command arg exception: " + e);
                 }
+            }
             try {
                 return (int) m.get(null, false, args);
             } catch (Exception e) {

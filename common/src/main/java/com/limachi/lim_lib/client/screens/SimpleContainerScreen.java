@@ -10,6 +10,7 @@ import net.fabricmc.api.Environment;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.GameRenderer;
@@ -84,5 +85,21 @@ public class SimpleContainerScreen<T extends AbstractContainerMenu> extends Abst
     @Override
     public <T extends Screen & IParentedScreen> T parent() {
         return (T)parent;
+    }
+
+    @Override
+    public boolean mouseScrolled(double d, double e, double f, double g) {
+        if (getFocused() instanceof GuiEventListener widget) {
+            if (widget.mouseScrolled(d, e, f, g))
+                return true;
+            for (GuiEventListener child : children())
+                if (child != widget && child.mouseScrolled(d, e, f, g))
+                    return true;
+            return false;
+        }
+        for (GuiEventListener child : children())
+            if (child.mouseScrolled(d, e, f, g))
+                return true;
+        return false;
     }
 }

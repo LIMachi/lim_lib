@@ -1,7 +1,5 @@
 package com.limachi.lim_lib.client.widgets;
 
-import com.mojang.blaze3d.systems.RenderSystem;
-
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 
@@ -13,6 +11,7 @@ import net.minecraft.network.chat.Component;
 
 import org.lwjgl.glfw.GLFW;
 
+import java.util.Collection;
 import java.util.function.Consumer;
 
 @Environment(EnvType.CLIENT)
@@ -27,8 +26,11 @@ public class TextEditor extends EditBox {
         protected Integer width, height;
         protected int insertColor = -3092272, textColor = 14737632;
         protected Consumer<String> inputConsumer;
+        protected Collection<String> suggestions;
+        protected int maxSuggestions = 5;
+        protected boolean suggestionsBelow = false;
 
-        public Builder(int x, int y, TextEditor previousInstance) {
+        protected Builder(int x, int y, TextEditor previousInstance) {
             this.x = x;
             this.y = y;
             widthInChars = 16;
@@ -47,6 +49,9 @@ public class TextEditor extends EditBox {
         public Builder title(Component title) { this.title = title; return this; }
         public Builder widthInChars(int width) { widthInChars = width; return this; }
         public Builder consumer(Consumer<String> inputConsumer) { this.inputConsumer = inputConsumer; return this; }
+        public Builder suggestions(Collection<String> suggestions) { this.suggestions = suggestions; return this; }
+        public Builder maxSuggestions(int max) { this.maxSuggestions = max; return this; }
+        public Builder suggestionsBelow(boolean below) { this.suggestionsBelow = below; return this; }
 
         public TextEditor build() {
             if (font == null)
@@ -59,9 +64,16 @@ public class TextEditor extends EditBox {
                 title = Component.empty();
             if (inputConsumer == null)
                 inputConsumer = s->{};
-            return new TextEditor(font, x, y, width, height, prev, title, inputConsumer);
+            TextEditor out = new TextEditor(font, x, y, width, height, prev, title, inputConsumer);
+            if (suggestions != null) {
+                out.setSuggestions(new TextSuggestions(out, maxSuggestions, suggestions));
+                out.suggestions.setBelow(suggestionsBelow);
+            }
+            return out;
         }
     }
+
+    public static Builder builder(int x, int y, TextEditor previousInstance) { return new Builder(x, y, previousInstance); }
 
     protected Font font;
     protected int backgroundColor = 0;
@@ -80,6 +92,12 @@ public class TextEditor extends EditBox {
         this.suggestions = suggestions;
     }
 
+    public void updateSuggestions(Collection<String> suggestions) {
+        if (this.suggestions != null)
+            this.suggestions.updateSuggestions(suggestions);
+    }
+
+    /*
     protected void renderBackground(GuiGraphics guiGraphics) {
         guiGraphics.fill(getX() + 1, getY() + 1, getX() + width - 2, getY() + height - 2, backgroundColor);
         int color = backgroundColor;
@@ -92,19 +110,26 @@ public class TextEditor extends EditBox {
         guiGraphics.vLine(getX() + width, getY(), getY() + height, -1);
         guiGraphics.setColor(1, 1, 1, 1);
     }
+    */
+
+    @Override
+    public void renderWidget(GuiGraphics guiGraphics, int i, int j, float f) {
+        super.renderWidget(guiGraphics, i, j, f);
+        if (suggestions != null)
+            suggestions.render(guiGraphics, i, j);
+    }
 
     public void finish(boolean andConsume) {
         if (andConsume)
             inputConsumer.accept(getValue());
-        setEditable(false);
         setFocused(false);
     }
 
     @Override
     public boolean keyPressed(int i, int j, int k) {
-        if ((isActive() && isFocused()) || (suggestions != null && suggestions.isActive() && suggestions.isFocused())) {
-            if (suggestions != null && suggestions.keyPressed(i, j, k))
-                return true;
+        if (suggestions != null && suggestions.keyPressed(i, j, k))
+            return true;
+        if ((isActive() && isFocused())) {
             switch (i) {
                 case GLFW.GLFW_KEY_ENTER /*257*/-> {
                     if (canConsumeInput()) {
@@ -137,7 +162,7 @@ public class TextEditor extends EditBox {
 
     @Override
     public boolean mouseScrolled(double d, double e, double f, double g) {
-        if (suggestions != null && suggestions.mouseScrolled(d, e, f, g))
+        if (suggestions != null && suggestions.mouseScrolled(g))
             return true;
         return super.mouseScrolled(d, e, f, g);
     }

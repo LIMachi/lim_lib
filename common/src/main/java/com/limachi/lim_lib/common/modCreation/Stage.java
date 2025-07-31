@@ -12,5 +12,6 @@ public enum Stage {
     ENTITY_ATTRIBUTE,
     ENTITY,
     MENU,
+    LEVEL_DATA_FIELDS,
     LAST
 }

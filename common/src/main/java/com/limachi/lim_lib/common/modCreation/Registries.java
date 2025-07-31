@@ -1,7 +1,9 @@
 package com.limachi.lim_lib.common.modCreation;
 
 import com.limachi.lim_lib.InstancedMod;
+import com.limachi.lim_lib.ModInstances;
 import com.limachi.lim_lib.common.annotations.*;
+import com.limachi.lim_lib.common.dataStorage.LevelDataFile;
 import com.limachi.lim_lib.common.utils.StringUtils;
 import com.limachi.lim_lib.common.codec.CodecUtils;
 import com.limachi.lim_lib.common.network.ClassMsg;
@@ -450,6 +452,21 @@ public class Registries {
         });
     }
 
+    protected void extractLevelDataFields() {
+        HashMap<String, LevelDataFile> tmp = new  HashMap<>();
+        mod.extractor.runOnFields(LevelData.class, (f, a) -> {
+            String file = a.file();
+            if (file.isBlank())
+                file = mod.registries.mod_id;
+            tmp.compute(file, (k, v)->{
+                if (v == null)
+                    v = new LevelDataFile(k);
+                v.addField(f, a, mod);
+                return v;
+            });
+        });
+    }
+
     protected void stage(Stage stage, Runnable run) {
         StaticInitializer.initialize(mod.extractor, stage, true);
         run.run();
@@ -466,6 +483,7 @@ public class Registries {
             stage(Stage.ITEM, this::extractItems);
             stage(Stage.BLOCK_ENTITY, this::extractBlockEntities);
             stage(Stage.MENU, this::extractMenus);
+            stage(Stage.LEVEL_DATA_FIELDS, this::extractLevelDataFields);
         }
     }
 }

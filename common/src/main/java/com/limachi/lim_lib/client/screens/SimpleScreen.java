@@ -10,6 +10,7 @@ import net.fabricmc.api.Environment;
 
 import net.minecraft.client.gui.ComponentPath;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.navigation.FocusNavigationEvent;
 import net.minecraft.client.gui.navigation.ScreenDirection;
 import net.minecraft.client.gui.screens.Screen;
@@ -145,5 +146,21 @@ public class SimpleScreen extends Screen implements IParentedScreen {
 
     public boolean isOutsideScreen(double mouseX, double mouseY) {
         return isOutsideScreen((int)mouseX, (int)mouseY);
+    }
+
+    @Override
+    public boolean mouseScrolled(double d, double e, double f, double g) {
+        if (getFocused() instanceof GuiEventListener widget) {
+            if (widget.mouseScrolled(d, e, f, g))
+                return true;
+            for (GuiEventListener child : children())
+                if (child != widget && child.mouseScrolled(d, e, f, g))
+                    return true;
+            return false;
+        }
+        for (GuiEventListener child : children())
+            if (child.mouseScrolled(d, e, f, g))
+                return true;
+        return false;
     }
 }

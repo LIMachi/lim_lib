@@ -50,17 +50,7 @@ dependencies {
 processResources {
     inputs.property 'version', project.version
 
-    filesMatching('*') {
-        expand  version: project.version,
-                mod_id: project.mod_id,
-                readable_name: project.readable_name,
-                description: project.description,
-                author: project.author,
-                license: project.license,
-                minecraft_version: project.minecraft_version,
-                mod_root: project.mod_root
-    }
-    filesMatching('META-INF/*') {
+    filesMatching(['*.mixins.json', 'META-INF/*']) {
         expand  version: project.version,
                 mod_id: project.mod_id,
                 readable_name: project.readable_name,

@@ -17,7 +17,7 @@ loom {
 }
 
 processResources {
-    filesMatching('*') {
+    filesMatching(['*.mixins.json', 'assets/*', 'data/*', 'pack.mcmeta']) {
         expand  version: project.version,
                 mod_id: project.mod_id,
                 readable_name: project.readable_name,
@@ -28,3 +28,32 @@ processResources {
                 mod_root: project.mod_root
     }
 }
+
+def generatedPropertiesDir = "$buildDir/generated/sources/properties"
+
+task generateBuildConstants {
+    doLast {
+        def props = new Properties();
+        new File("$rootDir/gradle.properties").withInputStream {
+            s -> props.load(s)
+        }
+
+        def dir = new File(generatedPropertiesDir, project.mod_root.replace('.', '/'))
+        dir.mkdirs()
+
+        def sb = new StringBuilder();
+        sb.append("package ").append(project.mod_root).append(";\n\npublic class Properties {");
+
+        props.each { k, v ->
+            if (project.hasProperty(k) && !k.contains('.') && !(v instanceof Closure))
+                sb.append("\n                public static final String ").append(k).append(" = \"").append(v).append("\";");
+        }
+
+        sb.append("\n}");
+
+        new File(dir, 'Properties.java').text = sb.toString().stripIndent()
+    }
+}
+
+compileJava.dependsOn(generateBuildConstants)
+sourceSets.main.java.srcDirs += generatedPropertiesDir

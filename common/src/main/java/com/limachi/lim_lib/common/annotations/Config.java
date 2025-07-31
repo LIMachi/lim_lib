@@ -52,9 +52,9 @@ public @interface Config {
     String name() default "";
 
     /**
-     * can this value be reloaded at run time or should it be read only once at startup/server connection
+     * can this value be reloaded at run time (/reload for server, F3+T for client) or should it be read only once at startup/server connection
      */
-    boolean reload() default false;
+    boolean reload() default true;
 
     /**
      * is this value specific to client configs (will not be present in server configs)
