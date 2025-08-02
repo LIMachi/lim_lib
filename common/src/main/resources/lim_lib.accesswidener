@@ -40,3 +40,6 @@ transitive-accessible method net/minecraft/client/gui/components/CommandSuggesti
 ##CommandSuggestions#SuggestionsList
 transitive-accessible field net/minecraft/client/gui/components/CommandSuggestions$SuggestionsList rect Lnet/minecraft/client/renderer/Rect2i;
 transitive-mutable field net/minecraft/client/gui/components/CommandSuggestions$SuggestionsList rect Lnet/minecraft/client/renderer/Rect2i;
+
+##Screen
+transitive-accessible field net/minecraft/client/gui/screens/Screen renderables Ljava/util/List;
