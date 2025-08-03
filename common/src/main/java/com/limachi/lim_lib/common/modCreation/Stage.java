@@ -11,6 +11,7 @@ public enum Stage {
     BLOCK_ENTITY,
     ENTITY_ATTRIBUTE,
     ENTITY,
+    RECIPES,
     MENU,
     LEVEL_DATA_FIELDS,
     LAST
