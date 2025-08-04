@@ -10,8 +10,6 @@ import net.fabricmc.api.Environment;
 
 import net.minecraft.client.gui.ComponentPath;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.components.AbstractWidget;
-import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.navigation.FocusNavigationEvent;
 import net.minecraft.client.gui.navigation.ScreenDirection;
@@ -73,12 +71,6 @@ public class SimpleScreen extends Screen implements IParentedScreen {
         RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
         super.render(guiGraphics, mouseX, mouseY, partialTick);
         renderFg(guiGraphics, mouseX, mouseY, partialTick);
-        Tooltip tt = null;
-        for (var widget : renderables)
-            if (widget instanceof AbstractWidget w && w.isMouseOver(mouseX, mouseY))
-                tt = w.getTooltip();
-        if (tt != null)
-            guiGraphics.renderTooltip(font, tt.toCharSequence(minecraft), mouseX, mouseY);
     }
 
     @Override

@@ -36,5 +36,5 @@
   "suggests": {
     "another-mod": "*"
   },
-  "__accessWidener": "${mod_id}.accesswidener"
+  "accessWidener": "${mod_id}.accesswidener"
 }
