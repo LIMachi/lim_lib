@@ -8,6 +8,9 @@ import dev.architectury.utils.GameInstance;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import org.jetbrains.annotations.NotNull;
+
+import java.util.Iterator;
 
 @SuppressWarnings("unused")
 @FunctionalInterface
@@ -28,6 +31,20 @@ public interface IS2CMsg<T extends IS2CMsg<T>> extends IMsg<T> {
             if (!NetworkManager.canPlayerReceive(player, type()))
                 return false;
         NetworkManager.sendToPlayers(players, this);
+        return true;
+    }
+
+    default boolean sendToClients(Iterator<ServerPlayer> players) {
+        while (players.hasNext()) {
+            if (!NetworkManager.canPlayerReceive(players.next(), type()))
+                return false;
+        }
+        NetworkManager.sendToPlayers(new Iterable<>() {
+            @Override
+            public @NotNull Iterator<ServerPlayer> iterator() {
+                return players;
+            }
+        }, this);
         return true;
     }
 

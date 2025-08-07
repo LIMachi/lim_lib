@@ -27,6 +27,11 @@ import java.util.function.Supplier;
  */
 @SuppressWarnings("unused")
 public class Game {
+    public enum Logical {
+        Client,
+        Server
+    }
+
 
     /**
      * @return the current running server (Integrated, Test or Dedicated) or null if not running
@@ -69,16 +74,12 @@ public class Game {
     /**
      * @return true if the current world is a single player (not including lan worlds)
      */
-    public static boolean isSinglePlayer() {
-        return getPhysical(()->Client::isSinglePlayer, ()->()->false);
-    }
+    public static boolean isSinglePlayer() { return getPhysical(()->Client::isSinglePlayer, ()->()->false); }
 
     /**
      * @return true if the current world is a single player lan (you are the host, but the game is not expected to pause, player may connect, etc...)
      */
-    public static boolean isLanHost() {
-        return getPhysical(()->Client::isLanHost, ()->()->false);
-    }
+    public static boolean isLanHost() { return getPhysical(()->Client::isLanHost, ()->()->false); }
 
     /**
      * @return true if the current world is a remote connection (client connected to a dedicated server or lan world, and for the server, if it is running as dedicated)
@@ -104,6 +105,10 @@ public class Game {
             return client != null && client.isSameThread();
         }).orElse(false);
     }
+
+    public static EnvType getEnv() { return Platform.getEnv(); }
+
+    public static Logical getLogical() { return isLogicalServer() ? Logical.Server : Logical.Client; }
 
     /**
      * @return true if this jar was made for Forge or NeoForge
@@ -197,6 +202,16 @@ public class Game {
             EnvExecutor.runInEnv(Env.CLIENT, ()->()->{
                 if (getClient() instanceof Minecraft mc && mc.isSameThread())
                     client.get().run();
+            });
+    }
+
+    public static void runLogical(Logical side, Supplier<Runnable> run) {
+        if (side == Logical.Server && isLogicalServer())
+            run.get().run();
+        if (side == Logical.Client)
+            EnvExecutor.runInEnv(Env.CLIENT, ()->()->{
+                if (getClient() instanceof Minecraft mc && mc.isSameThread())
+                    run.get().run();
             });
     }
 

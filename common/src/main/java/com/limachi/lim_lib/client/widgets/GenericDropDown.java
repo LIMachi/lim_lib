@@ -2,6 +2,8 @@ package com.limachi.lim_lib.client.widgets;
 
 import com.mojang.blaze3d.platform.Window;
 import com.mojang.blaze3d.systems.RenderSystem;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractContainerWidget;
@@ -16,6 +18,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.function.Consumer;
 
+@Environment(EnvType.CLIENT)
 public class GenericDropDown extends AbstractContainerWidget {
     protected final ArrayList<OptionWrapper> list = new ArrayList<>();
     protected OptionWrapper selected;
@@ -30,6 +33,7 @@ public class GenericDropDown extends AbstractContainerWidget {
     protected int scrollS = 0;
     protected int scrollBarWidth = 10;
 
+    @Environment(EnvType.CLIENT)
     public static class OptionWrapper extends AbstractWidget {
         protected final AbstractWidget inner;
         protected final Consumer<OptionWrapper> onClick;
@@ -76,6 +80,7 @@ public class GenericDropDown extends AbstractContainerWidget {
         }
     }
 
+    @Environment(EnvType.CLIENT)
     public static class Builder {
         int x;
         int y;
