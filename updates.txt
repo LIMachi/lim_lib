@@ -1,0 +1,7 @@
+--- 0.3.0 ---
+first architectury version, supporting both neoforge and fabric
+
+--- 0.3.1 ---
+bugfix:
+-error in IS2CMsg::sendToClients(Iterator<ServerPlayer> players) resulting in message never being sent
+

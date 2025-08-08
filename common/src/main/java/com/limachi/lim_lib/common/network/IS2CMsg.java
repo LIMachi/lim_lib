@@ -35,17 +35,10 @@ public interface IS2CMsg<T extends IS2CMsg<T>> extends IMsg<T> {
     }
 
     default boolean sendToClients(Iterator<ServerPlayer> players) {
-        while (players.hasNext()) {
-            if (!NetworkManager.canPlayerReceive(players.next(), type()))
-                return false;
-        }
-        NetworkManager.sendToPlayers(new Iterable<>() {
-            @Override
-            public @NotNull Iterator<ServerPlayer> iterator() {
-                return players;
-            }
-        }, this);
-        return true;
+        boolean fail = false;
+        while (players.hasNext())
+            fail |= !sendToClient(players.next());
+        return !fail;
     }
 
     default boolean sendToClients() {
