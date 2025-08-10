@@ -14,6 +14,8 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
+import java.util.Arrays;
+
 /**
  * all the architectury events as Class references to be used with {@link RegisterEventListener}
  */
@@ -40,11 +42,11 @@ public enum Events {
     /** @see InteractionEvent#RIGHT_CLICK_ITEM */ RIGHT_CLICK_ITEM(InteractionEvent.RightClickItem.class),
     /** @see InteractionEvent#INTERACT_ENTITY */ RIGHT_CLICK_ENTITY(InteractionEvent.InteractEntity.class),
     /** @see InteractionEvent#FARMLAND_TRAMPLE */ FARMLAND_TRAMPLE(InteractionEvent.FarmlandTrample.class),
-    /** @see LifecycleEvent#SERVER_BEFORE_START */ SERVER_BEFORE_START(LifecycleEvent.InstanceState.class),
-    /** @see LifecycleEvent#SERVER_STARTING */ SERVER_STARTING(LifecycleEvent.InstanceState.class),
-    /** @see LifecycleEvent#SERVER_STARTED */ SERVER_STARTED(LifecycleEvent.InstanceState.class),
-    /** @see LifecycleEvent#SERVER_STOPPING */ SERVER_STOPPING(LifecycleEvent.InstanceState.class),
-    /** @see LifecycleEvent#SERVER_STOPPED */ SERVER_STOPPED(LifecycleEvent.InstanceState.class),
+    /** @see LifecycleEvent#SERVER_BEFORE_START */ SERVER_BEFORE_START(void.class, MinecraftServer.class),
+    /** @see LifecycleEvent#SERVER_STARTING */ SERVER_STARTING(void.class, MinecraftServer.class),
+    /** @see LifecycleEvent#SERVER_STARTED */ SERVER_STARTED(void.class, MinecraftServer.class),
+    /** @see LifecycleEvent#SERVER_STOPPING */ SERVER_STOPPING(void.class, MinecraftServer.class),
+    /** @see LifecycleEvent#SERVER_STOPPED */ SERVER_STOPPED(void.class, MinecraftServer.class),
     /** @see LifecycleEvent#SERVER_LEVEL_LOAD */ SERVER_LEVEL_LOAD(LifecycleEvent.LevelState.class),
     /** @see LifecycleEvent#SERVER_LEVEL_UNLOAD */ SERVER_LEVEL_UNLOAD(LifecycleEvent.LevelState.class),
     /** @see LifecycleEvent#SERVER_LEVEL_SAVE */ SERVER_LEVEL_SAVE(LifecycleEvent.LevelState.class),
@@ -114,7 +116,7 @@ public enum Events {
      */
     public void register(MethodAccess<?, ?> methodAccess) {
         if (!methodAccess.mayCallWith(returnType, parameters))
-            throw new RuntimeException("Trying to register event: " + this + " with invalid method type: " + methodAccess);
+            throw new RuntimeException("Trying to register event: " + this + " with invalid method type: " + methodAccess.returnType() + "-" + Arrays.toString(methodAccess.parameters()) + " expected " + returnType + "-" + Arrays.toString(parameters));
         Method m = new Method(methodAccess);
         switch (this) {
             case BLOCK_BREAK -> BlockEvent.BREAK.register(m::eventResult);

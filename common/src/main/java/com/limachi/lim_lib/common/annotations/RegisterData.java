@@ -7,9 +7,9 @@ import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)
-public @interface LevelData {
+public @interface RegisterData {
     String file() default  ""; //defaults to mod_id
     String[] dimensions() default  { "minecraft:overworld" };
     boolean saveToDisk() default true; //write to disk on world save
-    boolean syncToClient() default false; //sync to client on change, on next world tick
+    boolean syncToClient() default false; //sync to client on change or when they join the world
 }

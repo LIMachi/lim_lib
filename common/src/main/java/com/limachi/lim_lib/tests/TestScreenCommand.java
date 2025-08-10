@@ -1,19 +1,18 @@
-package com.limachi.lim_lib;
+package com.limachi.lim_lib.tests;
 
 import com.limachi.lim_lib.common.annotations.CmdArg;
 import com.limachi.lim_lib.common.annotations.RegisterCommand;
 import com.limachi.lim_lib.common.annotations.RegisterMsg;
 import com.limachi.lim_lib.common.network.IS2CMsg;
-
 import com.limachi.lim_lib.common.utils.Game;
 import com.mojang.brigadier.context.CommandContext;
-
 import dev.architectury.networking.NetworkManager;
-
+import dev.architectury.utils.Env;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-
+import net.minecraft.client.Minecraft;
 import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 
 public class TestScreenCommand {
@@ -22,7 +21,11 @@ public class TestScreenCommand {
         @Environment(EnvType.CLIENT)
         @Override
         public void run(NetworkManager.PacketContext ctx) {
-            Game.runLogical(Game.Logical.Client, ()->()->TestScreen.open(title));
+            Game.runPhysical(Env.CLIENT, ()->()->{
+                if (Minecraft.getInstance() instanceof Minecraft mc) {
+                    mc.setScreen(new TestScreen(Component.literal(title), mc.screen));
+                }
+            });
         }
     }
 

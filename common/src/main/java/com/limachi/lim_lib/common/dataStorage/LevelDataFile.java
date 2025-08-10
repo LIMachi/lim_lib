@@ -1,54 +1,66 @@
 package com.limachi.lim_lib.common.dataStorage;
 
-import com.limachi.lim_lib.InstancedMod;
-import com.limachi.lim_lib.ModInstances;
-import com.limachi.lim_lib.common.annotations.LevelData;
-import com.limachi.lim_lib.common.reflect.FieldAccess;
+import com.limachi.lim_lib.common.annotations.RegisterEventListener;
+import com.limachi.lim_lib.common.modCreation.Events;
+
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.datafix.DataFixTypes;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.saveddata.SavedData;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.HashMap;
 
 public class LevelDataFile extends SavedData {
-
     protected final String file;
-    protected final HashMap<String, LevelDataField<?>> fields = new HashMap<>();
+    protected final ResourceLocation dimension;
+    protected final HashMap<String, DataField<?>> fields = new HashMap<>();
     protected final Factory<LevelDataFile> FACTORY = new Factory<>(()->this, this::load, DataFixTypes.LEVEL);
-    protected boolean loaded = false;
+    protected Level level = null;
+    protected static final HashMap<String, HashMap<ResourceLocation, LevelDataFile>> files = new HashMap<>();
 
-    public LevelDataFile(String file) {
+    public LevelDataFile(String file, ResourceLocation dimension) {
         this.file = file;
-    }
-
-    public void addField(FieldAccess<?, ?> field, LevelData a, InstancedMod mod) {
-        String path = field.clazz().toString() + "#" + field.name();
-        if (field.get() instanceof LevelDataField<?> ldf)
-            fields.put(path, ldf.annotation(a, this, mod));
-        else
-            mod.logger.error("Invalid field type '" + path + "' was " + field.get().getClass() + " expected LevelDataField");
+        this.dimension = dimension;
     }
 
     @Override
-    public CompoundTag save(CompoundTag compoundTag, HolderLookup.Provider provider) {
-        for (var p : fields.entrySet())
-            compoundTag.put(p.getKey(), p.getValue().serialize());
+    public @NotNull CompoundTag save(CompoundTag compoundTag, HolderLookup.Provider provider) {
+        if (level != null)
+            for (var p : fields.entrySet())
+                p.getValue().serialize(level.dimension().location()).ifPresent(t->compoundTag.put(p.getKey(), t));
         return compoundTag;
     }
 
     public void loadingCheck(Level level) {
-        if (level instanceof ServerLevel sl && !loaded) {
+        if (level instanceof ServerLevel sl && this.level == null && level.dimension().location().equals(dimension)) {
+            this.level = level;
             sl.getDataStorage().computeIfAbsent(FACTORY, file);
-            loaded = true;
         }
     }
 
     public LevelDataFile load(CompoundTag tag,  HolderLookup.Provider provider) {
-        for (var p : fields.entrySet())
-            p.getValue().deserialize(tag.getCompound(p.getKey()));
+        if (level != null)
+            for (var p : fields.entrySet())
+                p.getValue().deserialize(tag.get(p.getKey()), level.dimension().location());
         return this;
+    }
+
+    public void invalidate() {
+        level = null;
+    }
+
+    @RegisterEventListener(Events.SERVER_STOPPING)
+    public static void serverStopping(MinecraftServer state) {
+        for (var h : files.values())
+            for (var e : h.entrySet())
+                e.getValue().invalidate();
+        for (var f : DataField.fields.values())
+            f.invalidate();
     }
 }

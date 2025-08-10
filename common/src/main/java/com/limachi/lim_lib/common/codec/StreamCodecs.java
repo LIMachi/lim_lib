@@ -281,6 +281,8 @@ public class StreamCodecs {
 
     public static final StreamCodec<RegistryFriendlyByteBuf, InteractionHand> HAND = StreamCodec.of((b, l)->b.writeBoolean(l == InteractionHand.OFF_HAND), b-> b.readBoolean() ? InteractionHand.OFF_HAND : InteractionHand.MAIN_HAND);
 
+    public static final StreamCodec<RegistryFriendlyByteBuf, ResourceLocation> RESOURCE_LOCATION = StreamCodec.of(FriendlyByteBuf::writeResourceLocation, FriendlyByteBuf::readResourceLocation);
+
     private static final HashMap<Class<?>, StreamCodec<RegistryFriendlyByteBuf, ?>> CODECS = new HashMap<>();
 
     static {
@@ -343,6 +345,8 @@ public class StreamCodecs {
         CODECS.put(ItemStack.class, STACK);
 
         CODECS.put(InteractionHand.class, HAND);
+
+        CODECS.put(ResourceLocation.class, RESOURCE_LOCATION);
     }
 
     public static <T> StreamCodec<RegistryFriendlyByteBuf, T> getCodec(Class<T> clazz) {

@@ -2,6 +2,7 @@ package com.limachi.lim_lib.common.modCreation;
 
 import com.limachi.lim_lib.InstancedMod;
 import com.limachi.lim_lib.common.annotations.*;
+import com.limachi.lim_lib.common.dataStorage.DataField;
 import com.limachi.lim_lib.common.dataStorage.LevelDataFile;
 import com.limachi.lim_lib.common.utils.StringUtils;
 import com.limachi.lim_lib.common.codec.CodecUtils;
@@ -35,7 +36,6 @@ import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -52,15 +52,12 @@ import java.util.regex.Pattern;
 public class Registries {
     public final InstancedMod mod;
     public final String mod_id;
-
     public final DeferredRegister<DataComponentType<?>> component_types;
     public final DeferredRegister<Block> blocks;
     public final DeferredRegister<BlockEntityType<?>> block_entities;
     public final DeferredRegister<Item> items;
     public final DeferredRegister<MenuType<?>> menus;
     public final DeferredRegister<CreativeModeTab> tabs;
-    public final DeferredRegister<RecipeSerializer<?>> recipes;
-
     public RegistrySupplier<CreativeModeTab> default_tab = null;
     public final HashMap<Class<?>, Pair<CustomPacketPayload.Type<?>, CustomPacketPayload.Type<?>>> messages = new HashMap<>();
 
@@ -136,7 +133,6 @@ public class Registries {
         items = DeferredRegister.create(mod_id, net.minecraft.core.registries.Registries.ITEM);
         menus = DeferredRegister.create(mod_id, net.minecraft.core.registries.Registries.MENU);
         tabs = DeferredRegister.create(mod_id, net.minecraft.core.registries.Registries.CREATIVE_MODE_TAB);
-        recipes = DeferredRegister.create(mod_id,  net.minecraft.core.registries.Registries.RECIPE_SERIALIZER);
     }
 
 //    public <T extends ModBase> T initMod() {
@@ -154,7 +150,6 @@ public class Registries {
         items.register();
         menus.register();
         tabs.register();
-        recipes.register();
         mod.logger.info("finished common registration");
     }
 
@@ -459,16 +454,11 @@ public class Registries {
 
     protected void extractLevelDataFields() {
         HashMap<String, LevelDataFile> tmp = new  HashMap<>();
-        mod.extractor.runOnFields(LevelData.class, (f, a) -> {
-            String file = a.file();
-            if (file.isBlank())
-                file = mod.registries.mod_id;
-            tmp.compute(file, (k, v)->{
-                if (v == null)
-                    v = new LevelDataFile(k);
-                v.addField(f, a, mod);
-                return v;
-            });
+        mod.extractor.runOnFields(RegisterData.class, (f, a) -> {
+            if (f.get() instanceof DataField<?> ldf) {
+                String path = f.clazz().toString() + "#" + f.name();
+                ldf.annotation(mod, a, path);
+            }
         });
     }
 

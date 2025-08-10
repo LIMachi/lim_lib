@@ -518,6 +518,8 @@ public class Codecs {
         }
     };
 
+    public static final Codec<ResourceLocation>  RESOURCE_LOCATION = ResourceLocation.CODEC;
+
     private static final HashMap<Class<?>, Codec<?>> CODECS = new HashMap<>();
 
     static {
@@ -580,6 +582,8 @@ public class Codecs {
         CODECS.put(ItemStack.class, STACK);
 
         CODECS.put(InteractionHand.class, HAND);
+
+        CODECS.put(ResourceLocation.class, RESOURCE_LOCATION);
     }
 
     public static <T> Codec<T> getCodec(Class<T> clazz) {

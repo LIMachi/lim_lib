@@ -1,12 +1,10 @@
-package com.limachi.lim_lib;
+package com.limachi.lim_lib.tests;
 
 import com.limachi.lim_lib.common.annotations.Config;
 import com.limachi.lim_lib.common.annotations.RegisterBlock;
 import com.limachi.lim_lib.common.annotations.RegisterBlockEntity;
 import com.limachi.lim_lib.common.annotations.RegisterBlockItem;
-
 import dev.architectury.registry.registries.RegistrySupplier;
-
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.item.BlockItem;
