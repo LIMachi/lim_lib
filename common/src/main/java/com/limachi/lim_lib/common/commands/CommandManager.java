@@ -46,9 +46,9 @@ import java.util.Optional;
 import java.util.function.BiFunction;
 
 public class CommandManager {
-    public static LiteralArgumentBuilder<CommandSourceStack> cmd(String cmd, Command<CommandSourceStack> run, HashMap<String, ArgumentType<?>> mappedTypes) {
+    public static LiteralArgumentBuilder<CommandSourceStack> cmd(int OPLevel, boolean requirePlayer, String cmd, Command<CommandSourceStack> run, HashMap<String, ArgumentType<?>> mappedTypes) {
         String[] c = cmd.startsWith("/") ? cmd.substring(1).split(" ") : cmd.split(" ");
-        LiteralArgumentBuilder<CommandSourceStack> root = Commands.literal(c[0]);
+        LiteralArgumentBuilder<CommandSourceStack> root = Commands.literal(c[0]).requires(ctx->ctx.hasPermission(OPLevel) && (!requirePlayer || ctx.isPlayer()));
         ArrayList<ArgumentBuilder<CommandSourceStack, ?>> rev = new ArrayList<>(c.length - 1);
         for (int i = 1; i < c.length; ++i) {
             if (c[i].startsWith("<") && c[i].endsWith(">")) {
@@ -64,9 +64,9 @@ public class CommandManager {
         return root;
     }
 
-    public static LiteralArgumentBuilder<CommandSourceStack> cmd(String cmd, Command<CommandSourceStack> run, ArgumentType<?> ... types) {
+    public static LiteralArgumentBuilder<CommandSourceStack> cmd(int OPLevel, boolean requirePlayer, String cmd, Command<CommandSourceStack> run, ArgumentType<?> ... types) {
         String[] c = cmd.startsWith("/") ? cmd.substring(1).split(" ") : cmd.split(" ");
-        LiteralArgumentBuilder<CommandSourceStack> root = Commands.literal(c[0]);
+        LiteralArgumentBuilder<CommandSourceStack> root = Commands.literal(c[0]).requires(ctx->ctx.hasPermission(OPLevel) && (!requirePlayer || ctx.isPlayer()));
         int arg = 0;
         ArrayList<ArgumentBuilder<CommandSourceStack, ?>> rev = new ArrayList<>(c.length - 1);
         for (int i = 1; i < c.length; ++i) {
@@ -218,7 +218,7 @@ public class CommandManager {
             }
         }
         mod.logger.info("registered command: " + command);
-        return Optional.of(cmd(command, ctx -> {
+        return Optional.of(cmd(a.OPLevel(), a.requirePlayer(), command, ctx -> {
             Object[] args = new Object[parameters.length];
             args[0] = ctx;
             for (int i = 0; i < at.length; ++i) {

@@ -51,9 +51,7 @@ public class LevelDataFile extends SavedData {
         return this;
     }
 
-    public void invalidate() {
-        level = null;
-    }
+    public void invalidate() { level = null; }
 
     @RegisterEventListener(Events.SERVER_STOPPING)
     public static void serverStopping(MinecraftServer state) {

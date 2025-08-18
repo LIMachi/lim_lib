@@ -1,11 +1,9 @@
 package com.limachi.lim_lib.common.codec;
 
 import com.limachi.lim_lib.common.reflect.ReflectUtils;
+
 import com.mojang.datafixers.util.Pair;
-import com.mojang.serialization.Codec;
-import com.mojang.serialization.DataResult;
-import com.mojang.serialization.DynamicOps;
-import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.*;
 import com.mojang.serialization.codecs.PrimitiveCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
@@ -17,9 +15,9 @@ import net.minecraft.network.codec.StreamEncoder;
 import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 public class CodecUtils {
     //TODO: test if this works
@@ -150,5 +148,134 @@ public class CodecUtils {
         if (Record.class.isAssignableFrom(clazz))
             return (StreamCodec<B, T>) recordStreamCodec((Class<Record>) clazz);
         return (StreamCodec<B, T>) StreamCodecs.getCodec(clazz);
+    }
+
+    /**
+     * contrary to the vanilla codec, this function works with any map (including mutable ones, like HashMap, and maps that have non string keys)
+     * works by making 2 ordered list of same size and inserting them as child of a single object
+     */
+    public static <K, V, M extends Map<K, V>> Codec<M> mapCodec(Supplier<M> mapConstructor, Codec<K> keyCodec, Codec<V> valueCodec) {
+        return new Codec<>() {
+            @Override
+            public <T> DataResult<Pair<M, T>> decode(DynamicOps<T> ops, T input) {
+                return ops.getMap(input).flatMap(m->{
+                    var k = m.get("keys");
+                    var v = m.get("values");
+                    if (k != null && v != null) {
+                        var lk = ops.getStream(k);
+                        var lv = ops.getStream(v);
+                        if (lk.isSuccess() && lv.isSuccess()) {
+                            var lkr = lk.result();
+                            var lvr = lv.result();
+                            if (lkr.isPresent() && lvr.isPresent()) {
+                                var uk = lkr.get().toList();
+                                var uv = lvr.get().toList();
+                                if (uk.size() == uv.size()) {
+                                    var out = mapConstructor.get();
+                                    for (int i = 0; i < uk.size(); ++i) {
+                                        var tk = keyCodec.decode(ops, uk.get(i));
+                                        var tv = valueCodec.decode(ops, uv.get(i));
+                                        if (tk.isSuccess() && tv.isSuccess())
+                                            out.put(tk.getOrThrow().getFirst(), tv.getOrThrow().getFirst());
+                                    }
+                                    return DataResult.success(Pair.of(out, input));
+                                }
+                            }
+                        }
+                    }
+                    return DataResult.error(() -> "Keys and/or values are not same"); //should do a more detailed error
+                });
+            }
+
+            @Override
+            public <T> DataResult<T> encode(M input, DynamicOps<T> ops, T prefix) {
+                var k = ops.listBuilder();
+                var v = ops.listBuilder();
+                for (var e : input.entrySet()) {
+                    var tk = keyCodec.encodeStart(ops, e.getKey());
+                    var tv = valueCodec.encodeStart(ops, e.getValue());
+                    if (tk.isSuccess() && tv.isSuccess()) {
+                        k.add(tk);
+                        v.add(tv);
+                    } else {
+                        //merge and return errors
+                    }
+                }
+                return ops
+                        .mapBuilder()
+                        .add("keys", k.build(prefix))
+                        .add("values", v.build(prefix))
+                        .build(prefix);
+            }
+        };
+    }
+
+    public static <K, V, M extends Map<K, V>> StreamCodec<RegistryFriendlyByteBuf, M> mapStreamCodec(Supplier<M> mapConstructor, StreamCodec<RegistryFriendlyByteBuf, K> keyCodec, StreamCodec<RegistryFriendlyByteBuf, V> valueCodec) {
+        return StreamCodec.of((b, m)->{
+            b.writeVarInt(m.size());
+            for (var entry : m.entrySet()) {
+                keyCodec.encode(b, entry.getKey());
+                valueCodec.encode(b, entry.getValue());
+            }
+        }, b->{
+            var out = mapConstructor.get();
+            int len = b.readVarInt();
+            for (int i = 0; i < len; ++i) {
+                K k = keyCodec.decode(b);
+                V v = valueCodec.decode(b);
+                out.put(k, v);
+            }
+            return out;
+        });
+    }
+
+    public static <K, V> Codec<Pair<K, V>> pairCodec(Codec<K> keyCodec, Codec<V> valueCodec) {
+        return RecordCodecBuilder.create(b->b.group(
+                keyCodec.fieldOf("first").forGetter(Pair::getFirst),
+                valueCodec.fieldOf("second").forGetter(Pair::getSecond)
+        ).apply(b, Pair::of));
+    }
+
+    public static <K, V> StreamCodec<RegistryFriendlyByteBuf, Pair<K, V>> pairStreamCodec(StreamCodec<RegistryFriendlyByteBuf, K> keyCodec, StreamCodec<RegistryFriendlyByteBuf, V> valueCodec) {
+        return StreamCodec.of((b, p)->{
+            keyCodec.encode(b, p.getFirst());
+            valueCodec.encode(b, p.getSecond());
+        }, b->{
+            K k = keyCodec.decode(b);
+            V v = valueCodec.decode(b);
+            return Pair.of(k, v);
+        });
+    }
+
+    public static <V, C extends Collection<V>> Codec<C> collectionCodec(Supplier<C> collectionConstructor, Codec<V> valueCodec) {
+        return new PrimitiveCodec<>() {
+            @Override
+            public <T> DataResult<C> read(DynamicOps<T> ops, T input) {
+                return ops.getStream(input).flatMap(c->{
+                    C out = collectionConstructor.get();
+                    c.forEach(e-> out.add(valueCodec.decode(ops, e).getPartialOrThrow().getFirst()));
+                    return DataResult.success(out);
+                });
+            }
+
+            @Override
+            public <T> T write(DynamicOps<T> ops, C value) {
+                return ops.createList(value.stream().map(v->valueCodec.encodeStart(ops, v).getPartialOrThrow()));
+            }
+        };
+    }
+
+    public static <V, C extends Collection<V>> StreamCodec<RegistryFriendlyByteBuf, C> collectionStreamCodec(Supplier<C> collectionConstructor, StreamCodec<RegistryFriendlyByteBuf, V> valueCodec) {
+        return StreamCodec.of((b, c)->{
+            b.writeVarInt(c.size());
+            for (var entry : c)
+                valueCodec.encode(b, entry);
+        }, b->{
+            var out = collectionConstructor.get();
+            int len = b.readVarInt();
+            for (int i = 0; i < len; ++i)
+                out.add(valueCodec.decode(b));
+            return out;
+        });
     }
 }

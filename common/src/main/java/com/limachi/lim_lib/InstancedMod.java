@@ -49,6 +49,11 @@ public class InstancedMod {
             client = new ClientRegistries(this);
         });
         configs = new ConfigManager(id, extractor);
+        if (!id.equals("lim_lib") && !ModInstances.getAllModIds().contains("lim_lib")) {
+            logger.warn("waiting for lim_lib to be initialized");
+            while (ModInstances.getMod("lim_lib") == null);
+            logger.info("resuming initialization");
+        }
         extractor.runOnMethods(PreRegistries.class, (m, a)->m.getStatic());
         StaticInitializer.initialize(extractor, Stage.FIRST, true);
         StaticInitializer.initialize(extractor, Stage.FIRST, false);

@@ -10,6 +10,7 @@ import com.mojang.serialization.Dynamic;
 import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.codecs.PrimitiveCodec;
 
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
@@ -32,6 +33,8 @@ public class Codecs {
         public <T> DataResult<Character> read(DynamicOps<T> ops, T input) { return ops.getNumberValue(input).map(n->(char)n.intValue()); }
         @Override
         public <T> T write(DynamicOps<T> ops, Character value) { return ops.createInt(value); }
+        @Override
+        public String toString() { return "char"; }
     };
     public static final Codec<Short> SHORT = Codec.SHORT;
     public static final Codec<Integer> INT = Codec.INT;
@@ -39,11 +42,13 @@ public class Codecs {
     public static final Codec<Float> FLOAT = Codec.FLOAT;
     public static final Codec<Double> DOUBLE = Codec.DOUBLE;
     public static final Codec<String> STR = Codec.STRING;
-    public static final Codec<BlockPos> POS = new PrimitiveCodec<BlockPos>() {
+    public static final Codec<BlockPos> POS = new PrimitiveCodec<>() {
         @Override
         public <T> DataResult<BlockPos> read(DynamicOps<T> ops, T input) { return ops.getNumberValue(input).map(n->BlockPos.of(n.longValue())); }
         @Override
         public <T> T write(DynamicOps<T> ops, BlockPos value) { return ops.createLong(value.asLong()); }
+        @Override
+        public String toString() { return "BlockPos"; }
     };
     public static final Codec<Boolean[]> BOOL_ARRAY = new PrimitiveCodec<>() {
         @Override
@@ -506,7 +511,7 @@ public class Codecs {
     public static final Codec<Tag> TAG = Codec.PASSTHROUGH.comapFlatMap((dynamic) -> DataResult.success(dynamic.convert(NbtOps.INSTANCE).getValue().copy()), (tag) -> new Dynamic<>(NbtOps.INSTANCE, tag.copy()));
     public static final Codec<CompoundTag> COMPOUND_TAG = CompoundTag.CODEC;
     public static final Codec<ItemStack> STACK = ItemStack.CODEC;
-    public static final Codec<InteractionHand> HAND = new PrimitiveCodec<InteractionHand>() {
+    public static final Codec<InteractionHand> HAND = new PrimitiveCodec<>() {
         @Override
         public <T> DataResult<InteractionHand> read(DynamicOps<T> ops, T input) {
             return ops.getBooleanValue(input).map(r->r ? InteractionHand.OFF_HAND : InteractionHand.MAIN_HAND);
@@ -518,7 +523,12 @@ public class Codecs {
         }
     };
 
-    public static final Codec<ResourceLocation>  RESOURCE_LOCATION = ResourceLocation.CODEC;
+    public static final Codec<ResourceLocation> RESOURCE_LOCATION = ResourceLocation.CODEC;
+
+    public static final Codec<UUID> UUID = RecordCodecBuilder.create(b->b.group(
+            LONG.fieldOf("mostSigBits").forGetter(java.util.UUID::getMostSignificantBits),
+            LONG.fieldOf("leastSigBits").forGetter(java.util.UUID::getLeastSignificantBits)
+    ).apply(b, UUID::new));
 
     private static final HashMap<Class<?>, Codec<?>> CODECS = new HashMap<>();
 
@@ -584,6 +594,8 @@ public class Codecs {
         CODECS.put(InteractionHand.class, HAND);
 
         CODECS.put(ResourceLocation.class, RESOURCE_LOCATION);
+
+        CODECS.put(UUID.class, UUID);
     }
 
     public static <T> Codec<T> getCodec(Class<T> clazz) {

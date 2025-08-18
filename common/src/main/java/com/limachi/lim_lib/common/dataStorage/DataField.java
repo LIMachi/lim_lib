@@ -19,6 +19,7 @@ import net.minecraft.world.level.Level;
 import java.util.HashMap;
 import java.util.Optional;
 
+@SuppressWarnings({"unused", "unchecked"})
 public class DataField<T> {
     protected static final HashMap<String, DataField<?>> fields = new HashMap<>(); //registry of all fields
 
@@ -35,23 +36,19 @@ public class DataField<T> {
         final LevelDataFile file;
 
         protected ValueFilePair(String file, ResourceLocation dimension) {
-            LevelDataFile[] tf = {null};
+            LevelDataFile tf = null;
             if (a.saveToDisk()) {
-                LevelDataFile.files.compute(file, (f, hrl)->{
-                    if (hrl == null)
-                        hrl = new HashMap<>();
-                    hrl.compute(dimension, (r, ldf)->{
-                        if (ldf == null)
-                            ldf = new LevelDataFile(file, dimension);
-                        if (!ldf.fields.containsKey(id))
-                            ldf.fields.put(id, DataField.this);
-                        tf[0] = ldf;
-                        return ldf;
-                    });
-                    return hrl;
-                });
+                if (!LevelDataFile.files.containsKey(file))
+                    LevelDataFile.files.put(file, new HashMap<>());
+                var hrl = LevelDataFile.files.get(file);
+                if (!hrl.containsKey(dimension))
+                    hrl.put(dimension, new LevelDataFile(file, dimension));
+                var ldf = hrl.get(dimension);
+                if (!ldf.fields.containsKey(id))
+                    ldf.fields.put(id, DataField.this);
+                tf = ldf;
             }
-            this.file = tf[0];
+            this.file = tf;
         }
 
         protected ValueFilePair setValue(T value) { this.value = value; return this; }
@@ -135,9 +132,7 @@ public class DataField<T> {
         return def;
     }
 
-    public T get() {
-        return get(Level.OVERWORLD.location());
-    }
+    public T get() { return get(Level.OVERWORLD.location()); }
 
     public void set(Level level, T value) {
         loadingCheck(level);
@@ -162,9 +157,19 @@ public class DataField<T> {
         });
     }
 
-    public void set(T value) {
-        set(Level.OVERWORLD.location(), value);
+    public void set(T value) { set(Level.OVERWORLD.location(), value); }
+
+    public void setDirty(Level level) {
+        if (level != null && values.get(level.dimension().location()) instanceof ValueFilePair p)
+            set(level, p.value);
     }
+
+    public void setDirty(ResourceLocation dimension) {
+        if (values.get(dimension) instanceof ValueFilePair p)
+            set(dimension, p.value);
+    }
+
+    public void setDirty() { setDirty(defaultDim); }
 
     public void sendSync(ResourceLocation level, T value) {
         serialize(value).ifPresent(t->{
@@ -174,13 +179,9 @@ public class DataField<T> {
         });
     }
 
-    public void receiveSync(Tag tag, ResourceLocation level) {
-        deserialize(tag, level);
-    }
+    public void receiveSync(Tag tag, ResourceLocation level) { deserialize(tag, level); }
 
-    public void invalidate() {
-        values.replaceAll((i, v)->v.setValue(def));
-    }
+    public void invalidate() { values.replaceAll((i, v)->v.setValue(def)); }
 
     public void sendAll(ServerPlayer player) {
         for (var p : values.entrySet()) {

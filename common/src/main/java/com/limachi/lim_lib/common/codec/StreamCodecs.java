@@ -19,6 +19,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.HashMap;
+import java.util.UUID;
 
 public class StreamCodecs {
     public static final StreamCodec<RegistryFriendlyByteBuf, Boolean> BOOL = StreamCodec.of(RegistryFriendlyByteBuf::writeBoolean, RegistryFriendlyByteBuf::readBoolean);
@@ -283,6 +284,8 @@ public class StreamCodecs {
 
     public static final StreamCodec<RegistryFriendlyByteBuf, ResourceLocation> RESOURCE_LOCATION = StreamCodec.of(FriendlyByteBuf::writeResourceLocation, FriendlyByteBuf::readResourceLocation);
 
+    public static final StreamCodec<RegistryFriendlyByteBuf, UUID> UUID = StreamCodec.of((b, u)->b.writeUUID(u), b->b.readUUID());
+
     private static final HashMap<Class<?>, StreamCodec<RegistryFriendlyByteBuf, ?>> CODECS = new HashMap<>();
 
     static {
@@ -347,6 +350,8 @@ public class StreamCodecs {
         CODECS.put(InteractionHand.class, HAND);
 
         CODECS.put(ResourceLocation.class, RESOURCE_LOCATION);
+
+        CODECS.put(UUID.class, UUID);
     }
 
     public static <T> StreamCodec<RegistryFriendlyByteBuf, T> getCodec(Class<T> clazz) {
