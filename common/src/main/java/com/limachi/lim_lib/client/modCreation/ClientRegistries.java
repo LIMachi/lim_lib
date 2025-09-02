@@ -8,6 +8,7 @@ import com.limachi.lim_lib.common.modCreation.StaticInitializer;
 import com.limachi.lim_lib.common.reflect.ReflectUtils;
 
 import dev.architectury.registry.client.keymappings.KeyMappingRegistry;
+import dev.architectury.registry.client.level.entity.EntityRendererRegistry;
 import dev.architectury.registry.client.rendering.ColorHandlerRegistry;
 import dev.architectury.registry.menu.MenuRegistry;
 import dev.architectury.registry.registries.RegistrySupplier;
@@ -20,8 +21,12 @@ import net.minecraft.client.color.block.BlockColor;
 import net.minecraft.client.color.item.ItemColor;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.MenuAccess;
+import net.minecraft.client.renderer.entity.EntityRenderer;
+import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
@@ -125,6 +130,28 @@ public class ClientRegistries {
         mod.extractor.runOnClasses(RegisterMenuScreen.class, (c, a)->new S<>(Registries.searchRegistry(mod.registries.menus, mod.registries.mod_id + ":" + Registries.defaultToClass(a.value(), c)), S.cast(c)).register());
     }
 
+    protected record ErasedEntityRender<T extends Entity>(Supplier<EntityType<T>> type, EntityRendererProvider<T> provider) {
+        public void register() { EntityRendererRegistry.register(type, provider); }
+    }
+
+    protected void extractEntityRenderers() {
+        mod.extractor.runOnClasses(RegisterEntityRenderer.class, (c, a)->{
+            String name = Registries.defaultToClass(a.name(), c);
+            String target = a.value();
+            if (target.isBlank())
+                target = name.replace("Renderer", "").replace("_renderer", "");
+            if (target.isBlank()) {
+                //error
+                return;
+            }
+            ResourceLocation path = ResourceLocation.fromNamespaceAndPath(mod.registries.mod_id, target);
+            if (Registries.contains(mod.registries.entities, path)) {
+                final var builder = Registries.defaultInstanceSupplier(c, EntityRenderer.class, EntityRendererProvider.Context.class);
+                new ErasedEntityRender(mod.registries.entities.getRegistrar().delegate(path), (EntityRendererProvider<Entity>) builder::apply).register();
+            }
+        });
+    }
+
     protected void stage(ClientStage stage, Runnable run) {
         StaticInitializer.initialize(mod.extractor, stage, true);
         run.run();
@@ -138,6 +165,7 @@ public class ClientRegistries {
             stage(ClientStage.KEY_BINDING, this::extractKeyBindings);
             stage(ClientStage.BLOCK_TINTER, this::extractBlockTinters);
             stage(ClientStage.ITEM_TINTER, this::extractItemTinters);
+            stage(ClientStage.ENTITY_RENDERER, this::extractEntityRenderers);
         }
     }
 

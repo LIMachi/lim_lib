@@ -20,6 +20,7 @@ import com.mojang.serialization.Codec;
 
 import dev.architectury.networking.NetworkManager;
 import dev.architectury.registry.CreativeTabRegistry;
+import dev.architectury.registry.level.entity.EntityAttributeRegistry;
 import dev.architectury.registry.menu.MenuRegistry;
 import dev.architectury.registry.registries.DeferredRegister;
 import dev.architectury.registry.registries.RegistrySupplier;
@@ -30,12 +31,17 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -52,12 +58,15 @@ import java.util.regex.Pattern;
 public class Registries {
     public final InstancedMod mod;
     public final String mod_id;
+
     public final DeferredRegister<DataComponentType<?>> component_types;
     public final DeferredRegister<Block> blocks;
     public final DeferredRegister<BlockEntityType<?>> block_entities;
     public final DeferredRegister<Item> items;
     public final DeferredRegister<MenuType<?>> menus;
     public final DeferredRegister<CreativeModeTab> tabs;
+    public final DeferredRegister<EntityType<?>> entities;
+
     public RegistrySupplier<CreativeModeTab> default_tab = null;
     public final HashMap<Class<?>, Pair<CustomPacketPayload.Type<?>, CustomPacketPayload.Type<?>>> messages = new HashMap<>();
 
@@ -133,6 +142,7 @@ public class Registries {
         items = DeferredRegister.create(mod_id, net.minecraft.core.registries.Registries.ITEM);
         menus = DeferredRegister.create(mod_id, net.minecraft.core.registries.Registries.MENU);
         tabs = DeferredRegister.create(mod_id, net.minecraft.core.registries.Registries.CREATIVE_MODE_TAB);
+        entities = DeferredRegister.create(mod_id, net.minecraft.core.registries.Registries.ENTITY_TYPE);
     }
 
 //    public <T extends ModBase> T initMod() {
@@ -150,6 +160,7 @@ public class Registries {
         items.register();
         menus.register();
         tabs.register();
+        entities.register();
         mod.logger.info("finished common registration");
     }
 
@@ -343,6 +354,10 @@ public class Registries {
         }));
     }
 
+    public <T extends Entity> RegistrySupplier<EntityType<T>> entity(String reg_key, EntityType.Builder<T> builder) {
+        return logRegistration("entity", entities.register(reg_key, ()->builder.build(reg_key)));
+    }
+
     protected void extractItems() {
         mod.extractor.runOnFields(RegisterItem.class, (f, a)->{
             String name = defaultToClass(a.value(), f.clazz());
@@ -462,6 +477,38 @@ public class Registries {
         });
     }
 
+    public static boolean contains(DeferredRegister<?> reg, ResourceLocation loc) {
+        for (RegistrySupplier<?> registrySupplier : reg)
+            if (registrySupplier.is(loc))
+                return true;
+        return false;
+    }
+
+    protected void extractEntityAttributes() {
+        mod.extractor.runOnMethods(EntityAttributeBuilder.class, (m, a)->{
+            var name = ResourceLocation.fromNamespaceAndPath(mod_id, defaultToClass(a.value(), m.clazz()));
+            if (contains(entities, name)) {
+                var entity = entities.getRegistrar().delegate(name);
+                EntityAttributeRegistry.register((RegistrySupplier<EntityType<LivingEntity>>)(Object)entity, ()-> (AttributeSupplier.Builder) m.get());
+            } else {
+                //error
+            }
+        });
+    }
+
+    protected void extractEntities() {
+        mod.extractor.runOnFields(RegisterEntity.class, (f, a)->{
+            if (hasConstructor(f.clazz(), EntityType.class, Level.class)) {
+                String name = defaultToClass(a.value(), f.clazz());
+                var builder = defaultInstanceSupplier(f.clazz(), Entity.class, EntityType.class, Level.class);
+                ((FieldAccess<?, RegistrySupplier<EntityType<Entity>>>) f).set(null, false, entity(name, EntityType.Builder.of(builder::apply, a.category()).sized(a.width(), a.height())));
+            } else
+                mod.logger.error("@RegisterEntity on a class that does not have a Object(EntityType, Level) constructor exposed: " + f.clazz());
+        });
+    }
+
+    protected void extractRecipes() {}
+
     protected void stage(Stage stage, Runnable run) {
         StaticInitializer.initialize(mod.extractor, stage, true);
         run.run();
@@ -477,6 +524,9 @@ public class Registries {
             stage(Stage.BLOCK_ITEM, this::extractBlockItems);
             stage(Stage.ITEM, this::extractItems);
             stage(Stage.BLOCK_ENTITY, this::extractBlockEntities);
+            stage(Stage.ENTITY, this::extractEntities);
+            stage(Stage.ENTITY_ATTRIBUTE, this::extractEntityAttributes);
+            stage(Stage.RECIPES, this::extractRecipes);
             stage(Stage.MENU, this::extractMenus);
             stage(Stage.LEVEL_DATA_FIELDS, this::extractLevelDataFields);
         }

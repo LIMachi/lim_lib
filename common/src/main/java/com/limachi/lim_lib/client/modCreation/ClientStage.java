@@ -7,5 +7,6 @@ public enum ClientStage {
     KEY_BINDING,
     BLOCK_TINTER,
     ITEM_TINTER,
+    ENTITY_RENDERER,
     LAST
 }
